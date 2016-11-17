@@ -21,7 +21,7 @@ block chain has reached a significant size.
 Building
 --------
 
-Build Zcash along with most dependencies from source by running
+Build Zdash along with most dependencies from source by running
 Get dependencies:
 ```{r, engine='bash'}
 
