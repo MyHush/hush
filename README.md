@@ -1,27 +1,48 @@
-Zcash 1.0.2
+Zdash 1.0.2
 ===========
 
-What is Zcash?
+What is Zdash?
 --------------
 
-[Zcash](https://z.cash/) is an implementation of the "Zerocash" protocol.
+[Zdash] is a private implementation of the "Zerocash" protocol forked from [Zcash].
 Based on Bitcoin's code, it intends to offer a far higher standard of privacy
 through a sophisticated zero-knowledge proving scheme that preserves
-confidentiality of transaction metadata. Technical details are available
-in our [Protocol Specification](https://github.com/zcash/zips/raw/master/protocol/protocol.pdf).
+confidentiality of transaction metadata. 
 
-This software is the Zcash client. It downloads and stores the entire history
-of Zcash transactions; depending on the speed of your computer and network
+This software is the Zdash client. It downloads and stores the entire history
+of Zdash transactions; depending on the speed of your computer and network
 connection, the synchronization process could take a day or more once the
 block chain has reached a significant size.
 
-Security Warnings
------------------
 
-See important security warnings in
-[doc/security-warnings.md](doc/security-warnings.md).
+**Zdash is unfinished and highly experimental.** Use at your own risk.
 
-**Zcash is unfinished and highly experimental.** Use at your own risk.
+
+Building
+--------
+
+Build Zcash along with most dependencies from source by running
+Get dependencies:
+```{r, engine='bash'}
+
+sudo apt-get install \
+      build-essential pkg-config libc6-dev m4 g++-multilib \
+      autoconf libtool ncurses-dev unzip git python \
+      zlib1g-dev wget bsdmainutils automake
+```
+
+Install
+```{r, engine='bash'}
+# Build
+./zcutil/build.sh -j$(nproc)
+# fetch key
+./zcutil/fetch-params.sh
+# Run
+./src/zcashd
+```
+
+
+Currently only Linux is officially supported.
 
 Where do I begin?
 -----------------
@@ -32,16 +53,7 @@ https://github.com/zcash/zcash/wiki/1.0-User-Guide
 
 * See the documentation at the [Zcash Wiki](https://github.com/zcash/zcash/wiki)
   for help and more information.
-* Ask for help on the [Zcash](https://forum.z.cash/) forum.
 
-Participation in the Zcash project is subject to a
-[Code of Conduct](code_of_conduct.md).
-
-Building
---------
-
-Build Zcash along with most dependencies from source by running
-./zcutil/build.sh. Currently only Linux is officially supported.
 
 License
 -------
