@@ -1,4 +1,4 @@
-Zdash 1.0.2
+Zdash 1.0.3
 ===========
 
 What is Zdash?
