@@ -33,10 +33,13 @@ sudo apt-get install \
 
 Install
 ```{r, engine='bash'}
-# Build
-./zcutil/build.sh -j$(nproc)
+#pull
+git clone https://github.com/J-Stuhlman/zdash.git
+cd zdash
 # fetch key
 ./zcutil/fetch-params.sh
+# Build
+./zcutil/build.sh -j$(nproc)
 # Run
 ./src/zcashd
 ```
