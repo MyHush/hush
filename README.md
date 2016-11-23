@@ -21,7 +21,9 @@ TEAM
 ----
 
 Axel Karlsson: [@sparkit] Community manager, general communications.
+
 Jamal Aezaz :  [@jamalaezaz] Promotions manager, campaign supervisor.
+
 Joseph Stuhlman: [@joseph] Dev, general communications. 
 
 * You can join our team and make contributions
