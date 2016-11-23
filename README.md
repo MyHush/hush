@@ -17,6 +17,19 @@ block chain has reached a significant size.
 
 **Zdash is unfinished and highly experimental.** Use at your own risk.
 
+TEAM
+----
+
+Axel Karlsson: [@sparkit] Community manager, general communications.
+Jamal Aezaz :  [@jamalaezaz] Promotions manager, campaign supervisor.
+Joseph Stuhlman: [@joseph] Dev, general communications. 
+
+* You can join our team and make contributions
+
+Slack
+-----
+https://zdash-slack.herokuapp.com/ //invite
+
 
 Building
 --------
