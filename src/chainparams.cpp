@@ -99,8 +99,9 @@ public:
   
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("zdash.tk", "142.4.212.68")); // node1
-        vSeeds.push_back(CDNSSeedData("node2", "192.99.3.29")); // node2
+        vSeeds.push_back(CDNSSeedData("node1", "192.99.3.29")); // node1
+        vSeeds.push_back(CDNSSeedData("node2", "zdash.suprnova.cc")); // node2
+        vSeeds.push_back(CDNSSeedData("node3", "76.188.211.191")); // node3
         //vSeeds.push_back(CDNSSeedData("znodes.org", "dnsseed.znodes.org")); //
 
         // guarantees the first 2 characters, when base58 encoded, are "t1"
