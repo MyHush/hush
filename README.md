@@ -24,8 +24,6 @@ Axel Karlsson: [@sparkit] Community manager, general communications.
 
 Iolar Demartini Junior: [@demartini] Web Developer (Front End).
 
-Jamal Aezaz :  [@jamalaezaz] Promotions manager, campaign supervisor.
-
 Joseph Stuhlman: [@joseph] Dev, general communications. 
 
 
