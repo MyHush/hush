@@ -25,7 +25,7 @@ namespace libzcash {
 
 #include "zcash/circuit/gadget.tcc"
 
-std::once_flag init_public_params_once_flag;
+  //std::once_flag init_public_params_once_flag;
 
 CCriticalSection cs_ParamsIO;
 CCriticalSection cs_LoadKeys;
