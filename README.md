@@ -1,5 +1,5 @@
-Zdash 1.0.3
-===========
+Zdash 1.0.8-1
+=============
 
 What is Zdash?
 --------------
@@ -12,7 +12,7 @@ confidentiality of transaction metadata.
 This software is the Zdash client. It downloads and stores the entire history
 of Zdash transactions; depending on the speed of your computer and network
 connection, the synchronization process could take a day or more once the
-block chain has reached a significant size.
+blockchain has reached a significant size.
 
 
 **Zdash is unfinished and highly experimental.** Use at your own risk.
