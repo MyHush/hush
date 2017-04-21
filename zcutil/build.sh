@@ -77,7 +77,7 @@ then
 fi
 
 # If --disable-rust is the next argument, disable Rust code:
-RUST_ARG=''
+RUST_ARG='--disable-rust'
 if [ "x${1:-}" = 'x--disable-rust' ]
 then
     RUST_ARG='--enable-rust=no'
@@ -89,4 +89,5 @@ PREFIX="$(pwd)/depends/$BUILD/"
 HOST="$HOST" BUILD="$BUILD" NO_RUST="$RUST_ARG" "$MAKE" "$@" -C ./depends/ V=1
 ./autogen.sh
 CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" "$RUST_ARG" "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
-"$MAKE" "$@" V=1
+cd src
+"$MAKE" "$@" V=1 zcashd zcash-cli
