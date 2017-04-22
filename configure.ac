@@ -443,11 +443,10 @@ if test x$use_hardening != xno; then
     HARDENED_CPPFLAGS="$HARDENED_CPPFLAGS -D_FORTIFY_SOURCE=2"
   ],[AC_MSG_ERROR(Cannot enable -D_FORTIFY_SOURCE=2)])
 
-  AX_CHECK_LINK_FLAG([[-Wl,-z,relro]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -Wl,-z,relro"],[AC_MSG_ERROR(Cannot enable RELRO)])
-  AX_CHECK_LINK_FLAG([[-Wl,-z,now]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -Wl,-z,now"],[AC_MSG_ERROR(Cannot enable BIND_NOW)])
-
   if test x$TARGET_OS != xwindows; then
     # All windows code is PIC, forcing it on just adds useless compile warnings
+    AX_CHECK_LINK_FLAG([[-Wl,-z,relro]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -Wl,-z,relro"],[AC_MSG_ERROR(Cannot enable RELRO)])
+    AX_CHECK_LINK_FLAG([[-Wl,-z,now]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -Wl,-z,now"],[AC_MSG_ERROR(Cannot enable BIND_NOW)])
     AX_CHECK_COMPILE_FLAG([-fPIE],[HARDENED_CXXFLAGS="$HARDENED_CXXFLAGS -fPIE"],[AC_MSG_ERROR(Cannot enable -fPIE)])
     AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"],[AC_MSG_ERROR(Cannot enable -pie)])
   else
@@ -749,11 +748,11 @@ fi
 
 # These packages don't provide pkgconfig config files across all
 # platforms, so we use older autoconf detection mechanisms:
-AC_CHECK_HEADER([gmp.h],,AC_MSG_ERROR(libgmp headers missing))
-AC_CHECK_LIB([gmp],[[__gmpn_sub_n]],GMP_LIBS=-lgmp, [AC_MSG_ERROR(libgmp missing)])
+#AC_CHECK_HEADER([gmp.h],,AC_MSG_ERROR(libgmp headers missing))
+#AC_CHECK_LIB([gmp],[[__gmpn_sub_n]],GMP_LIBS=-lgmp, [AC_MSG_ERROR(libgmp missing)])
 
-AC_CHECK_HEADER([gmpxx.h],,AC_MSG_ERROR(libgmpxx headers missing))
-AC_CHECK_LIB([gmpxx],[main],GMPXX_LIBS=-lgmpxx, [AC_MSG_ERROR(libgmpxx missing)])
+#AC_CHECK_HEADER([gmpxx.h],,AC_MSG_ERROR(libgmpxx headers missing))
+#AC_CHECK_LIB([gmpxx],[main],GMPXX_LIBS=-lgmpxx, [AC_MSG_ERROR(libgmpxx missing)])
 
 # libsnark header layout is broken unless cpp's -I is passed with the
 # libsnark directory, so for now we use this hideous workaround:
@@ -768,8 +767,8 @@ fi
 CPPFLAGS="-I$LIBSNARK_INCDIR $CPPFLAGS"
 
 # Now check for libsnark compilability using traditional autoconf tests:
-AC_CHECK_HEADER([libsnark/gadgetlib1/gadget.hpp],,AC_MSG_ERROR(libsnark headers missing))
-AC_CHECK_LIB([snark],[main],LIBSNARK_LIBS=-lsnark, [AC_MSG_ERROR(libsnark missing)], [-lgmpxx])
+#AC_CHECK_HEADER([libsnark/gadgetlib1/gadget.hpp],,AC_MSG_ERROR(libsnark headers missing))
+#AC_CHECK_LIB([snark],[main],LIBSNARK_LIBS=-lsnark, [AC_MSG_ERROR(libsnark missing)], [-lgmpxx])
 
 RUST_LIBS=""
 if test x$enable_rust != xno; then
