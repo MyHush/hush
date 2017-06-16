@@ -24,14 +24,13 @@ TEAM
 
 * Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
-* Joseph Stuhlman: [@joseph] Dev, general communications.
 * David Mercer: [@radix42] Lead Developer 
 
 * You can join our team too and make contributions
 
 Slack
 -----
-https://zdash-slack.herokuapp.com/ //invite
+https://slack.myhush.org/ //invite
 
 
 Building
