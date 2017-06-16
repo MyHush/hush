@@ -220,7 +220,7 @@ int printMiningStatus(bool mining)
         lines++;
     } else {
         std::cout << _("You are currently not mining.") << std::endl;
-        std::cout << _("To enable mining, add 'gen=1' to your zdash.conf and restart.") << std::endl;
+        std::cout << _("To enable mining, add 'gen=1' to your hush.conf and restart.") << std::endl;
         lines += 2;
     }
     std::cout << std::endl;
@@ -387,8 +387,8 @@ void ThreadShowMetricsScreen()
         std::cout << "\e[2J";
 
     // Thank you text
-    std::cout << _("Thank you for running a Zdash node!") << std::endl;
-    std::cout << _("You're helping to strengthen the machine :D") << std::endl;
+    std::cout << _("Thank you for running a HUSH node!") << std::endl;
+    std::cout << _("You're helping to secure everyone's privacy") << std::endl;
     std::cout << std::endl;
 
         // Privacy notice text

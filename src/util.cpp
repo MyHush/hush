@@ -450,7 +450,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.zcash
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "Zdash";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Hush";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -462,10 +462,10 @@ boost::filesystem::path GetDefaultDataDir()
     // Mac
     pathRet /= "Library/Application Support";
     TryCreateDirectory(pathRet);
-    return pathRet / "Zdash";
+    return pathRet / "Hush";
 #else
     // Unix
-    return pathRet / ".zdash";
+    return pathRet / ".hush";
 #endif
 #endif
 }
@@ -582,7 +582,7 @@ void ClearDatadirCache()
 
 boost::filesystem::path GetConfigFile()
 {
-    boost::filesystem::path pathConfigFile(GetArg("-conf", "zdash.conf"));
+    boost::filesystem::path pathConfigFile(GetArg("-conf", "hush.conf"));
     if (!pathConfigFile.is_complete())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
@@ -601,7 +601,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
     {
-        // Don't overwrite existing settings so command line settings override zdash.conf
+        // Don't overwrite existing settings so command line settings override hush.conf
         string strKey = string("-") + it->string_key;
         if (mapSettingsRet.count(strKey) == 0)
         {

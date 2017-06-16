@@ -93,7 +93,7 @@ void ThreadSendAlert()
 
     // Set specific client version/versions here. If setSubVer is empty, no filtering on subver is done:
     // alert.setSubVer.insert(std::string("/MagicBean:0.7.2/"));
-    const std::vector<std::string> useragents = {"MagicBean", "BeanStalk", "AppleSeed", "EleosZcash"};
+    const std::vector<std::string> useragents = {"MagicBean", "BalefulStatic"};
 
     BOOST_FOREACH(const std::string& useragent, useragents) {
         alert.setSubVer.insert(std::string("/"+useragent+":1.0.3/"));

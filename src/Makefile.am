@@ -71,11 +71,11 @@ noinst_PROGRAMS =
 TESTS =
 
 if BUILD_BITCOIND
-  bin_PROGRAMS += zcashd
+  bin_PROGRAMS += hushd
 endif
 
 if BUILD_BITCOIN_UTILS
-  bin_PROGRAMS += zcash-cli zcash-tx
+  bin_PROGRAMS += hush-cli hush-tx
 endif
 
 LIBZCASH_H = \
@@ -204,7 +204,7 @@ obj/build.h: FORCE
 	  $(abs_top_srcdir)
 libbitcoin_util_a-clientversion.$(OBJEXT): obj/build.h
 
-# server: zcashd
+# server: hushd
 libbitcoin_server_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(MINIUPNPC_CPPFLAGS) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS)
 libbitcoin_server_a_SOURCES = \
   sendalert.cpp \
@@ -265,7 +265,7 @@ libbitcoin_proton_a_SOURCES = \
   amqp/amqppublishnotifier.cpp
 endif
 
-# wallet: zcashd, but only linked when wallet enabled
+# wallet: hushd, but only linked when wallet enabled
 libbitcoin_wallet_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_SOURCES = \
   utiltest.cpp \
@@ -315,7 +315,7 @@ crypto_libbitcoin_crypto_a_SOURCES += \
   ${EQUIHASH_TROMP_SOURCES}
 endif
 
-# common: shared between zcashd and non-server tools
+# common: shared between hushd and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(BITCOIN_INCLUDES)
 libbitcoin_common_a_SOURCES = \
   amount.cpp \
@@ -383,15 +383,15 @@ nodist_libbitcoin_util_a_SOURCES = $(srcdir)/obj/build.h
 #
 
 # bitcoind binary #
-zcashd_SOURCES = bitcoind.cpp
-zcashd_CPPFLAGS = $(BITCOIN_INCLUDES)
-zcashd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+hushd_SOURCES = bitcoind.cpp
+hushd_CPPFLAGS = $(BITCOIN_INCLUDES)
+hushd_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-zcashd_SOURCES += bitcoind-res.rc
+hushd_SOURCES += bitcoind-res.rc
 endif
 
-zcashd_LDADD = \
+hushd_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_COMMON) \
   $(LIBUNIVALUE) \
@@ -403,14 +403,14 @@ zcashd_LDADD = \
   $(LIBSECP256K1)
 
 if ENABLE_ZMQ
-zcashd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
+hushd_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
 if ENABLE_WALLET
-zcashd_LDADD += libbitcoin_wallet.a
+hushd_LDADD += libbitcoin_wallet.a
 endif
 
-zcashd_LDADD += \
+hushd_LDADD += \
   $(BOOST_LIBS) \
   $(BDB_LIBS) \
   $(SSL_LIBS) \
@@ -423,19 +423,19 @@ zcashd_LDADD += \
   $(LIBZCASH_LIBS)
 
 if ENABLE_PROTON
-zcashd_LDADD += $(LIBBITCOIN_PROTON) $(PROTON_LIBS)
+hushd_LDADD += $(LIBBITCOIN_PROTON) $(PROTON_LIBS)
 endif
 
 # bitcoin-cli binary #
-zcash_cli_SOURCES = bitcoin-cli.cpp
-zcash_cli_CPPFLAGS = $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
-zcash_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+hush_cli_SOURCES = bitcoin-cli.cpp
+hush_cli_CPPFLAGS = $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
+hush_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-zcash_cli_SOURCES += bitcoin-cli-res.rc
+hush_cli_SOURCES += bitcoin-cli-res.rc
 endif
 
-zcash_cli_LDADD = \
+hush_cli_LDADD = \
   $(LIBBITCOIN_CLI) \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_UTIL) \
@@ -448,17 +448,17 @@ zcash_cli_LDADD = \
   $(LIBZCASH_LIBS)
 #
 
-# zcash-tx binary #
-zcash_tx_SOURCES = bitcoin-tx.cpp
-zcash_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
-zcash_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+# hush-tx binary #
+hush_tx_SOURCES = bitcoin-tx.cpp
+hush_tx_CPPFLAGS = $(BITCOIN_INCLUDES)
+hush_tx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 if TARGET_WINDOWS
-zcash_tx_SOURCES += bitcoin-tx-res.rc
+hush_tx_SOURCES += bitcoin-tx-res.rc
 endif
 
 # FIXME: Is libzcash needed for zcash_tx?
-zcash_tx_LDADD = \
+hush_tx_LDADD = \
   $(LIBUNIVALUE) \
   $(LIBBITCOIN_COMMON) \
   $(LIBBITCOIN_UTIL) \
@@ -467,7 +467,7 @@ zcash_tx_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBZCASH_LIBS)
 
-zcash_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
+hush_tx_LDADD += $(BOOST_LIBS) $(CRYPTO_LIBS)
 #
 
 # zcash protocol primitives #
