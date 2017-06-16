@@ -65,6 +65,9 @@ void static BatchWriteHashBestAnchor(CLevelDBBatch &batch, const uint256 &hash) 
     batch.Write(DB_BEST_ANCHOR, hash);
 }
 
+CCoinsViewDB::CCoinsViewDB(std::string dbName, size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / dbName, nCacheSize, fMemory, fWipe) {
+}
+
 CCoinsViewDB::CCoinsViewDB(size_t nCacheSize, bool fMemory, bool fWipe) : db(GetDataDir() / "chainstate", nCacheSize, fMemory, fWipe) {
 }
 
@@ -225,7 +228,10 @@ bool CCoinsViewDB::GetStats(CCoinsStats &stats) const {
             return error("%s: Deserialize or I/O error - %s", __func__, e.what());
         }
     }
-    stats.nHeight = mapBlockIndex.find(GetBestBlock())->second->nHeight;
+    {
+        LOCK(cs_main);
+        stats.nHeight = mapBlockIndex.find(stats.hashBlock)->second->nHeight;
+    }
     stats.hashSerialized = ss.GetHash();
     stats.nTotalAmount = nTotalAmount;
     return true;

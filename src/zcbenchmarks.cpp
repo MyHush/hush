@@ -1,4 +1,6 @@
+#include <cstdio>
 #include <future>
+#include <map>
 #include <thread>
 #include <unistd.h>
 #include <boost/filesystem.hpp>
@@ -9,6 +11,7 @@
 #include "primitives/transaction.h"
 #include "base58.h"
 #include "crypto/equihash.h"
+#include "chain.h"
 #include "chainparams.h"
 #include "consensus/validation.h"
 #include "main.h"
@@ -17,6 +20,8 @@
 #include "script/sign.h"
 #include "sodium.h"
 #include "streams.h"
+#include "txdb.h"
+#include "utiltest.h"
 #include "wallet/wallet.h"
 
 #include "zcbenchmarks.h"
@@ -89,7 +94,29 @@ double benchmark_create_joinsplit()
                          0);
     double ret = timer_stop(tv_start);
 
-    assert(jsdesc.Verify(*pzcashParams, pubKeyHash));
+    auto verifier = libzcash::ProofVerifier::Strict();
+    assert(jsdesc.Verify(*pzcashParams, verifier, pubKeyHash));
+    return ret;
+}
+
+std::vector<double> benchmark_create_joinsplit_threaded(int nThreads)
+{
+    std::vector<double> ret;
+    std::vector<std::future<double>> tasks;
+    std::vector<std::thread> threads;
+    for (int i = 0; i < nThreads; i++) {
+        std::packaged_task<double(void)> task(&benchmark_create_joinsplit);
+        tasks.emplace_back(task.get_future());
+        threads.emplace_back(std::move(task));
+    }
+    std::future_status status;
+    for (auto it = tasks.begin(); it != tasks.end(); it++) {
+        it->wait();
+        ret.push_back(it->get());
+    }
+    for (auto it = threads.begin(); it != threads.end(); it++) {
+        it->join();
+    }
     return ret;
 }
 
@@ -98,10 +125,12 @@ double benchmark_verify_joinsplit(const JSDescription &joinsplit)
     struct timeval tv_start;
     timer_start(tv_start);
     uint256 pubKeyHash;
-    joinsplit.Verify(*pzcashParams, pubKeyHash);
+    auto verifier = libzcash::ProofVerifier::Strict();
+    joinsplit.Verify(*pzcashParams, verifier, pubKeyHash);
     return timer_stop(tv_start);
 }
 
+#ifdef ENABLE_MINING
 double benchmark_solve_equihash()
 {
     CBlock pblock;
@@ -149,6 +178,7 @@ std::vector<double> benchmark_solve_equihash_threaded(int nThreads)
     }
     return ret;
 }
+#endif // ENABLE_MINING
 
 double benchmark_verify_equihash()
 {
@@ -221,5 +251,157 @@ double benchmark_large_tx()
                             &serror));
     }
     return timer_stop(tv_start);
+}
+
+double benchmark_try_decrypt_notes(size_t nAddrs)
+{
+    CWallet wallet;
+    for (int i = 0; i < nAddrs; i++) {
+        auto sk = libzcash::SpendingKey::random();
+        wallet.AddSpendingKey(sk);
+    }
+
+    auto sk = libzcash::SpendingKey::random();
+    auto tx = GetValidReceive(*pzcashParams, sk, 10, true);
+
+    struct timeval tv_start;
+    timer_start(tv_start);
+    auto nd = wallet.FindMyNotes(tx);
+    return timer_stop(tv_start);
+}
+
+double benchmark_increment_note_witnesses(size_t nTxs)
+{
+    CWallet wallet;
+    ZCIncrementalMerkleTree tree;
+
+    auto sk = libzcash::SpendingKey::random();
+    wallet.AddSpendingKey(sk);
+
+    // First block
+    CBlock block1;
+    for (int i = 0; i < nTxs; i++) {
+        auto wtx = GetValidReceive(*pzcashParams, sk, 10, true);
+        auto note = GetNote(*pzcashParams, sk, wtx, 0, 1);
+        auto nullifier = note.nullifier(sk);
+
+        mapNoteData_t noteData;
+        JSOutPoint jsoutpt {wtx.GetHash(), 0, 1};
+        CNoteData nd {sk.address(), nullifier};
+        noteData[jsoutpt] = nd;
+
+        wtx.SetNoteData(noteData);
+        wallet.AddToWallet(wtx, true, NULL);
+        block1.vtx.push_back(wtx);
+    }
+    CBlockIndex index1(block1);
+    index1.nHeight = 1;
+
+    // Increment to get transactions witnessed
+    wallet.ChainTip(&index1, &block1, tree, true);
+
+    // Second block
+    CBlock block2;
+    block2.hashPrevBlock = block1.GetHash();
+    {
+        auto wtx = GetValidReceive(*pzcashParams, sk, 10, true);
+        auto note = GetNote(*pzcashParams, sk, wtx, 0, 1);
+        auto nullifier = note.nullifier(sk);
+
+        mapNoteData_t noteData;
+        JSOutPoint jsoutpt {wtx.GetHash(), 0, 1};
+        CNoteData nd {sk.address(), nullifier};
+        noteData[jsoutpt] = nd;
+
+        wtx.SetNoteData(noteData);
+        wallet.AddToWallet(wtx, true, NULL);
+        block2.vtx.push_back(wtx);
+    }
+    CBlockIndex index2(block2);
+    index2.nHeight = 2;
+
+    struct timeval tv_start;
+    timer_start(tv_start);
+    wallet.ChainTip(&index2, &block2, tree, true);
+    return timer_stop(tv_start);
+}
+
+// Fake the input of a given block
+class FakeCoinsViewDB : public CCoinsViewDB {
+    uint256 hash;
+    ZCIncrementalMerkleTree t;
+
+public:
+    FakeCoinsViewDB(std::string dbName, uint256& hash) : CCoinsViewDB(dbName, 100, false, false), hash(hash) {}
+
+    bool GetAnchorAt(const uint256 &rt, ZCIncrementalMerkleTree &tree) const {
+        if (rt == t.root()) {
+            tree = t;
+            return true;
+        }
+        return false;
+    }
+
+    bool GetNullifier(const uint256 &nf) const {
+        return false;
+    }
+
+    uint256 GetBestBlock() const {
+        return hash;
+    }
+
+    uint256 GetBestAnchor() const {
+        return t.root();
+    }
+
+    bool BatchWrite(CCoinsMap &mapCoins,
+                    const uint256 &hashBlock,
+                    const uint256 &hashAnchor,
+                    CAnchorsMap &mapAnchors,
+                    CNullifiersMap &mapNullifiers) {
+        return false;
+    }
+
+    bool GetStats(CCoinsStats &stats) const {
+        return false;
+    }
+};
+
+double benchmark_connectblock_slow()
+{
+    // Test for issue 2017-05-01.a
+    SelectParams(CBaseChainParams::MAIN);
+    CBlock block;
+    FILE* fp = fopen((GetDataDir() / "benchmark/block-107134.dat").string().c_str(), "rb");
+    if (!fp) throw new std::runtime_error("Failed to open block data file");
+    CAutoFile blkFile(fp, SER_DISK, CLIENT_VERSION);
+    blkFile >> block;
+    blkFile.fclose();
+
+    // Fake its inputs
+    auto hashPrev = uint256S("00000000159a41f468e22135942a567781c3f3dc7ad62257993eb3c69c3f95ef");
+    FakeCoinsViewDB fakeDB("benchmark/block-107134-inputs", hashPrev);
+    CCoinsViewCache view(&fakeDB);
+
+    // Fake the chain
+    CBlockIndex index(block);
+    index.nHeight = 107134;
+    CBlockIndex indexPrev;
+    indexPrev.phashBlock = &hashPrev;
+    indexPrev.nHeight = index.nHeight - 1;
+    index.pprev = &indexPrev;
+    mapBlockIndex.insert(std::make_pair(hashPrev, &indexPrev));
+
+    CValidationState state;
+    struct timeval tv_start;
+    timer_start(tv_start);
+    assert(ConnectBlock(block, state, &index, view, true));
+    auto duration = timer_stop(tv_start);
+
+    // Undo alterations to global state
+    mapBlockIndex.erase(hashPrev);
+    SelectParamsFromCommandLine();
+
+    return duration;
 }
 

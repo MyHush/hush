@@ -1,6 +1,29 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eu -o pipefail
+
+# Allow user overrides to $MAKE. Typical usage for users who need it:
+#   MAKE=gmake ./zcutil/build.sh -j$(nproc)
+if [[ -z "${MAKE-}" ]]; then
+    MAKE=make
+fi
+
+# Allow overrides to $BUILD and $HOST for porters. Most users will not need it.
+#   BUILD=i686-pc-linux-gnu ./zcutil/build.sh
+if [[ -z "${BUILD-}" ]]; then
+    BUILD=x86_64-unknown-linux-gnu
+fi
+if [[ -z "${HOST-}" ]]; then
+    HOST=x86_64-unknown-linux-gnu
+fi
+
+# Allow override to $CC and $CXX for porters. Most users will not need it.
+if [[ -z "${CC-}" ]]; then
+    CC=gcc
+fi
+if [[ -z "${CXX-}" ]]; then
+    CXX=g++
+fi
 
 if [ "x$*" = 'x--help' ]
 then
@@ -10,13 +33,23 @@ Usage:
 $0 --help
   Show this help message and exit.
 
-$0 [ --enable-lcov || --disable-tests ] [ MAKEARGS... ]
+$0 [ --enable-lcov || --disable-tests ] [ --disable-mining ] [ --disable-rust ] [ --enable-proton ] [ MAKEARGS... ]
   Build Zcash and most of its transitive dependencies from
   source. MAKEARGS are applied to both dependencies and Zcash itself.
 
   If --enable-lcov is passed, Zcash is configured to add coverage
   instrumentation, thus enabling "make cov" to work.
   If --disable-tests is passed instead, the Zcash tests are not built.
+
+  If --disable-mining is passed, Zcash is configured to not build any mining
+  code. It must be passed after the test arguments, if present.
+
+  If --disable-rust is passed, Zcash is configured to not build any Rust language
+  assets. It must be passed after test/mining arguments, if present.
+
+  If --enable-proton is passed, Zcash is configured to build the Apache Qpid Proton
+  library required for AMQP support. This library is not built by default.
+  It must be passed after the test/mining/Rust arguments, if present.
 EOF
     exit 0
 fi
@@ -39,10 +72,40 @@ then
     shift
 fi
 
-# BUG: parameterize the platform/host directory:
-PREFIX="$(pwd)/depends/x86_64-unknown-linux-gnu/"
+# If --disable-mining is the next argument, disable mining code:
+MINING_ARG=''
+if [ "x${1:-}" = 'x--disable-mining' ]
+then
+    MINING_ARG='--enable-mining=no'
+    shift
+fi
 
-HOST=x86_64-unknown-linux-gnu BUILD=x86_64-unknown-linux-gnu make "$@" -C ./depends/ V=1 NO_QT=1
+# If --disable-rust is the next argument, disable Rust code:
+RUST_ARG='--disable-rust'
+if [ "x${1:-}" = 'x--disable-rust' ]
+then
+    RUST_ARG='--enable-rust=no'
+    shift
+fi
+
+# If --enable-proton is the next argument, enable building Proton code:
+PROTON_ARG='--enable-proton=no'
+if [ "x${1:-}" = 'x--enable-proton' ]
+then
+    PROTON_ARG=''
+    shift
+fi
+
+PREFIX="$(pwd)/depends/$BUILD/"
+
+eval "$MAKE" --version
+eval "$CC" --version
+eval "$CXX" --version
+as --version
+ld --version
+
+HOST="$HOST" BUILD="$BUILD" NO_RUST="$RUST_ARG" NO_PROTON="$PROTON_ARG" "$MAKE" "$@" -C ./depends/ V=1
 ./autogen.sh
-./configure --prefix="${PREFIX}" --host=x86_64-unknown-linux-gnu --build=x86_64-unknown-linux-gnu --with-gui=no "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
-make "$@" V=1
+CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" "$RUST_ARG" "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" "$PROTON_ARG" CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
+cd src
+"$MAKE" "$@" V=1 hushd hush-cli

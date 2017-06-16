@@ -23,18 +23,20 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
-#include "json/json_spirit_writer_template.h"
+
+#include <univalue.h>
 
 #include "zcash/Note.hpp"
 #include "zcash/Address.hpp"
+#include "zcash/Proof.hpp"
 
 using namespace std;
-using namespace json_spirit;
 
 // In script_tests.cpp
-extern Array read_json(const std::string& jsondata);
+extern UniValue read_json(const std::string& jsondata);
 
 static std::map<string, unsigned int> mapFlagNames = boost::assign::map_list_of
     (string("NONE"), (unsigned int)SCRIPT_VERIFY_NONE)
@@ -95,32 +97,32 @@ BOOST_AUTO_TEST_CASE(tx_valid)
     // ... where all scripts are stringified scripts.
     //
     // verifyFlags is a comma separated list of script verification flags to apply, or "NONE"
-    Array tests = read_json(std::string(json_tests::tx_valid, json_tests::tx_valid + sizeof(json_tests::tx_valid)));
+    UniValue tests = read_json(std::string(json_tests::tx_valid, json_tests::tx_valid + sizeof(json_tests::tx_valid)));
 
+    auto verifier = libzcash::ProofVerifier::Strict();
     ScriptError err;
-    BOOST_FOREACH(Value& tv, tests)
-    {
-        Array test = tv.get_array();
-        string strTest = write_string(tv, false);
-        if (test[0].type() == array_type)
+    for (size_t idx = 0; idx < tests.size(); idx++) {
+        UniValue test = tests[idx];
+        string strTest = test.write();
+        if (test[0].isArray())
         {
-            if (test.size() != 3 || test[1].type() != str_type || test[2].type() != str_type)
+            if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
             {
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
 
             map<COutPoint, CScript> mapprevOutScriptPubKeys;
-            Array inputs = test[0].get_array();
+            UniValue inputs = test[0].get_array();
             bool fValid = true;
-            BOOST_FOREACH(Value& input, inputs)
-            {
-                if (input.type() != array_type)
+            for (size_t inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
+	        const UniValue& input = inputs[inpIdx];
+                if (!input.isArray())
                 {
                     fValid = false;
                     break;
                 }
-                Array vinput = input.get_array();
+                UniValue vinput = input.get_array();
                 if (vinput.size() != 3)
                 {
                     fValid = false;
@@ -141,7 +143,7 @@ BOOST_AUTO_TEST_CASE(tx_valid)
             stream >> tx;
 
             CValidationState state;
-            BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
+            BOOST_CHECK_MESSAGE(CheckTransaction(tx, state, verifier), strTest);
             BOOST_CHECK(state.IsValid());
 
             for (unsigned int i = 0; i < tx.vin.size(); i++)
@@ -171,32 +173,32 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
     // ... where all scripts are stringified scripts.
     //
     // verifyFlags is a comma separated list of script verification flags to apply, or "NONE"
-    Array tests = read_json(std::string(json_tests::tx_invalid, json_tests::tx_invalid + sizeof(json_tests::tx_invalid)));
+    UniValue tests = read_json(std::string(json_tests::tx_invalid, json_tests::tx_invalid + sizeof(json_tests::tx_invalid)));
 
+    auto verifier = libzcash::ProofVerifier::Strict();
     ScriptError err;
-    BOOST_FOREACH(Value& tv, tests)
-    {
-        Array test = tv.get_array();
-        string strTest = write_string(tv, false);
-        if (test[0].type() == array_type)
+    for (size_t idx = 0; idx < tests.size(); idx++) {
+        UniValue test = tests[idx];
+        string strTest = test.write();
+        if (test[0].isArray())
         {
-            if (test.size() != 3 || test[1].type() != str_type || test[2].type() != str_type)
+            if (test.size() != 3 || !test[1].isStr() || !test[2].isStr())
             {
                 BOOST_ERROR("Bad test: " << strTest);
                 continue;
             }
 
             map<COutPoint, CScript> mapprevOutScriptPubKeys;
-            Array inputs = test[0].get_array();
+            UniValue inputs = test[0].get_array();
             bool fValid = true;
-            BOOST_FOREACH(Value& input, inputs)
-            {
-                if (input.type() != array_type)
+	    for (size_t inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
+	        const UniValue& input = inputs[inpIdx];
+                if (!input.isArray())
                 {
                     fValid = false;
                     break;
                 }
-                Array vinput = input.get_array();
+                UniValue vinput = input.get_array();
                 if (vinput.size() != 3)
                 {
                     fValid = false;
@@ -217,7 +219,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             stream >> tx;
 
             CValidationState state;
-            fValid = CheckTransaction(tx, state) && state.IsValid();
+            fValid = CheckTransaction(tx, state, verifier) && state.IsValid();
 
             for (unsigned int i = 0; i < tx.vin.size() && fValid; i++)
             {
@@ -246,11 +248,12 @@ BOOST_AUTO_TEST_CASE(basic_transaction_tests)
     CMutableTransaction tx;
     stream >> tx;
     CValidationState state;
-    BOOST_CHECK_MESSAGE(CheckTransaction(tx, state) && state.IsValid(), "Simple deserialized transaction should be valid.");
+    auto verifier = libzcash::ProofVerifier::Strict();
+    BOOST_CHECK_MESSAGE(CheckTransaction(tx, state, verifier) && state.IsValid(), "Simple deserialized transaction should be valid.");
 
     // Check that duplicate txins fail
     tx.vin.push_back(tx.vin[0]);
-    BOOST_CHECK_MESSAGE(!CheckTransaction(tx, state) || !state.IsValid(), "Transaction with duplicate txins should be invalid.");
+    BOOST_CHECK_MESSAGE(!CheckTransaction(tx, state, verifier) || !state.IsValid(), "Transaction with duplicate txins should be invalid.");
 }
 
 //
@@ -341,9 +344,11 @@ BOOST_AUTO_TEST_CASE(test_basic_joinsplit_verification)
         libzcash::JSOutput(addr, 50)
     };
 
+    auto verifier = libzcash::ProofVerifier::Strict();
+
     {
         JSDescription jsdesc(*p, pubKeyHash, rt, inputs, outputs, 0, 0);
-        BOOST_CHECK(jsdesc.Verify(*p, pubKeyHash));
+        BOOST_CHECK(jsdesc.Verify(*p, verifier, pubKeyHash));
 
         CDataStream ss(SER_DISK, CLIENT_VERSION);
         ss << jsdesc;
@@ -352,7 +357,7 @@ BOOST_AUTO_TEST_CASE(test_basic_joinsplit_verification)
         ss >> jsdesc_deserialized;
 
         BOOST_CHECK(jsdesc_deserialized == jsdesc);
-        BOOST_CHECK(jsdesc_deserialized.Verify(*p, pubKeyHash));
+        BOOST_CHECK(jsdesc_deserialized.Verify(*p, verifier, pubKeyHash));
     }
 
     {
@@ -365,12 +370,13 @@ BOOST_AUTO_TEST_CASE(test_basic_joinsplit_verification)
         // Ensure that it won't verify if the root is changed.
         auto test = JSDescription(*p, pubKeyHash, rt, inputs, outputs, 0, 0);
         test.anchor = GetRandHash();
-        BOOST_CHECK(!test.Verify(*p, pubKeyHash));
+        BOOST_CHECK(!test.Verify(*p, verifier, pubKeyHash));
     }
 }
 
 BOOST_AUTO_TEST_CASE(test_simple_joinsplit_invalidity)
 {
+    auto verifier = libzcash::ProofVerifier::Strict();
     CMutableTransaction tx;
     tx.nVersion = 2;
     {
@@ -422,23 +428,23 @@ BOOST_AUTO_TEST_CASE(test_simple_joinsplit_invalidity)
         JSDescription *jsdesc = &newTx.vjoinsplit[0];
         jsdesc->vpub_old = -1;
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-txns-vpub_old-negative");
 
         jsdesc->vpub_old = MAX_MONEY + 1;
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-txns-vpub_old-toolarge");
 
         jsdesc->vpub_old = 0;
         jsdesc->vpub_new = -1;
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-txns-vpub_new-negative");
 
         jsdesc->vpub_new = MAX_MONEY + 1;
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-txns-vpub_new-toolarge");
 
         jsdesc->vpub_new = (MAX_MONEY / 2) + 10;
@@ -448,7 +454,7 @@ BOOST_AUTO_TEST_CASE(test_simple_joinsplit_invalidity)
         JSDescription *jsdesc2 = &newTx.vjoinsplit[1];
         jsdesc2->vpub_new = (MAX_MONEY / 2) + 10;
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-txns-txintotal-toolarge");
     }
     {
@@ -462,18 +468,19 @@ BOOST_AUTO_TEST_CASE(test_simple_joinsplit_invalidity)
         jsdesc->nullifiers[0] = GetRandHash();
         jsdesc->nullifiers[1] = jsdesc->nullifiers[0];
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-joinsplits-nullifiers-duplicate");
 
         jsdesc->nullifiers[1] = GetRandHash();
 
         newTx.vjoinsplit.push_back(JSDescription());
+        jsdesc = &newTx.vjoinsplit[0]; // Fixes #2026. Related PR #2078.
         JSDescription *jsdesc2 = &newTx.vjoinsplit[1];
 
         jsdesc2->nullifiers[0] = GetRandHash();
         jsdesc2->nullifiers[1] = jsdesc->nullifiers[0];
 
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-joinsplits-nullifiers-duplicate");
     }
     {
@@ -492,7 +499,7 @@ BOOST_AUTO_TEST_CASE(test_simple_joinsplit_invalidity)
             CTransaction finalNewTx(newTx);
             BOOST_CHECK(finalNewTx.IsCoinBase());
         }
-        BOOST_CHECK(!CheckTransaction(newTx, state));
+        BOOST_CHECK(!CheckTransaction(newTx, state, verifier));
         BOOST_CHECK(state.GetRejectReason() == "bad-cb-has-joinsplits");
     }
 }
@@ -553,7 +560,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     string reason;
     BOOST_CHECK(IsStandardTx(t, reason));
 
-    t.vout[0].nValue = 501; // dust
+    t.vout[0].nValue = 53; // dust
     BOOST_CHECK(!IsStandardTx(t, reason));
 
     t.vout[0].nValue = 2730; // not dust
@@ -632,7 +639,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandardV2)
     BOOST_CHECK(IsStandardTx(t, reason));
 
     // v2 transactions can still be non-standard for the same reasons as v1.
-    t.vout[0].nValue = 501; // dust
+    t.vout[0].nValue = 53; // dust
     BOOST_CHECK(!IsStandardTx(t, reason));
 
     // v3 is not standard.

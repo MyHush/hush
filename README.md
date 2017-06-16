@@ -1,5 +1,5 @@
-Zdash 1.0.3
-===========
+Zdash 1.0.9
+=============
 
 What is Zdash?
 --------------
@@ -12,7 +12,7 @@ confidentiality of transaction metadata.
 This software is the Zdash client. It downloads and stores the entire history
 of Zdash transactions; depending on the speed of your computer and network
 connection, the synchronization process could take a day or more once the
-block chain has reached a significant size.
+blockchain has reached a significant size.
 
 
 **Zdash is unfinished and highly experimental.** Use at your own risk.
@@ -62,6 +62,14 @@ cd zdash
 
 
 Currently only Linux is officially supported.
+
+Deprecation Policy
+------------------
+
+This release is considered deprecated 16 weeks after the release day. There
+is an automatic deprecation shutdown feature which will halt the node some
+time after this 16 week time period. The automatic feature is based on block
+height and can be explicitly disabled.
 
 Where do I begin?
 -----------------

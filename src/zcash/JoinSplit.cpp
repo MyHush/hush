@@ -25,7 +25,7 @@ namespace libzcash {
 
 #include "zcash/circuit/gadget.tcc"
 
-std::once_flag init_public_params_once_flag;
+  //std::once_flag init_public_params_once_flag;
 
 CCriticalSection cs_ParamsIO;
 CCriticalSection cs_LoadKeys;
@@ -79,10 +79,6 @@ public:
 
     JoinSplitCircuit() {}
     ~JoinSplitCircuit() {}
-
-    static void initialize() {
-    std::call_once (init_public_params_once_flag, ppzksnark_ppT::init_public_params);
-    }
 
     void setProvingKeyPath(std::string path) {
         pkPath = path;
@@ -151,6 +147,7 @@ public:
 
     bool verify(
         const ZCProof& proof,
+        ProofVerifier& verifier,
         const uint256& pubKeyHash,
         const uint256& randomSeed,
         const boost::array<uint256, NumInputs>& macs,
@@ -179,7 +176,12 @@ public:
                 vpub_new
             );
 
-            return r1cs_ppzksnark_online_verifier_strong_IC<ppzksnark_ppT>(*vk_precomp, witness, r1cs_proof);
+            return verifier.check(
+                *vk,
+                *vk_precomp,
+                witness,
+                r1cs_proof
+            );
         } catch (...) {
             return false;
         }
@@ -358,7 +360,7 @@ public:
 template<size_t NumInputs, size_t NumOutputs>
 JoinSplit<NumInputs, NumOutputs>* JoinSplit<NumInputs, NumOutputs>::Generate()
 {
-    JoinSplitCircuit<NumInputs, NumOutputs>::initialize();
+    initialize_curve_params();
     auto js = new JoinSplitCircuit<NumInputs, NumOutputs>();
     js->generate();
 
@@ -368,7 +370,7 @@ JoinSplit<NumInputs, NumOutputs>* JoinSplit<NumInputs, NumOutputs>::Generate()
 template<size_t NumInputs, size_t NumOutputs>
 JoinSplit<NumInputs, NumOutputs>* JoinSplit<NumInputs, NumOutputs>::Unopened()
 {
-    JoinSplitCircuit<NumInputs, NumOutputs>::initialize();
+    initialize_curve_params();
     return new JoinSplitCircuit<NumInputs, NumOutputs>();
 }
 
