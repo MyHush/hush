@@ -10,6 +10,7 @@
 #include "util.h"
 #include "utiltime.h"
 #include "utilmoneystr.h"
+#include "utilstrencodings.h"
 
 #include <boost/thread.hpp>
 #include <boost/thread/synchronized_value.hpp>
@@ -226,7 +227,7 @@ int printMiningStatus(bool mining)
         lines++;
     } else {
         std::cout << _("You are currently not mining.") << std::endl;
-        std::cout << _("To enable mining, add 'gen=1' to your zdash.conf and restart.") << std::endl;
+        std::cout << _("To enable mining, add 'gen=1' to your hush.conf and restart.") << std::endl;
         lines += 2;
     }
     std::cout << std::endl;
@@ -341,20 +342,19 @@ int printMessageBox(size_t cols)
     int lines = 2 + u->size();
     std::cout << _("Messages:") << std::endl;
     for (auto it = u->cbegin(); it != u->cend(); ++it) {
-        std::cout << *it << std::endl;
+        auto msg = FormatParagraph(*it, cols, 2);
+        std::cout << "- " << msg << std::endl;
         // Handle newlines and wrapped lines
         size_t i = 0;
         size_t j = 0;
-        while (j < it->size()) {
-            i = it->find('\n', j);
+        while (j < msg.size()) {
+            i = msg.find('\n', j);
             if (i == std::string::npos) {
-                i = it->size();
+                i = msg.size();
             } else {
                 // Newline
                 lines++;
             }
-            // Wrapped lines
-            lines += ((i-j) / cols);
             j = i + 1;
         }
     }
@@ -394,8 +394,8 @@ void ThreadShowMetricsScreen()
         std::cout << "\e[2J";
 
     // Thank you text
-    std::cout << _("Thank you for running a Zdash node!") << std::endl;
-    std::cout << _("You're helping to strengthen the machine :D") << std::endl;
+    std::cout << _("Thank you for running a HUSH node!") << std::endl;
+    std::cout << _("You're helping to secure everyone's privacy") << std::endl;
     std::cout << std::endl;
 
         // Privacy notice text
