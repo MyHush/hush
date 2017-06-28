@@ -100,12 +100,12 @@ fi
 # might break the entry above to find gcc- on arm
 if [ -f "/etc/arch-release" ]; then
     if [ -f "/usr/bin/gcc-5" ]; then
-    CC=gcc-5
-    CXX=g++-5
+      CC=gcc-5
+      CXX=g++-5
+    else
+      echo 'gcc5 required, please install using "sudo pacman -S gss5"'
+      exit 1
     fi
-else
-echo 'gcc5 required, please install using "sudo pacman -S gss5"'
-exit 1
 fi
 
 PREFIX="$(pwd)/depends/$BUILD/"
