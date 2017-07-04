@@ -24,13 +24,18 @@ TEAM
 
 * Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
-* David Mercer: [@radix42] Lead Developer 
+* David Mercer: [@radix42] Lead Developer
+* Matthew Reichardt [@mreichardt] Core Developer, Tooling
 
 * You can join our team too and make contributions
 
 Slack
 -----
 https://slack.myhush.org/ //invite
+
+Forum
+-----
+https://forum.myhush.org/
 
 
 Building
