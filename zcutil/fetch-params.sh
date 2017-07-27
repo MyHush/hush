@@ -2,7 +2,11 @@
 
 set -eu
 
-PARAMS_DIR="$HOME/.zcash-params"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    PARAMS_DIR="$HOME/Library/Application Support/ZcashParams"
+else
+    PARAMS_DIR="$HOME/.zcash-params"
+fi
 
 SPROUT_PKEY_NAME='sprout-proving.key'
 SPROUT_VKEY_NAME='sprout-verifying.key'
@@ -18,17 +22,23 @@ function fetch_params {
     local dlname="${output}.dl"
     local expectedhash="$3"
 
-    if ! [ -f "$output" ]
-    then
+    if ! [ -f "$output" ]; then
         echo "Retrieving: $url"
-        wget \
-            --progress=dot:giga \
-            --output-document="$dlname" \
-            --continue \
-            --retry-connrefused --waitretry=3 --timeout=30 \
-            "$url"
+        if [[ $(sw_vers -productName) == "Mac OS X" ]]; then
+            curl \
+                --output "$dlname" \
+                -# -L -C - \
+                "$url"
+        else
+            wget \
+                --progress=dot:giga \
+                --output-document="$dlname" \
+                --continue \
+                --retry-connrefused --waitretry=3 --timeout=30 \
+                "$url"
+        fi
 
-        "$SHA256CMD" $SHA256ARGS -c <<EOF
+        "$SHA256CMD" $SHA256ARGS --check <<EOF
 $expectedhash  $dlname
 EOF
 
@@ -46,12 +56,20 @@ EOF
 # Use flock to prevent parallel execution.
 function lock() {
     local lockfile=/tmp/fetch_params.lock
-    # create lock file
-    eval "exec 200>/$lockfile"
-    # acquire the lock
-    flock -n 200 \
-        && return 0 \
-        || return 1
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if shlock -f ${lockfile} -p $$; then
+            return 0
+        else
+            return 1
+        fi
+    else
+        # create lock file
+        eval "exec 200>/$lockfile"
+        # acquire the lock
+        flock -n 200 \
+            && return 0 \
+            || return 1
+    fi
 }
 
 function exit_locked_error {
