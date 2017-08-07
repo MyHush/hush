@@ -21,7 +21,7 @@ Tell us what should happen
 ### Actual behaviour + errors
 Tell us what happens instead including any noticable error output (any messages displayed on-screen when e.g. a crash occurred)
 
-### The version of Zcash you were using:
+### The version of Hush you were using:
 Run `hushd --version` to find out
 
 ### Machine specs:
