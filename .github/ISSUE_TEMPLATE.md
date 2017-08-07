@@ -1,6 +1,6 @@
 <!--- Remove text and sections that do not apply -->
 
-This issue tracker is only for technical issues related to zcashd.
+This issue tracker is only for technical issues related to hushd, the Hush node daemon.
 
 General Hush questions and/or support requests and are best directed to the [Hush Forums](https://forum.myhush.org) or [Slack Chat](https://myhush.slack.com).
 
