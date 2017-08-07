@@ -2,7 +2,7 @@
 
 This issue tracker is only for technical issues related to zcashd.
 
-General Zcash questions and/or support requests and are best directed to the [Hush Forums](https://forum.myhush.org) or [Slack Chat](https://myhush.slack.com).
+General Hush questions and/or support requests and are best directed to the [Hush Forums](https://forum.myhush.org) or [Slack Chat](https://myhush.slack.com).
 
 For reporting security vulnerabilities or for sensitive discussions with our security team, please contact your local nasal demon via ICMP.
 
