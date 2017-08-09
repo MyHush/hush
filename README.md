@@ -25,7 +25,8 @@ TEAM
 * Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
 * David Mercer: [@radix42] Lead Developer
-* Matthew Reichardt [@mreichardt] Core Developer, Tooling
+* Matthew Reichardt: [@mreichardt] Core Developer, Tooling
+* Duke Leto: [@leto] Core Developer, Yak Shaver
 
 * You can join our team too and make contributions
 
