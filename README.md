@@ -24,13 +24,20 @@ TEAM
 
 * Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
-* David Mercer: [@radix42] Lead Developer 
+* David Mercer: [@radix42] Lead Developer
+* Matthew Reichardt: [@mreichardt] Core Developer, Tooling
+* Duke Leto: [@leto] Core Developer, Yak Shaver
+* Larry Ludlow [@madbuda] Core Developer, Infrastructure 
 
 * You can join our team too and make contributions
 
 Slack
 -----
 https://slack.myhush.org/ //invite
+
+Forum
+-----
+https://forum.myhush.org/
 
 
 Building
