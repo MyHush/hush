@@ -27,6 +27,7 @@ TEAM
 * David Mercer: [@radix42] Lead Developer
 * Matthew Reichardt: [@mreichardt] Core Developer, Tooling
 * Duke Leto: [@leto] Core Developer, Yak Shaver
+* Larry Ludlow [@madbuda] Core Developer, Infrastructure 
 
 * You can join our team too and make contributions
 
