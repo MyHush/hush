@@ -45,7 +45,17 @@ node you want to talk to when you ask it questions.
 By default hush-cli will talk to the Mainnet node if one / both are running
 By default hush-cli will talk to the Testnet node if ONLY the testnet is running
 
-We need a way to tell hush-cli to talk to the Testnet node instead of the Mainnet
+First start the Mainnet:
+```
+./src/hushd
+```
+
+Then start the Testnet
+```
+./src/hushd -testnet
+```
+
+Now We need a way to tell hush-cli to talk to the Testnet node instead of the Mainnet
 node if both are running.
 We can do this by calling the correct Testnet RPC port on the command line:
 ```
