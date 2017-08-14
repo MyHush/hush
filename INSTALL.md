@@ -16,44 +16,7 @@ distributions:
 You will need to have Git and a C++ compiler and libtool and a
 a few other libraries, depending on your setup.
 
-## Building
-The following build process generally applies to Ubuntu (and similar) Linux
-distributions. For best results it is recommended to use Ubuntu Linux 16.04
-or later.
-Build HUSH along with most dependencies from source by running
-Get dependencies:
-```{r, engine='bash'}
-
-sudo apt-get install \
-      build-essential pkg-config libc6-dev m4 g++-multilib \
-      autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake
-```
-
-Create a HUSH configuration file (*important*):
-```
-mkdir -p ~/.hush
-echo "rpcuser=username" >> ~/.hush/hush.conf
-echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-```
-
-## Downloading Git source repo, building and running Hush
-
-```{r, engine='bash'}
-# pull
-git clone https://github.com/MyHush/hush.git
-cd hush
-# fetch key
-./zcutil/fetch-params.sh
-# Build
-./zcutil/build.sh -j$(nproc)
-# Run a HUSH node
-./src/hushd
-```
-
 ## Supported Platforms
-
-Currently only Linux is officially supported. Windows/Mac OS X versions are in the works...
 
 We aim to support all platforms, but there is only so much time in the day.
 
