@@ -33,49 +33,18 @@ TEAM
 
 Slack
 -----
-https://slack.myhush.org/ //invite
+
+Please feel free to join our Slack at https://slack.myhush.org/ .
+There are many channels, some you might enjoy are #general, #exchanges and #mining.
 
 Forum
 -----
 https://forum.myhush.org/
 
+Installing
+----------
 
-Building
---------
-The following build process generally applies to Ubuntu (and similar) Linux
-distributions. For best results it is recommended to use Ubuntu Linux 16.04
-or later.
-Build HUSH along with most dependencies from source by running
-Get dependencies:
-```{r, engine='bash'}
-
-sudo apt-get install \
-      build-essential pkg-config libc6-dev m4 g++-multilib \
-      autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake
-```
-
-Create a HUSH configuration file (*important*):
-```
-mkdir -p ~/.hush
-echo "rpcuser=username" >> ~/.hush/hush.conf
-echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-```
-
-Install HUSH
-```{r, engine='bash'}
-# pull
-git clone https://github.com/MyHush/hush.git
-cd hush
-# fetch key
-./zcutil/fetch-params.sh
-# Build
-./zcutil/build.sh -j$(nproc)
-# Run a HUSH node
-./src/hushd
-```
-
-Currently only Linux is officially supported. Windows/Mac OS X versions are in the works...
+See [INSTALL.md](https://github.com/MyHush/hush/edit/master/README.md).
 
 Deprecation Policy
 ------------------
