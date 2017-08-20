@@ -9,5 +9,6 @@ else
     mkdir -p $DIR
     echo "rpcuser=username" >> $DIR/hush.conf
     echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>$DIR/hush.conf
+    cat zcutil/hush.conf.default >> $DIR/hush.conf
     echo "Created $DIR/hush.conf"
 fi
