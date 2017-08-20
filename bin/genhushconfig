@@ -2,7 +2,7 @@
 
 # Generate a new Hush node config
 
-DIR="~/.hush"
+DIR="$HOME/.hush"
 if [ -d "$DIR" ]; then
     echo "Hush config directory $DIR already exists, doing nothing!!!"
 else
