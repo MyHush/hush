@@ -31,11 +31,14 @@ sudo apt-get install \
 ```
 
 Create a HUSH configuration file (*important*):
+
 ```
-mkdir -p ~/.hush
-echo "rpcuser=username" >> ~/.hush/hush.conf
-echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
+./bin/genhushconfig
 ```
+
+This script will never touch an existing ~/.hush, it will only
+create a new one for the first time and populate it with a
+basic config file.
 
 ## Downloading Git source repo, building and running Hush
 
