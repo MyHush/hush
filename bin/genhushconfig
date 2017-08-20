@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Generate a new Hush node config
+
+DIR="~/.hush"
+if [ -d "$DIR" ]; then
+    echo "Hush config directory $DIR already exists, doing nothing!!!"
+else
+    mkdir -p $DIR
+    echo "rpcuser=username" >> $DIR/hush.conf
+    echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>$DIR/hush.conf
+    echo "Created $DIR/hush.conf"
+fi
