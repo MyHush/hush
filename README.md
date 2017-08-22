@@ -44,7 +44,7 @@ https://forum.myhush.org/
 Installing
 ----------
 
-See [INSTALL.md](https://github.com/MyHush/hush/edit/master/README.md).
+See [INSTALL.md](https://github.com/MyHush/hush/blob/master/INSTALL.md).
 
 Deprecation Policy
 ------------------
