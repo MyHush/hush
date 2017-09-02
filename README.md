@@ -46,6 +46,42 @@ Installing
 
 See [INSTALL.md](https://github.com/MyHush/hush/blob/master/INSTALL.md).
 
+
+Bootstrap Nodes
+---------------
+Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
+
+**IPV4**
+* us.madmining.club
+* 183.89.226.141
+* 163.172.70.26
+* 76.188.211.191
+* 173.212.196.148
+* 78.94.32.197
+* 77.78.12.89
+* 78.46.88.113
+* 163.172.70.26
+* 192.99.3.29
+* 144.76.62.229
+* 163.172.64.208
+* 37.187.167.145
+
+**IPV6**
+* [2607:5300:60:341d::1]
+* [2001:41d0:d:691::]
+* [2a02:c207:2008:8708::1]
+* [2001:470:1f09:3b6:7285:c2ff:fe0e:1664]
+* [2a02:908:162:67dc:225:90ff:fe50:2b9b]
+
+**Hush on Tor**
+* hushwgexvojlkuhl.onion
+* ozumguh2lk6uvcc3.onion
+* hushnodejbnzyvfk.onion
+* hushnodexptkgea3.onion
+* keyrx4lugtnya7ax.onion
+* j7h7df2tylc57xeo.onion
+* madminingja2ozys.onion
+
 Deprecation Policy
 ------------------
 
