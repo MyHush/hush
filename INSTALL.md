@@ -1,4 +1,12 @@
-# Building Hush
+
+# Installing Hush with apt
+
+    sudo echo 'deb https://dl.bintray.com/myhush/hush/ hush main' >> /etc/apt/sources.list
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
+    sudo apt-get update
+    sudo apt-get install hush
+
+# Building Hush from source
 
 Building Hush from source will take some time but your efforts will be rewarded :)
 
