@@ -46,7 +46,6 @@ Installing
 
 See [INSTALL.md](https://github.com/MyHush/hush/blob/master/INSTALL.md).
 
-
 Bootstrap Nodes
 ---------------
 Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
