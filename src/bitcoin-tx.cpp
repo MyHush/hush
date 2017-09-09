@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2017      The Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -46,8 +47,8 @@ static bool AppInitRawTx(int argc, char* argv[])
         // First part of help message is specific to this utility
         std::string strUsage = _("Hush hush-tx utility version") + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
-              "  hush-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded zcash transaction") + "\n" +
-              "  hush-tx [options] -create [commands]   " + _("Create hex-encoded zcash transaction") + "\n" +
+              "  hush-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded hush transaction") + "\n" +
+              "  hush-tx [options] -create [commands]   " + _("Create hex-encoded hush transaction") + "\n" +
               "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
