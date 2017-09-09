@@ -595,7 +595,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
-        throw missing_zcash_conf();
+        throw missing_hush_conf();
 
     set<string> setOptions;
     setOptions.insert("*");

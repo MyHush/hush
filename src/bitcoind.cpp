@@ -102,7 +102,7 @@ bool AppInit(int argc, char* argv[])
         try
         {
             ReadConfigFile(mapArgs, mapMultiArgs);
-        } catch (const missing_zcash_conf& e) {
+        } catch (const missing_hush_conf& e) {
             fprintf(stderr,
                 (_("Before starting hushd, you need to create a configuration file:\n"
                    "%s\n"
