@@ -41,7 +41,7 @@
 using namespace std;
 
 #if defined(NDEBUG)
-# error "Zcash cannot be compiled without assertions."
+# error "Hush cannot be compiled without assertions."
 #endif
 
 /**
@@ -1960,7 +1960,7 @@ bool FindUndoPos(CValidationState &state, int nFile, CDiskBlockPos &pos, unsigne
 static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck() {
-    RenameThread("zcash-scriptch");
+    RenameThread("hush-scriptch");
     scriptcheckqueue.Thread();
 }
 

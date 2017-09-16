@@ -24,52 +24,62 @@ TEAM
 
 * Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
-* Joseph Stuhlman: [@joseph] Dev, general communications.
-* David Mercer: [@radix42] Lead Developer 
+* David Mercer: [@radix42] Lead Developer
+* Matthew Reichardt: [@mreichardt] Core Developer, Tooling
+* Duke Leto: [@leto] Core Developer, Yak Shaver
+* Larry Ludlow [@madbuda] Core Developer, Infrastructure 
 
 * You can join our team too and make contributions
 
 Slack
 -----
-https://zdash-slack.herokuapp.com/ //invite
 
+Please feel free to join our Slack at https://slack.myhush.org/ .
+There are many channels, some you might enjoy are #general, #exchanges and #mining.
 
-Building
---------
-The following build process generally applies to Ubuntu (and similar) Linux
-distributions. For best results it is recommended to use Ubuntu Linux 16.04
-or later.
-Build HUSH along with most dependencies from source by running
-Get dependencies:
-```{r, engine='bash'}
+Forum
+-----
+https://forum.myhush.org/
 
-sudo apt-get install \
-      build-essential pkg-config libc6-dev m4 g++-multilib \
-      autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake
-```
+Installing
+----------
 
-Create a HUSH configuration file (*important*):
-```
-mkdir -p ~/.hush
-echo "rpcuser=username" >> ~/.hush/hush.conf
-echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-```
+See [INSTALL.md](https://github.com/MyHush/hush/blob/master/INSTALL.md).
 
-Install HUSH
-```{r, engine='bash'}
-# pull
-git clone https://github.com/MyHush/hush.git
-cd hush
-# fetch key
-./zcutil/fetch-params.sh
-# Build
-./zcutil/build.sh -j$(nproc)
-# Run a HUSH node
-./src/hushd
-```
+Bootstrap Nodes
+---------------
+Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
 
-Currently only Linux is officially supported. Windows/Mac OS X versions are in the works...
+**IPV4**
+* us.madmining.club
+* 183.89.226.141
+* 163.172.70.26
+* 76.188.211.191
+* 173.212.196.148
+* 78.94.32.197
+* 77.78.12.89
+* 78.46.88.113
+* 163.172.70.26
+* 192.99.3.29
+* 144.76.62.229
+* 163.172.64.208
+* 37.187.167.145
+
+**IPV6**
+* [2607:5300:60:341d::1]
+* [2001:41d0:d:691::]
+* [2a02:c207:2008:8708::1]
+* [2001:470:1f09:3b6:7285:c2ff:fe0e:1664]
+* [2a02:908:162:67dc:225:90ff:fe50:2b9b]
+
+**Hush on Tor**
+* hushwgexvojlkuhl.onion
+* ozumguh2lk6uvcc3.onion
+* hushnodejbnzyvfk.onion
+* hushnodexptkgea3.onion
+* keyrx4lugtnya7ax.onion
+* j7h7df2tylc57xeo.onion
+* madminingja2ozys.onion
 
 Deprecation Policy
 ------------------
