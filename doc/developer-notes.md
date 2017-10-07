@@ -1,5 +1,4 @@
-Coding
-====================
+# Coding
 
 Various coding styles have been used during the history of the codebase,
 and the result is not very consistent. However, we're now trying to converge to
@@ -36,8 +35,7 @@ class Class
 }
 ```
 
-Doxygen comments
------------------
+# Doxygen comments
 
 To facilitate the generation of documentation, use doxygen-compatible comment blocks for functions, methods and fields.
 
@@ -116,7 +114,7 @@ that run in -regtest mode.
 
 **DEBUG_LOCKORDER**
 
-Zcash is a multithreaded application, and deadlocks or other multithreading bugs
+Hush is a multithreaded application, and deadlocks or other multithreading bugs
 can be very difficult to track down. Compiling with -DDEBUG_LOCKORDER (configure
 CXXFLAGS="-DDEBUG_LOCKORDER -g") inserts run-time checks to keep track of which locks
 are held, and adds warnings to the debug.log file if inconsistencies are detected.
@@ -165,7 +163,7 @@ Threads
 
 - ThreadRPCServer : Remote procedure call handler, listens on port 8232 for connections and services them.
 
-- ZcashMiner : Generates zcash (if wallet is enabled).
+- HushMiner : Generates hush (if wallet is enabled).
 
 - Shutdown : Does an orderly shutdown of everything.
 
