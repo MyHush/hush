@@ -1,14 +1,14 @@
+# Installing Hush
 
-# Installing Hush 
-
-## Install 
+## Install
 
     sudo echo 'deb https://dl.bintray.com/myhush/hush/ hush main' >> /etc/apt/sources.list
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61 
+    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
     sudo apt-get update
     sudo apt-get install hush
-    
+
 ## Create a HUSH configuration file (*important*):
+
 ```
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
@@ -19,6 +19,7 @@ echo "addnode=zdash.suprnova.cc" >> ~/.hush/hush.conf
 ```
 
 ## Download proving key
+
 ```
 hush-fetch-params
 ```
@@ -29,7 +30,7 @@ Building Hush from source will take some time but your efforts will be rewarded 
 
 ## Requirements
 
-You will need at least 2GB of RAM to build hush from git source, OR
+You will need at least 4GB of RAM to build hush from git source, OR
 you can enable a swap file. To enable a 4GB swap file on modern Linux
 distributions:
 
@@ -42,9 +43,11 @@ You will need to have Git and a C++ compiler and libtool and a
 a few other libraries, depending on your setup.
 
 ## Building
+
 The following build process generally applies to Ubuntu (and similar) Linux
 distributions. For best results it is recommended to use Ubuntu Linux 16.04
 or later.
+
 Build HUSH along with most dependencies from source by running
 Get dependencies:
 ```{r, engine='bash'}
@@ -55,12 +58,7 @@ sudo apt-get install \
       zlib1g-dev wget bsdmainutils automake
 ```
 
-Create a HUSH configuration file (*important*):
-```
-mkdir -p ~/.hush
-echo "rpcuser=username" >> ~/.hush/hush.conf
-echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-```
+Make sure to create a HUSH configuration file as described above.
 
 ## Downloading Git source repo, building and running Hush
 
@@ -78,7 +76,9 @@ cd hush
 
 ## Supported Platforms
 
-Currently only Linux is officially supported. Windows/Mac OS X versions are in the works...
+Currently Linux,  Windows and Mac OS X are our supported platforms. If you
+are interested in porting Hush to a new operating system, we are interested
+to talk with you.
 
 We aim to support all platforms, but there is only so much time in the day.
 
@@ -86,5 +86,6 @@ Currently, any ARMv7 machine will not be able to build this repo, because the
 underlying tech (zcash and the zksnark library) do not support that instruction
 set.
 
-This also means that RaspberryPi devices will not work, unless they have a newer ARMv8
+This also means that RaspberryPi devices will not work, unless they have a
+newer ARMv8-based Raspberry Pi.
 
