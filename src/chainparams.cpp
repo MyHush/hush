@@ -58,9 +58,14 @@ public:
         pchMessageStart[1] = 0xe9;
         pchMessageStart[2] = 0x27;
         pchMessageStart[3] = 0x64;
+<<<<<<< HEAD
         vAlertPubKey = ParseHex("0411ef848a72e48fb2d8216c6698a030dedbef16ac6cd9d739a7b4e346735a8edf252223bac64093f49616050df642c61ae5b5e2bd3654d7dde05a5e296f79950b");
         nDefaultPort = 8888;
         nMinerThreads = 0;
+=======
+        vAlertPubKey = ParseHex("04b7ecf0baa90495ceb4e4090f6b2fd37eec1e9c85fac68a487f3ce11589692e4a317479316ee814e066638e1db54e37a10689b70286e6315b1087b6615d179264");
+        nDefaultPort = 8233;
+>>>>>>> 4485d5d3f39f1d45d362ec8e92710ceefdb549a8
         nMaxTipAge = 24 * 60 * 60;
         nPruneAfterHeight = 100000;
         const size_t N = 200, K = 9;
@@ -218,9 +223,14 @@ public:
         pchMessageStart[1] = 0x1a;
         pchMessageStart[2] = 0xf9;
         pchMessageStart[3] = 0xbf;
+<<<<<<< HEAD
         vAlertPubKey = ParseHex("040c2275ef276b57c646edd5d4441b911c6b166596b0ee853e67842c580b9ed14dab42c7db0985afa1454f9480004e9597178ad4c51d54069bc1013909818a7b81");
         nDefaultPort = 18888;
         nMinerThreads = 0;
+=======
+        vAlertPubKey = ParseHex("044e7a1553392325c871c5ace5d6ad73501c66f4c185d6b0453cf45dec5a1322e705c672ac1a27ef7cdaf588c10effdf50ed5f95f85f2f54a5f6159fca394ed0c6");
+        nDefaultPort = 18233;
+>>>>>>> 4485d5d3f39f1d45d362ec8e92710ceefdb549a8
         nPruneAfterHeight = 1000;
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
@@ -309,7 +319,6 @@ public:
         pchMessageStart[1] = 0xe8;
         pchMessageStart[2] = 0x3f;
         pchMessageStart[3] = 0x5f;
-        nMinerThreads = 1;
         nMaxTipAge = 24 * 60 * 60;
         const size_t N = 48, K = 5;
         BOOST_STATIC_ASSERT(equihash_parameters_acceptable(N, K));

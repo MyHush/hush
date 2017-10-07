@@ -883,8 +883,13 @@ UniValue getblocksubsidy(const UniValue& params, bool fHelp)
             "1. height         (numeric, optional) The block height.  If not provided, defaults to the current height of the chain.\n"
             "\nResult:\n"
             "{\n"
+<<<<<<< HEAD
             "  \"miner\" : x.xxx           (numeric) The mining reward amount in HUSH.\n"
             "  \"founders\" : x.xxx        (numeric) The founders reward amount in HUSH.\n"
+=======
+            "  \"miner\" : x.xxx           (numeric) The mining reward amount in " + CURRENCY_UNIT + ".\n"
+            "  \"founders\" : x.xxx        (numeric) The founders reward amount in " + CURRENCY_UNIT + ".\n"
+>>>>>>> 4485d5d3f39f1d45d362ec8e92710ceefdb549a8
             "}\n"
             "\nExamples:\n"
             + HelpExampleCli("getblocksubsidy", "1000")
