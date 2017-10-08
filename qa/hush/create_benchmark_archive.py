@@ -11,13 +11,13 @@ import sys
 import tarfile
 import time
 
-ZCASH_CLI = './src/zcash-cli'
+ZCASH_CLI = './src/hush-cli'
 USAGE = """
 Requirements:
 - find
 - xz
 - %s (edit ZCASH_CLI in this script to alter the path)
-- A running mainnet zcashd using the default datadir with -txindex=1
+- A running mainnet hushd using the default datadir with -txindex=1
 
 Example usage:
 
@@ -26,7 +26,7 @@ virtualenv venv
 . venv/bin/activate
 pip install --global-option=build_ext --global-option="-L$(pwd)/src/leveldb/" --global-option="-I$(pwd)/src/leveldb/include/" plyvel
 pip install progressbar2
-LD_LIBRARY_PATH=src/leveldb python qa/zcash/create_benchmark_archive.py
+LD_LIBRARY_PATH=src/leveldb python qa/hush/create_benchmark_archive.py
 """ % ZCASH_CLI
 
 def check_deps():
