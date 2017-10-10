@@ -234,6 +234,7 @@ public:
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("tush1", "tush.cryptominingpools.org")); // Zcash
         vSeeds.push_back(CDNSSeedData("node1", "testnet.myhush.network")); // madbuda
+        vSeeds.push_back(CDNSSeedData("node2", "testnet.madmining.club")); // madmining
 
         // guarantees the first 2 characters, when base58 encoded, are "tm"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1D,0x25};
