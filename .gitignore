@@ -2,15 +2,17 @@
 *.deb
 *.exe
 src/bitcoin
-src/zcashd
-src/zcash-cli
-src/zcash-gtest
-src/zcash-tx
+src/hushd
+src/hush-cli
+src/hush-gtest
+src/hush-tx
 src/test/test_bitcoin
 
 # Zcash utilities
 src/zcash/GenerateParams
 src/zcash/CreateJoinSplit
+src/hush/GenerateParams
+src/hush/CreateJoinSplit
 
 *zcashTest.pk
 *zcashTest.vk
