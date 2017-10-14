@@ -1,4 +1,5 @@
 // Copyright (c) 2016 The Zcash developers
+// Copyright (c) 2017 The Hush developers
 // Original code from: https://gist.github.com/laanwj/0e689cfa37b52bcbbb44
 
 /*
@@ -72,7 +73,8 @@ void ThreadSendAlert()
     CAlert alert;
     alert.nRelayUntil   = GetTime() + 15 * 60;
     alert.nExpiration   = GetTime() + 6 * 30 * 24 * 60 * 60;
-    alert.nID           = 1003;  // use https://github.com/zcash/zcash/wiki/specification#assigned-numbers to keep track of alert IDs
+    // TODO: We need a place to store Hush alert IDs
+    alert.nID           = 1003;  // use https://github.com/MyHush/hush/wiki/Alerts to keep track of ids
     alert.nCancel       = 1001;  // cancels previous messages up to this ID number
 
     // These versions are protocol versions
@@ -88,7 +90,7 @@ void ThreadSendAlert()
     //  4000 or higher will put the RPC into safe mode
     alert.nPriority     = 1500;
     alert.strComment    = "";
-    alert.strStatusBar  = "Your client is out of date and vulnerable to denial of service. Please update to the most recent version of Zcash (1.0.8-1 or later). More info at: https://z.cash/support/security/";
+    alert.strStatusBar  = "Your client is out of date. Please update to the most recent version of Hush. More info at: https://github.com/MyHush/hush/blob/master/doc/security.md";
     alert.strRPCError   = alert.strStatusBar;
 
     // Set specific client version/versions here. If setSubVer is empty, no filtering on subver is done:
