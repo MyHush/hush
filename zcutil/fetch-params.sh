@@ -65,10 +65,10 @@ function main() {
     || exit_locked_error
 
     cat <<EOF
-Zcash - fetch-params.sh
+Hush - fetch-params.sh
 
-This script will fetch the Zcash zkSNARK parameters and verify their
-integrity with sha256sum.
+This script will fetch the Zcash zkSNARK parameters, which the Hush network
+relies on, and verify their integrity with sha256sum.
 
 If they already exist locally, it will exit now and do nothing else.
 EOF
