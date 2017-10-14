@@ -1,4 +1,10 @@
-# Zcash Payment API
+# Hush Payment API
+
+Hush inherits the Zcash Payment API.
+
+Hush supports all commands in the Bitcoin Core API (as of version 0.11.2).
+Where applicable, Hush will extend commands in a backwards-compatible way to
+enable additional functionality.
 
 ## Overview
 
@@ -9,18 +15,29 @@ Zcash payments make use of two address formats:
 * taddr - an address for transparent funds (just like a Bitcoin address, value stored in UTXOs)
 * zaddr - an address for private funds (value stored in objects called notes)
 
-When transferring funds from one taddr to another taddr, you can use either the existing Bitcoin RPC calls or the new Zcash RPC calls.
+When transferring funds from one taddr to another taddr, you can use either the
+existing Bitcoin RPC calls or the new Zcash RPC calls.
 
 When a transfer involves zaddrs, you must use the new Zcash RPC calls.
 
 
 ## Compatibility with Bitcoin Core
 
-Zcash supports all commands in the Bitcoin Core API (as of version 0.11.2).   Where applicable, Zcash will extend commands in a backwards-compatible way to enable additional functionality.
+Zcash supports all commands in the Bitcoin Core API (as of version 0.11.2).
+Where applicable, Hush will extend commands in a backwards-compatible way to
+enable additional functionality.
 
-We do not recommend use of accounts which are now deprecated in Bitcoin Core.  Where the account parameter exists in the API, please use “” as its value, otherwise an error will be returned.
+Zcash supports all commands in the Bitcoin Core API (as of version 0.11.2).
+Where applicable, Zcash will extend commands in a backwards-compatible way to
+enable additional functionality.
 
-To support multiple users in a single node’s wallet, consider using getnewaddress or z_getnewaddress to obtain a new address for each user.  Also consider mapping multiple addresses to each user.
+We do not recommend use of accounts which are now deprecated in Bitcoin Core.
+Where the account parameter exists in the API, please use “” as its value,
+otherwise an error will be returned.
+
+To support multiple users in a single node’s wallet, consider using
+getnewaddress or z_getnewaddress to obtain a new address for each user.  Also
+consider mapping multiple addresses to each user.
 
 ## List of Zcash API commands
 
