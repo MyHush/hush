@@ -1,8 +1,6 @@
-HUSH 1.0.9 - Testnet
-=============
-
-What is a Testnet?
---------------
+# Running a HUSH Testnet Node (TUSH Node)
+ 
+## What is a Testnet?
 
 ![Logo](doc/hush/hush.png "Logo")
 
@@ -10,8 +8,7 @@ This software is the HUSH node and command-line Testnet client. It provides
 a safe place - off the main network - for testing of new features,
 applications and ideas without compromising the security of the main network.
 
-How is running the Testnet different to running a Mainnet node?
---------------
+## How is running the Testnet different to running a Mainnet node?
 
 In essence their is very little difference in running a Testnet to a Mainnet node
 it only requires one of many possible changes in how you start the node - we will
@@ -20,6 +17,11 @@ look at just a few.
 However - it is important that before you choose which method to use, you consider
 if you will be ONLY running a Testnet node, or if you will be running one alongside
 a Mainnet node on the same computer.
+
+The testnet node uses the currency symbol TUSH for Test HUSH, and to be clear,
+if you own a taddr/zaddr on mainnet, you do not own those addresses on the testnet,
+since it has it's own genesis block and address hash space.
+
 
 ### To run a Testnet node on it's own (the simplest way) once only.
 Make sure there are no other instances of Hush running:
@@ -67,7 +69,7 @@ testnet=1
 gen=1
 genproclimit=1
 equihashsolver=tromp
-mineraddress=
+mineraddress=XXX
 ```
 Don't forget to add in one of your testnet transparent addresses (an empty one)
 on the last line there - it will keep all your mined coins on one address ready for
@@ -119,17 +121,24 @@ testnet=1
 gen=1
 genproclimit=1
 equihashsolver=tromp
-mineraddress=
+mineraddress=XXX
 ```
 - Run this from the usual hush directory (adjust for your paths):
 ```
 ./src/hushd -datadir=/home/username/.hush-t
 ```
 - OR make a nice bash script in ```/usr/bin/```
+`tush`:
 ```
 #!/bin/bash
-~/hush/src/hushd -datadir=/home/username/.hush-t $1 $2 $3
+~/hush/src/hushd -datadir=/home/username/.hush-t $@
 ```
+and `tush-cli`:
+```
+#!/bin/bash
+~/hush/src/hush-cli -rpcport=18822 $@
+```
+
 Remember that to talk to this Testnet node - you will still need to use the
 ```./src/hush-cli -rpcport=18822``` style command, or of course you could also
 make other scripts and nice bits to customise the system the way you want it.

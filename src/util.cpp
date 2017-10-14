@@ -892,8 +892,8 @@ void SetThreadPriority(int nPriority)
 std::string PrivacyInfo()
 {
     return "\n" +
-           FormatParagraph(strprintf(_("In order to ensure you are adequately protecting your privacy when using Zcash, please see <%s>."),
-                                     "https://z.cash/support/security/index.html")) + "\n";
+           FormatParagraph(strprintf(_("In order to ensure you are adequately protecting your privacy when using Hush, please see <%s>."),
+                                     "https://github.com/MyHush/hush/blob/master/doc/security.md")) + "\n";
 }
 
 std::string LicenseInfo()
