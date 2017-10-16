@@ -1,5 +1,5 @@
-HUSH 1.0.9
-=============
+HUSH 1.0.12
+=======
 
 What is HUSH?
 --------------
@@ -80,6 +80,9 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 * keyrx4lugtnya7ax.onion
 * j7h7df2tylc57xeo.onion
 * madminingja2ozys.onion
+=======
+**Hush is experimental and a work-in-progress.** Use at your own risk.
+
 
 Deprecation Policy
 ------------------

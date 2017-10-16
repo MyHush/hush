@@ -1,3 +1,9 @@
+hush (1.0.12) stable; urgency=medium
+
+  * 1.0.12 release
+
+ -- Hush Team <contact@myhush.org> Wed, 4 Oct 2017 8:08:26 +0800
+
 hush (1.0.9) stable; urgency=medium
 
   * Initial packaging for Debian.
