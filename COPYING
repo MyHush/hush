@@ -1,3 +1,4 @@
+Copyright (c) 2017      The Hush developers
 Copyright (c) 2016-2017 The Zdash developers
 Copyright (c) 2016-2017 The Zcash developers
 Copyright (c) 2009-2015 The Bitcoin Core developers
@@ -29,8 +30,7 @@ open-source licenses. For further details see 'contrib/debian/copyright'.
 
 This product includes software developed by the OpenSSL Project for use in the
 OpenSSL Toolkit (https://www.openssl.org/). This product includes cryptographic
-software written by Eric Young (eay@cryptsoft.com),
-and UPnP software written by Thomas Bernard.
+software written by Eric Young (eay@cryptsoft.com).
 
 
 Although almost all of the Zcash code is licensed under "permissive" open source

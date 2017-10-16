@@ -1,4 +1,5 @@
 // Copyright (c) 2017 The Zcash developers
+// Copyright (c) 2017 The Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -24,7 +25,7 @@ void EnforceNodeDeprecation(int nHeight, bool forceLogging) {
         if (blocksToDeprecation == 0 || forceLogging) {
             auto msg = strprintf(_("This version has been deprecated as of block height %d."),
                                  DEPRECATION_HEIGHT) + " " +
-                       _("You should upgrade to the latest version of Zcash.");
+                       _("You should upgrade to the latest version of Hush.");
             if (!disableDeprecation) {
                 msg += " " + strprintf(_("To disable deprecation for this version, set %s%s."),
                                        "-disabledeprecation=", CLIENT_VERSION_STR);
@@ -41,11 +42,11 @@ void EnforceNodeDeprecation(int nHeight, bool forceLogging) {
         if (disableDeprecation) {
             msg = strprintf(_("This version will be deprecated at block height %d."),
                             DEPRECATION_HEIGHT) + " " +
-                  _("You should upgrade to the latest version of Zcash.");
+                  _("You should upgrade to the latest version of Hush.");
         } else {
             msg = strprintf(_("This version will be deprecated at block height %d, and will automatically shut down."),
                             DEPRECATION_HEIGHT) + " " +
-                  _("You should upgrade to the latest version of Zcash.") + " " +
+                  _("You should upgrade to the latest version of Hush.") + " " +
                   strprintf(_("To disable deprecation for this version, set %s%s."),
                             "-disabledeprecation=", CLIENT_VERSION_STR);
         }

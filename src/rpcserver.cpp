@@ -245,10 +245,10 @@ UniValue stop(const UniValue& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "stop\n"
-            "\nStop Zcash server.");
+            "\nStop Hush server.");
     // Shutdown will take long enough that the response should get back
     StartShutdown();
-    return "Zcash server stopping";
+    return "Hush server stopping";
 }
 
 /**
@@ -293,9 +293,7 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "verifychain",            &verifychain,            true  },
 
     /* Mining */
-#ifdef ENABLE_WALLET
     { "mining",             "getblocktemplate",       &getblocktemplate,       true  },
-#endif
     { "mining",             "getmininginfo",          &getmininginfo,          true  },
     { "mining",             "getlocalsolps",          &getlocalsolps,          true  },
     { "mining",             "getnetworksolps",        &getnetworksolps,        true  },
@@ -388,6 +386,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "z_getbalance",           &z_getbalance,           false },
     { "wallet",             "z_gettotalbalance",      &z_gettotalbalance,      false },
     { "wallet",             "z_sendmany",             &z_sendmany,             false },
+    { "wallet",             "z_shieldcoinbase",       &z_shieldcoinbase,       false },
     { "wallet",             "z_getoperationstatus",   &z_getoperationstatus,   true  },
     { "wallet",             "z_getoperationresult",   &z_getoperationresult,   true  },
     { "wallet",             "z_listoperationids",     &z_listoperationids,     true  },
@@ -428,7 +427,7 @@ bool StartRPC()
 
     // Launch one async rpc worker.  The ability to launch multiple workers is not recommended at present and thus the option is disabled.
     getAsyncRPCQueue()->addWorker();
-/*   
+/*
     int n = GetArg("-rpcasyncthreads", 1);
     if (n<1) {
         LogPrintf("ERROR: Invalid value %d for -rpcasyncthreads.  Must be at least 1.\n", n);
@@ -581,7 +580,7 @@ UniValue CRPCTable::execute(const std::string &strMethod, const UniValue &params
 
 std::string HelpExampleCli(const std::string& methodname, const std::string& args)
 {
-    return "> zcash-cli " + methodname + " " + args + "\n";
+    return "> hush-cli " + methodname + " " + args + "\n";
 }
 
 std::string HelpExampleRpc(const std::string& methodname, const std::string& args)

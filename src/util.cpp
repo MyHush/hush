@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2016-2017 The HUSH developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -423,7 +424,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "Zcash";
+    const char* pszModule = "Hush";
 #endif
     if (pex)
         return strprintf(
@@ -444,10 +445,10 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Zcash
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Zcash
-    // Mac: ~/Library/Application Support/Zcash
-    // Unix: ~/.zcash
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Hush
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Hush
+    // Mac: ~/Library/Application Support/Hush
+    // Unix: ~/.hush
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Hush";
@@ -594,7 +595,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile());
     if (!streamConfig.good())
-        throw missing_zcash_conf();
+        throw missing_hush_conf();
 
     set<string> setOptions;
     setOptions.insert("*");
@@ -618,7 +619,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 #ifndef WIN32
 boost::filesystem::path GetPidFile()
 {
-    boost::filesystem::path pathPidFile(GetArg("-pid", "zcashd.pid"));
+    boost::filesystem::path pathPidFile(GetArg("-pid", "hushd.pid"));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -891,8 +892,8 @@ void SetThreadPriority(int nPriority)
 std::string PrivacyInfo()
 {
     return "\n" +
-           FormatParagraph(strprintf(_("In order to ensure you are adequately protecting your privacy when using Zcash, please see <%s>."),
-                                     "https://z.cash/support/security/index.html")) + "\n";
+           FormatParagraph(strprintf(_("In order to ensure you are adequately protecting your privacy when using Hush, please see <%s>."),
+                                     "https://github.com/MyHush/hush/blob/master/doc/security.md")) + "\n";
 }
 
 std::string LicenseInfo()
@@ -900,11 +901,22 @@ std::string LicenseInfo()
     return "\n" +
            FormatParagraph(strprintf(_("Copyright (C) 2009-%i The Bitcoin Core Developers"), COPYRIGHT_YEAR)) + "\n" +
            FormatParagraph(strprintf(_("Copyright (C) 2015-%i The Zcash Developers"), COPYRIGHT_YEAR)) + "\n" +
+           FormatParagraph(strprintf(_("Copyright (C) 2016-%i The Hush Developers"), COPYRIGHT_YEAR)) + "\n" +
            "\n" +
            FormatParagraph(_("This is experimental software.")) + "\n" +
            "\n" +
            FormatParagraph(_("Distributed under the MIT software license, see the accompanying file COPYING or <http://www.opensource.org/licenses/mit-license.php>.")) + "\n" +
            "\n" +
-           FormatParagraph(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software written by Eric Young and UPnP software written by Thomas Bernard.")) +
+           FormatParagraph(_("This product includes software developed by the OpenSSL Project for use in the OpenSSL Toolkit <https://www.openssl.org/> and cryptographic software written by Eric Young.")) +
            "\n";
 }
+
+int GetNumCores()
+{
+#if BOOST_VERSION >= 105600
+    return boost::thread::physical_concurrency();
+#else // Must fall back to hardware_concurrency, which unfortunately counts virtual cores
+    return boost::thread::hardware_concurrency();
+#endif
+}
+

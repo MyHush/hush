@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c)      2017 The Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -128,9 +129,9 @@ boost::filesystem::path GetConfigFile();
 boost::filesystem::path GetPidFile();
 void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
 #endif
-class missing_zcash_conf : public std::runtime_error {
+class missing_hush_conf : public std::runtime_error {
 public:
-    missing_zcash_conf() : std::runtime_error("Missing zcash.conf") { }
+    missing_hush_conf() : std::runtime_error("Missing hush.conf") { }
 };
 void ReadConfigFile(std::map<std::string, std::string>& mapSettingsRet, std::map<std::string, std::vector<std::string> >& mapMultiSettingsRet);
 #ifdef WIN32
@@ -219,6 +220,13 @@ std::string HelpMessageGroup(const std::string& message);
  */
 std::string HelpMessageOpt(const std::string& option, const std::string& message);
 
+/**
+ * Return the number of physical cores available on the current system.
+ * @note This does not count virtual cores, such as those provided by HyperThreading
+ * when boost is newer than 1.56.
+ */
+int GetNumCores();
+
 void SetThreadPriority(int nPriority);
 void RenameThread(const char* name);
 
@@ -227,7 +235,7 @@ void RenameThread(const char* name);
  */
 template <typename Callable> void TraceThread(const char* name,  Callable func)
 {
-    std::string s = strprintf("zcash-%s", name);
+    std::string s = strprintf("hush-%s", name);
     RenameThread(s.c_str());
     try
     {

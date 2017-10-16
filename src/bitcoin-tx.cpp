@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2017      The Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -44,10 +45,10 @@ static bool AppInitRawTx(int argc, char* argv[])
     if (argc<2 || mapArgs.count("-?") || mapArgs.count("-h") || mapArgs.count("-help"))
     {
         // First part of help message is specific to this utility
-        std::string strUsage = _("Zcash zcash-tx utility version") + " " + FormatFullVersion() + "\n\n" +
+        std::string strUsage = _("Hush hush-tx utility version") + " " + FormatFullVersion() + "\n\n" +
             _("Usage:") + "\n" +
-              "  zcash-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded zcash transaction") + "\n" +
-              "  zcash-tx [options] -create [commands]   " + _("Create hex-encoded zcash transaction") + "\n" +
+              "  hush-tx [options] <hex-tx> [commands]  " + _("Update hex-encoded hush transaction") + "\n" +
+              "  hush-tx [options] -create [commands]   " + _("Create hex-encoded hush transaction") + "\n" +
               "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
@@ -445,9 +446,15 @@ static void MutateTxSign(CMutableTransaction& tx, const string& flagStr)
 
 class Secp256k1Init
 {
+    ECCVerifyHandle globalVerifyHandle;
+
 public:
-    Secp256k1Init() { ECC_Start(); }
-    ~Secp256k1Init() { ECC_Stop(); }
+    Secp256k1Init() {
+        ECC_Start();
+    }
+    ~Secp256k1Init() {
+        ECC_Stop();
+    }
 };
 
 static void MutateTx(CMutableTransaction& tx, const string& command,

@@ -1,5 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2017      The Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -161,6 +162,7 @@ public:
 
 static CCoinsViewDB *pcoinsdbview = NULL;
 static CCoinsViewErrorCatcher *pcoinscatcher = NULL;
+static boost::scoped_ptr<ECCVerifyHandle> globalVerifyHandle;
 
 void Interrupt(boost::thread_group& threadGroup)
 {
@@ -184,7 +186,7 @@ void Shutdown()
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
-    RenameThread("zcash-shutoff");
+    RenameThread("hush-shutoff");
     mempool.AddTransactionsUpdated(1);
 
     StopHTTPRPC();
@@ -266,6 +268,7 @@ void Shutdown()
 #endif
     delete pzcashParams;
     pzcashParams = NULL;
+    globalVerifyHandle.reset();
     ECC_Stop();
     LogPrintf("%s: done\n", __func__);
 }
@@ -336,7 +339,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-blocknotify=<cmd>", _("Execute command when the best block changes (%s in cmd is replaced by block hash)"));
     strUsage += HelpMessageOpt("-checkblocks=<n>", strprintf(_("How many blocks to check at startup (default: %u, 0 = all)"), 288));
     strUsage += HelpMessageOpt("-checklevel=<n>", strprintf(_("How thorough the block verification of -checkblocks is (0-4, default: %u)"), 3));
-    strUsage += HelpMessageOpt("-conf=<file>", strprintf(_("Specify configuration file (default: %s)"), "zcash.conf"));
+    strUsage += HelpMessageOpt("-conf=<file>", strprintf(_("Specify configuration file (default: %s)"), "hush.conf"));
     if (mode == HMM_BITCOIND)
     {
 #if !defined(WIN32)
@@ -350,10 +353,11 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-dbcache=<n>", strprintf(_("Set database cache size in megabytes (%d to %d, default: %d)"), nMinDbCache, nMaxDbCache, nDefaultDbCache));
     strUsage += HelpMessageOpt("-loadblock=<file>", _("Imports blocks from external blk000??.dat file") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-maxorphantx=<n>", strprintf(_("Keep at most <n> unconnectable transactions in memory (default: %u)"), DEFAULT_MAX_ORPHAN_TRANSACTIONS));
+    strUsage += HelpMessageOpt("-mempooltxinputlimit=<n>", _("Set the maximum number of transparent inputs in a transaction that the mempool will accept (default: 0 = no limit applied)"));
     strUsage += HelpMessageOpt("-par=<n>", strprintf(_("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)"),
-        -(int)boost::thread::hardware_concurrency(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS));
+        -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS));
 #ifndef WIN32
-    strUsage += HelpMessageOpt("-pid=<file>", strprintf(_("Specify pid file (default: %s)"), "zcashd.pid"));
+    strUsage += HelpMessageOpt("-pid=<file>", strprintf(_("Specify pid file (default: %s)"), "hushd.pid"));
 #endif
     strUsage += HelpMessageOpt("-prune=<n>", strprintf(_("Reduce storage requirements by pruning (deleting) old blocks. This mode disables wallet support and is incompatible with -txindex. "
             "Warning: Reverting this setting requires re-downloading the entire blockchain. "
@@ -390,13 +394,6 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-timeout=<n>", strprintf(_("Specify connection timeout in milliseconds (minimum: 1, default: %d)"), DEFAULT_CONNECT_TIMEOUT));
     strUsage += HelpMessageOpt("-torcontrol=<ip>:<port>", strprintf(_("Tor control port to use if onion listening enabled (default: %s)"), DEFAULT_TOR_CONTROL));
     strUsage += HelpMessageOpt("-torpassword=<pass>", _("Tor control port password (default: empty)"));
-#ifdef USE_UPNP
-#if USE_UPNP
-    strUsage += HelpMessageOpt("-upnp", _("Use UPnP to map the listening port (default: 1 when listening and no -proxy)"));
-#else
-    strUsage += HelpMessageOpt("-upnp", strprintf(_("Use UPnP to map the listening port (default: %u)"), 0));
-#endif
-#endif
     strUsage += HelpMessageOpt("-whitebind=<addr>", _("Bind to given address and whitelist peers connecting to it. Use [host]:port notation for IPv6"));
     strUsage += HelpMessageOpt("-whitelist=<netmask>", _("Whitelist peers connecting from the given netmask or IP address. Can be specified multiple times.") +
         " " + _("Whitelisted peers cannot be DoS banned and their transactions are always relayed, even if they are already in the mempool, useful e.g. for a gateway"));
@@ -406,16 +403,17 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-disablewallet", _("Do not load the wallet and disable wallet RPC calls"));
     strUsage += HelpMessageOpt("-keypool=<n>", strprintf(_("Set key pool size to <n> (default: %u)"), 100));
     if (showDebug)
-        strUsage += HelpMessageOpt("-mintxfee=<amt>", strprintf("Fees (in BTC/Kb) smaller than this are considered zero fee for transaction creation (default: %s)",
-            FormatMoney(CWallet::minTxFee.GetFeePerK())));
-    strUsage += HelpMessageOpt("-paytxfee=<amt>", strprintf(_("Fee (in BTC/kB) to add to transactions you send (default: %s)"), FormatMoney(payTxFee.GetFeePerK())));
-    strUsage += HelpMessageOpt("-rescan", _("Rescan the blockchain for missing wallet transactions") + " " + _("on startup"));
+        strUsage += HelpMessageOpt("-mintxfee=<amt>", strprintf("Fees (in %s/kB) smaller than this are considered zero fee for transaction creation (default: %s)",
+            CURRENCY_UNIT, FormatMoney(CWallet::minTxFee.GetFeePerK())));
+    strUsage += HelpMessageOpt("-paytxfee=<amt>", strprintf(_("Fee (in %s/kB) to add to transactions you send (default: %s)"),
+        CURRENCY_UNIT, FormatMoney(payTxFee.GetFeePerK())));
+    strUsage += HelpMessageOpt("-rescan", _("Rescan the block chain for missing wallet transactions") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-salvagewallet", _("Attempt to recover private keys from a corrupt wallet.dat") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-sendfreetransactions", strprintf(_("Send transactions as zero-fee transactions if possible (default: %u)"), 0));
     strUsage += HelpMessageOpt("-spendzeroconfchange", strprintf(_("Spend unconfirmed change when sending transactions (default: %u)"), 1));
     strUsage += HelpMessageOpt("-txconfirmtarget=<n>", strprintf(_("If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: %u)"), DEFAULT_TX_CONFIRM_TARGET));
-    strUsage += HelpMessageOpt("-maxtxfee=<amt>", strprintf(_("Maximum total fees to use in a single wallet transaction; setting this too low may abort large transactions (default: %s)"),
-        FormatMoney(maxTxFee)));
+    strUsage += HelpMessageOpt("-maxtxfee=<amt>", strprintf(_("Maximum total fees (in %s) to use in a single wallet transaction; setting this too low may abort large transactions (default: %s)"),
+        CURRENCY_UNIT, FormatMoney(maxTxFee)));
     strUsage += HelpMessageOpt("-upgradewallet", _("Upgrade wallet to latest format") + " " + _("on startup"));
     strUsage += HelpMessageOpt("-wallet=<file>", _("Specify wallet file (within data directory)") + " " + strprintf(_("(default: %s)"), "wallet.dat"));
     strUsage += HelpMessageOpt("-walletbroadcast", _("Make the wallet broadcast transactions") + " " + strprintf(_("(default: %u)"), true));
@@ -466,7 +464,8 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-relaypriority", strprintf("Require high priority for relaying free or low-fee transactions (default: %u)", 0));
         strUsage += HelpMessageOpt("-maxsigcachesize=<n>", strprintf("Limit size of signature cache to <n> entries (default: %u)", 50000));
     }
-    strUsage += HelpMessageOpt("-minrelaytxfee=<amt>", strprintf(_("Fees (in BTC/Kb) smaller than this are considered zero fee for relaying (default: %s)"), FormatMoney(::minRelayTxFee.GetFeePerK())));
+    strUsage += HelpMessageOpt("-minrelaytxfee=<amt>", strprintf(_("Fees (in %s/kB) smaller than this are considered zero fee for relaying (default: %s)"),
+        CURRENCY_UNIT, FormatMoney(::minRelayTxFee.GetFeePerK())));
     strUsage += HelpMessageOpt("-printtoconsole", _("Send trace/debug info to console instead of debug.log file"));
     if (showDebug)
     {
@@ -598,7 +597,7 @@ void CleanupBlockRevFiles()
 
 void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 {
-    RenameThread("zcash-loadblk");
+    RenameThread("hush-loadblk");
     // -reindex
     if (fReindex) {
         CImportingNow imp;
@@ -661,8 +660,7 @@ void ThreadImport(std::vector<boost::filesystem::path> vImportFiles)
 bool InitSanityCheck(void)
 {
     if(!ECC_InitSanityCheck()) {
-        InitError("OpenSSL appears to lack support for elliptic curve cryptography. For more "
-                  "information, visit https://en.bitcoin.it/wiki/OpenSSL_and_EC_Libraries");
+        InitError("Elliptic curve cryptography sanity check failure. Aborting.");
         return false;
     }
     if (!glibc_sanity_test() || !glibcxx_sanity_test())
@@ -682,7 +680,7 @@ static void ZC_LoadParams()
 
     if (!(boost::filesystem::exists(pk_path) && boost::filesystem::exists(vk_path))) {
         uiInterface.ThreadSafeMessageBox(strprintf(
-            _("Cannot find the Zcash network parameters in the following directory:\n"
+            _("Cannot find the Hush network parameters in the following directory:\n"
               "%s\n"
               "Please run 'zcash-fetch-params' or './zcutil/fetch-params.sh' and then restart."),
                 ZC_GetParamsDir()),
@@ -793,6 +791,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (!fExperimentalMode) {
         if (mapArgs.count("-developerencryptwallet")) {
             return InitError(_("Wallet encryption requires -experimentalfeatures."));
+        } else if (mapArgs.count("-zshieldcoinbase")) {
+            return InitError(_("RPC call z_shieldcoinbase requires -experimentalfeatures."));
         }
     }
 
@@ -802,7 +802,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     fLogIPs = GetBoolArg("-logips", false);
 
     LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    LogPrintf("Zcash version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
+    LogPrintf("Hush version %s (%s)\n", FormatFullVersion(), CLIENT_DATE);
 
     // when specifying an explicit binding address, you want to listen on it
     // even when -connect or -proxy is specified
@@ -827,19 +827,13 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
         // to protect privacy, do not listen by default if a default proxy server is specified
         if (SoftSetBoolArg("-listen", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -listen=0\n", __func__);
-        // to protect privacy, do not use UPNP when a proxy is set. The user may still specify -listen=1
-        // to listen locally, so don't rely on this happening through -listen below.
-        if (SoftSetBoolArg("-upnp", false))
-            LogPrintf("%s: parameter interaction: -proxy set -> setting -upnp=0\n", __func__);
         // to protect privacy, do not discover addresses by default
         if (SoftSetBoolArg("-discover", false))
             LogPrintf("%s: parameter interaction: -proxy set -> setting -discover=0\n", __func__);
     }
 
     if (!GetBoolArg("-listen", DEFAULT_LISTEN)) {
-        // do not map ports or try to retrieve public IP when not listening (pointless)
-        if (SoftSetBoolArg("-upnp", false))
-            LogPrintf("%s: parameter interaction: -listen=0 -> setting -upnp=0\n", __func__);
+        // do not try to retrieve public IP when not listening (pointless)
         if (SoftSetBoolArg("-discover", false))
             LogPrintf("%s: parameter interaction: -listen=0 -> setting -discover=0\n", __func__);
         if (SoftSetBoolArg("-listenonion", false))
@@ -927,7 +921,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     // -par=0 means autodetect, but nScriptCheckThreads==0 means no concurrency
     nScriptCheckThreads = GetArg("-par", DEFAULT_SCRIPTCHECK_THREADS);
     if (nScriptCheckThreads <= 0)
-        nScriptCheckThreads += boost::thread::hardware_concurrency();
+        nScriptCheckThreads += GetNumCores();
     if (nScriptCheckThreads <= 1)
         nScriptCheckThreads = 0;
     else if (nScriptCheckThreads > MAX_SCRIPTCHECK_THREADS)
@@ -1035,6 +1029,17 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     }
 #endif
 
+    // Default value of 0 for mempooltxinputlimit means no limit is applied
+    if (mapArgs.count("-mempooltxinputlimit")) {
+        int64_t limit = GetArg("-mempooltxinputlimit", 0);
+        if (limit < 0) {
+            return InitError(_("Mempool limit on transparent inputs to a transaction cannot be negative"));
+        } else if (limit > 0) {
+            LogPrintf("Mempool configured to reject transactions with greater than %lld transparent inputs\n", limit);
+        }
+    }
+
+
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
 
     // Initialize libsodium
@@ -1044,10 +1049,11 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     // Initialize elliptic curve code
     ECC_Start();
+    globalVerifyHandle.reset(new ECCVerifyHandle());
 
     // Sanity check
     if (!InitSanityCheck())
-        return InitError(_("Initialization sanity check failed. Zcash is shutting down."));
+        return InitError(_("Initialization sanity check failed. Hush is shutting down."));
 
     std::string strDataDir = GetDataDir().string();
 #ifdef ENABLE_WALLET
@@ -1063,9 +1069,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     try {
         static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
         if (!lock.try_lock())
-            return InitError(strprintf(_("Cannot obtain a lock on data directory %s. Zcash is probably already running."), strDataDir));
+            return InitError(strprintf(_("Cannot obtain a lock on data directory %s. Hush is probably already running."), strDataDir));
     } catch(const boost::interprocess::interprocess_exception& e) {
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. Zcash is probably already running.") + " %s.", strDataDir, e.what()));
+        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. Hush is probably already running.") + " %s.", strDataDir, e.what()));
     }
 
 #ifndef WIN32
@@ -1482,10 +1488,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
                 InitWarning(msg);
             }
             else if (nLoadWalletRet == DB_TOO_NEW)
-                strErrors << _("Error loading wallet.dat: Wallet requires newer version of Bitcoin Core") << "\n";
+                strErrors << _("Error loading wallet.dat: Wallet requires newer version of Zcash") << "\n";
             else if (nLoadWalletRet == DB_NEED_REWRITE)
             {
-                strErrors << _("Wallet needed to be rewritten: restart Bitcoin Core to complete") << "\n";
+                strErrors << _("Wallet needed to be rewritten: restart Zcash to complete") << "\n";
                 LogPrintf("%s", strErrors.str());
                 return InitError(strErrors.str());
             }
@@ -1586,10 +1592,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 #ifdef ENABLE_MINING
  #ifndef ENABLE_WALLET
     if (GetBoolArg("-minetolocalwallet", false)) {
-        return InitError(_("Zcash was not built with wallet support. Set -minetolocalwallet=0 to use -mineraddress, or rebuild Zcash with wallet support."));
+        return InitError(_("Hush was not built with wallet support. Set -minetolocalwallet=0 to use -mineraddress, or rebuild Hush with wallet support."));
     }
     if (GetArg("-mineraddress", "").empty() && GetBoolArg("-gen", false)) {
-        return InitError(_("Zcash was not built with wallet support. Set -mineraddress, or rebuild Zcash with wallet support."));
+        return InitError(_("Hush was not built with wallet support. Set -mineraddress, or rebuild Hush with wallet support."));
     }
  #endif // !ENABLE_WALLET
 

@@ -1,8 +1,7 @@
-Contents
-===========
+# Contents
 This directory contains tools for developers working on this repository.
 
-github-merge.sh
+# github-merge.sh
 ==================
 
 A small script to automate merging pull-requests securely and sign them with GPG.
