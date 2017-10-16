@@ -1,4 +1,4 @@
-rust_packages := rust librustzcash
+#rust_packages := rust librustzcash
 #proton_packages := proton
 zcash_packages := libsnark libgmp libsodium
 packages := boost openssl libevent $(zcash_packages) googletest googlemock
