@@ -1,31 +1,30 @@
 #!/bin/bash
 set -u
 
-
 DATADIR=./benchmark-datadir
 SHA256CMD="$(command -v sha256sum || echo shasum)"
 SHA256ARGS="$(command -v sha256sum >/dev/null || echo '-a 256')"
 
-function zcash_rpc {
+function hush_rpc {
     ./src/hush-cli -datadir="$DATADIR" -rpcuser=user -rpcpassword=password -rpcport=5983 "$@"
 }
 
-function zcash_rpc_slow {
+function hush_rpc_slow {
     # Timeout of 1 hour
-    zcash_rpc -rpcclienttimeout=3600 "$@"
+    hush_rpc -rpcclienttimeout=3600 "$@"
 }
 
-function zcash_rpc_veryslow {
+function hush_rpc_veryslow {
     # Timeout of 2.5 hours
-    zcash_rpc -rpcclienttimeout=9000 "$@"
+    hush_rpc -rpcclienttimeout=9000 "$@"
 }
 
-function zcash_rpc_wait_for_start {
-    zcash_rpc -rpcwait getinfo > /dev/null
+function hush_rpc_wait_for_start {
+    hush_rpc -rpcwait getinfo > /dev/null
 }
 
 function hushd_generate {
-    zcash_rpc generate 101 > /dev/null
+    hush_rpc generate 101 > /dev/null
 }
 
 function extract_benchmark_datadir {
@@ -76,11 +75,11 @@ function hushd_start {
     esac
     ./src/hushd -regtest -datadir="$DATADIR" -rpcuser=user -rpcpassword=password -rpcport=5983 -showmetrics=0 &
     ZCASHD_PID=$!
-    zcash_rpc_wait_for_start
+    hush_rpc_wait_for_start
 }
 
 function hushd_stop {
-    zcash_rpc stop > /dev/null
+    hush_rpc stop > /dev/null
     wait $ZCASHD_PID
 }
 
@@ -107,11 +106,11 @@ function hushd_massif_start {
     rm -f massif.out
     valgrind --tool=massif --time-unit=ms --massif-out-file=massif.out ./src/hushd -regtest -datadir="$DATADIR" -rpcuser=user -rpcpassword=password -rpcport=5983 -showmetrics=0 &
     ZCASHD_PID=$!
-    zcash_rpc_wait_for_start
+    hush_rpc_wait_for_start
 }
 
 function hushd_massif_stop {
-    zcash_rpc stop > /dev/null
+    hush_rpc stop > /dev/null
     wait $ZCASHD_PID
     ms_print massif.out
 }
@@ -123,11 +122,11 @@ function hushd_valgrind_start {
     rm -f valgrind.out
     valgrind --leak-check=yes -v --error-limit=no --log-file="valgrind.out" ./src/hushd -regtest -datadir="$DATADIR" -rpcuser=user -rpcpassword=password -rpcport=5983 -showmetrics=0 &
     ZCASHD_PID=$!
-    zcash_rpc_wait_for_start
+    hush_rpc_wait_for_start
 }
 
 function hushd_valgrind_stop {
-    zcash_rpc stop > /dev/null
+    hush_rpc stop > /dev/null
     wait $ZCASHD_PID
     cat valgrind.out
 }
@@ -154,13 +153,19 @@ EOF
     xzcat block-107134.tar.xz | tar x -C "$DATADIR/regtest"
 }
 
+if [ $# -lt 2 ]
+then
+    echo "$0 : two arguments are required!"
+    exit 1
+fi
+
 # Precomputation
 case "$1" in
     *)
         case "$2" in
             verifyjoinsplit)
                 hushd_start "${@:2}"
-                RAWJOINSPLIT=$(zcash_rpc zcsamplejoinsplit)
+                RAWJOINSPLIT=$(hush_rpc zcsamplejoinsplit)
                 hushd_stop
         esac
 esac
@@ -170,41 +175,41 @@ case "$1" in
         hushd_start "${@:2}"
         case "$2" in
             sleep)
-                zcash_rpc zcbenchmark sleep 10
+                hush_rpc zcbenchmark sleep 10
                 ;;
             parameterloading)
-                zcash_rpc zcbenchmark parameterloading 10
+                hush_rpc zcbenchmark parameterloading 10
                 ;;
             createjoinsplit)
-                zcash_rpc zcbenchmark createjoinsplit 10 "${@:3}"
+                hush_rpc zcbenchmark createjoinsplit 10 "${@:3}"
                 ;;
             verifyjoinsplit)
-                zcash_rpc zcbenchmark verifyjoinsplit 1000 "\"$RAWJOINSPLIT\""
+                hush_rpc zcbenchmark verifyjoinsplit 1000 "\"$RAWJOINSPLIT\""
                 ;;
             solveequihash)
-                zcash_rpc_slow zcbenchmark solveequihash 50 "${@:3}"
+                hush_rpc_slow zcbenchmark solveequihash 50 "${@:3}"
                 ;;
             verifyequihash)
-                zcash_rpc zcbenchmark verifyequihash 1000
+                hush_rpc zcbenchmark verifyequihash 1000
                 ;;
             validatelargetx)
-                zcash_rpc zcbenchmark validatelargetx 5
+                hush_rpc zcbenchmark validatelargetx 5
                 ;;
             trydecryptnotes)
-                zcash_rpc zcbenchmark trydecryptnotes 1000 "${@:3}"
+                hush_rpc zcbenchmark trydecryptnotes 1000 "${@:3}"
                 ;;
             incnotewitnesses)
-                zcash_rpc zcbenchmark incnotewitnesses 100 "${@:3}"
+                hush_rpc zcbenchmark incnotewitnesses 100 "${@:3}"
                 ;;
             connectblockslow)
                 extract_benchmark_data
-                zcash_rpc zcbenchmark connectblockslow 10
+                hush_rpc zcbenchmark connectblockslow 10
                 ;;
             sendtoaddress)
-                zcash_rpc zcbenchmark sendtoaddress 10 "${@:4}"
+                hush_rpc zcbenchmark sendtoaddress 10 "${@:4}"
                 ;;
             loadwallet)
-                zcash_rpc zcbenchmark loadwallet 10 
+                hush_rpc zcbenchmark loadwallet 10 
                 ;;
             *)
                 hushd_stop
@@ -217,35 +222,35 @@ case "$1" in
         hushd_massif_start "${@:2}"
         case "$2" in
             sleep)
-                zcash_rpc zcbenchmark sleep 1
+                hush_rpc zcbenchmark sleep 1
                 ;;
             parameterloading)
-                zcash_rpc zcbenchmark parameterloading 1
+                hush_rpc zcbenchmark parameterloading 1
                 ;;
             createjoinsplit)
-                zcash_rpc_slow zcbenchmark createjoinsplit 1 "${@:3}"
+                hush_rpc_slow zcbenchmark createjoinsplit 1 "${@:3}"
                 ;;
             verifyjoinsplit)
-                zcash_rpc zcbenchmark verifyjoinsplit 1 "\"$RAWJOINSPLIT\""
+                hush_rpc zcbenchmark verifyjoinsplit 1 "\"$RAWJOINSPLIT\""
                 ;;
             solveequihash)
-                zcash_rpc_slow zcbenchmark solveequihash 1 "${@:3}"
+                hush_rpc_slow zcbenchmark solveequihash 1 "${@:3}"
                 ;;
             verifyequihash)
-                zcash_rpc zcbenchmark verifyequihash 1
+                hush_rpc zcbenchmark verifyequihash 1
                 ;;
             trydecryptnotes)
-                zcash_rpc zcbenchmark trydecryptnotes 1 "${@:3}"
+                hush_rpc zcbenchmark trydecryptnotes 1 "${@:3}"
                 ;;
             incnotewitnesses)
-                zcash_rpc zcbenchmark incnotewitnesses 1 "${@:3}"
+                hush_rpc zcbenchmark incnotewitnesses 1 "${@:3}"
                 ;;
             connectblockslow)
                 extract_benchmark_data
-                zcash_rpc zcbenchmark connectblockslow 1
+                hush_rpc zcbenchmark connectblockslow 1
                 ;;
             sendtoaddress)
-                zcash_rpc zcbenchmark sendtoaddress 1 "${@:4}"
+                hush_rpc zcbenchmark sendtoaddress 1 "${@:4}"
                 ;;
             loadwallet)
                 # The initial load is sufficient for measurement
@@ -262,32 +267,32 @@ case "$1" in
         hushd_valgrind_start
         case "$2" in
             sleep)
-                zcash_rpc zcbenchmark sleep 1
+                hush_rpc zcbenchmark sleep 1
                 ;;
             parameterloading)
-                zcash_rpc zcbenchmark parameterloading 1
+                hush_rpc zcbenchmark parameterloading 1
                 ;;
             createjoinsplit)
-                zcash_rpc_veryslow zcbenchmark createjoinsplit 1 "${@:3}"
+                hush_rpc_veryslow zcbenchmark createjoinsplit 1 "${@:3}"
                 ;;
             verifyjoinsplit)
-                zcash_rpc zcbenchmark verifyjoinsplit 1 "\"$RAWJOINSPLIT\""
+                hush_rpc zcbenchmark verifyjoinsplit 1 "\"$RAWJOINSPLIT\""
                 ;;
             solveequihash)
-                zcash_rpc_veryslow zcbenchmark solveequihash 1 "${@:3}"
+                hush_rpc_veryslow zcbenchmark solveequihash 1 "${@:3}"
                 ;;
             verifyequihash)
-                zcash_rpc zcbenchmark verifyequihash 1
+                hush_rpc zcbenchmark verifyequihash 1
                 ;;
             trydecryptnotes)
-                zcash_rpc zcbenchmark trydecryptnotes 1 "${@:3}"
+                hush_rpc zcbenchmark trydecryptnotes 1 "${@:3}"
                 ;;
             incnotewitnesses)
-                zcash_rpc zcbenchmark incnotewitnesses 1 "${@:3}"
+                hush_rpc zcbenchmark incnotewitnesses 1 "${@:3}"
                 ;;
             connectblockslow)
                 extract_benchmark_data
-                zcash_rpc zcbenchmark connectblockslow 1
+                hush_rpc zcbenchmark connectblockslow 1
                 ;;
             *)
                 hushd_valgrind_stop
