@@ -13,8 +13,8 @@
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
 echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-echo "addnode=myhush.network" >> ~/.hush/hush.conf
-echo "addnode=us.madmining.club" >> ~/.hush/hush.conf
+echo "addnode=node.myhush.network" >> ~/.hush/hush.conf
+echo "addnode=mmc01.madbuda.me" >> ~/.hush/hush.conf
 echo "addnode=zdash.suprnova.cc" >> ~/.hush/hush.conf
 ```
 
