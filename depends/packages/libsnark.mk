@@ -1,9 +1,9 @@
 package=libsnark
-$(package)_download_path=https://github.com/zcash/$(package)/archive/
+$(package)_download_path=https://github.com/radix42/$(package)/archive/
 $(package)_file_name=$(package)-$($(package)_git_commit).tar.gz
 $(package)_download_file=$($(package)_git_commit).tar.gz
-$(package)_sha256_hash=dad153fe46e2e1f33557a195cbe7d69aed8b19ed9befc08ddcb8c6d3c025941f
-$(package)_git_commit=9ada3f84ab484c57b2247c2f41091fd6a0916573
+$(package)_sha256_hash=a7663783eb63bb59698d3997372b86a9d1b20dff5336b65fc9ddd9171c46c83d
+$(package)_git_commit=4015f558bb7a1b603de4ee1559c974389d3abb54
 
 $(package)_dependencies=libgmp libsodium
 
