@@ -31,10 +31,10 @@ TEAM
 
 * You can join our team too and make contributions
 
-Slack
+Discord
 -----
 
-Please feel free to join our Slack at https://slack.myhush.org/ .
+Please feel free to join us on Discord at https://discord.io/hush .
 There are many channels, some you might enjoy are #general, #exchanges and #mining.
 
 Forum
