@@ -22,7 +22,6 @@ blockchain has reached a significant size.
 TEAM
 ----
 
-* Axel Karlsson: [@sparkit] Community manager, general communications.
 * Iolar Demartini Junior: [@demartini] Web Developer (Front End).
 * David Mercer: [@radix42] Lead Developer
 * Matthew Reichardt: [@mreichardt] Core Developer, Tooling
@@ -51,7 +50,8 @@ Bootstrap Nodes
 Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
 
 **IPV4**
-* us.madmining.club
+* mmc01.madbuda.me
+* myhush.network
 * 183.89.226.141
 * 163.172.70.26
 * 76.188.211.191
@@ -66,6 +66,8 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 * 37.187.167.145
 
 **IPV6**
+* [2607:4f00:0:509::4]
+* [2607:4f00:0:509::3]
 * [2607:5300:60:341d::1]
 * [2001:41d0:d:691::]
 * [2a02:c207:2008:8708::1]
@@ -83,13 +85,17 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 =======
 **Hush is experimental and a work-in-progress.** Use at your own risk.
 
+Testnet
+-----------------
+
+https://github.com/MyHush/hush/blob/master/Testnet.md
 
 Deprecation Policy
 ------------------
 
 This release is considered deprecated 16 weeks after the release day. There
 is an automatic deprecation shutdown feature which will halt the node some
-time after this 16 week time period. The automatic feature is based on block
+time after this 52 week time period. The automatic feature is based on block
 height and can be explicitly disabled.
 
 Where do I begin?
