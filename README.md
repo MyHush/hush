@@ -82,7 +82,8 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 * keyrx4lugtnya7ax.onion
 * j7h7df2tylc57xeo.onion
 * madminingja2ozys.onion
-=======
+
+-----------------
 **Hush is experimental and a work-in-progress.** Use at your own risk.
 
 Testnet
