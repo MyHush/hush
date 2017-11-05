@@ -76,6 +76,9 @@ endif
 
 if BUILD_BITCOIN_UTILS
   bin_PROGRAMS += hush-cli hush-tx
+if ENABLE_WALLET
+  bin_PROGRAMS += wallet-utility
+endif
 endif
 
 LIBZCASH_H = \
@@ -92,6 +95,8 @@ LIBZCASH_H = \
 .PHONY: FORCE check-symbols check-security
 # bitcoin core #
 BITCOIN_CORE_H = \
+  addressindex.h \
+  spentindex.h \
   addrman.h \
   alert.h \
   amount.h \
@@ -428,6 +433,14 @@ hush_cli_SOURCES = bitcoin-cli.cpp
 hush_cli_CPPFLAGS = $(BITCOIN_INCLUDES) $(EVENT_CFLAGS)
 hush_cli_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
+# wallet-utility binary #
+if ENABLE_WALLET
+wallet_utility_SOURCES = wallet-utility.cpp
+wallet_utility_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAG)
+wallet_utility_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+wallet_utility_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+endif
+
 if TARGET_WINDOWS
 hush_cli_SOURCES += bitcoin-cli-res.rc
 endif
@@ -444,6 +457,20 @@ hush_cli_LDADD = \
   $(LIBBITCOIN_CRYPTO) \
   $(LIBZCASH_LIBS)
 #
+
+if ENABLE_WALLET
+wallet_utility_LDADD = \
+  libbitcoin_wallet.a \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(LIBSECP256K1) \
+  $(LIBBITCOIN_UTIL) \
+  $(BOOST_LIBS) \
+  $(BDB_LIBS) \
+  $(CRYPTO_LIBS) \
+  $(LIBZCASH) \
+  $(LIBZCASH_LIBS)
+endif
 
 # hush-tx binary #
 hush_tx_SOURCES = bitcoin-tx.cpp
