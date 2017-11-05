@@ -1,4 +1,7 @@
-HUSH 1.0.12
+HUSH 1.0.12-bitcore
+=======
+
+Incomplete Release, please do not use this
 =======
 
 What is HUSH?
