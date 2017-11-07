@@ -202,12 +202,14 @@ int printStats(bool mining)
     int height;
     int64_t tipmediantime;
     size_t connections;
+    size_t tlsConnections;
     int64_t netsolps;
     {
         LOCK2(cs_main, cs_vNodes);
         height = chainActive.Height();
         tipmediantime = chainActive.Tip()->GetMedianTimePast();
         connections = vNodes.size();
+        tlsConnections = std::count_if(vNodes.begin(), vNodes.end(), [](CNode* n) {return n->ssl != NULL;});
         netsolps = GetNetworkHashPS(120, -1);
     }
     auto localsolps = GetLocalSolPS();
@@ -219,7 +221,7 @@ int printStats(bool mining)
     } else {
         std::cout << "           " << _("Block height") << " | " << height << std::endl;
     }
-    std::cout << "            " << _("Connections") << " | " << connections << std::endl;
+    std::cout << "            " << _("Connections") << " | " << connections << " (TLS: " << tlsConnections << ")" << std::endl;
     std::cout << "  " << _("Network solution rate") << " | " << netsolps << " Sol/s" << std::endl;
     if (mining && miningTimer.running()) {
         std::cout << "    " << _("Local solution rate") << " | " << strprintf("%.4f Sol/s", localsolps) << std::endl;
