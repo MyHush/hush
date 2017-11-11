@@ -2276,6 +2276,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = block.vtx[i];
+        const uint256 txhash = tx.GetTxid();
 
         nInputs += tx.vin.size();
         nSigOps += GetLegacySigOpCount(tx);
