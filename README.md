@@ -113,7 +113,7 @@ The section of using the command line is relevant to HUSH.
 
 ### Not content with command line use of HUSH?
 
-A [HUSH GUI Wallet](https://github.com/vaklinov/hush-swing-wallet-ui) exists and is maintained by an independent developer as a separate project. Please read about the known issues and limitations before using the wallet.
+A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/tree/v1.0.12-win) 
 
 License
 -------
