@@ -25,7 +25,6 @@ TEAM
 * Iolar Demartini Junior: [@demartini](https://twitter.com/demartini) Web Developer (Front End).
 * David Mercer: [@radix42](https://twitter.com/radix42) Lead Developer
 * Matthew Reichardt: [@mreichardt](https://twitter.com/mreichardt) Core Developer, Tooling
-* Duke Leto: [@dukeleto](https://twitter.com/dukeleto) Core Developer, Yak Shaver
 * Larry Ludlow [@madbuda](https://twitter.com/madbuda) Core Developer, Infrastructure 
 
 * You can join our team too and make contributions
