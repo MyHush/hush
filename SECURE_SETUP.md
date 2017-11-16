@@ -19,7 +19,7 @@ To enable this option turn on the following two flags in your `hush.conf` file:
 ## Standing up your own "secure" node with a valid certificate:
 This guide requires having your own domain. You can still use all of the above connection options without setting up your own secure node, however, peers using the `tlsvalidate=1` flag will not connect to your node.
 
-### Install a free certificate from LetsEncrpt and use it with Hush:
+### Install a free certificate from LetsEncrypt and use it with Hush:
 1. Create an A record pointing to the IP address of your node on the DNS control panel for your domain. You can set the `host` entry to anything you like such as `hnode`. This A record should then be reachable as `host.mydomain.com` (we will refer to this as your `FQDN` from now on). 
 
 2. Ensure your domain name as propagated and matches the public IP address of your node by pinging your `FQDN`
