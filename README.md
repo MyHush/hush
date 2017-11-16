@@ -91,6 +91,10 @@ Testnet
 
 https://github.com/MyHush/hush/blob/master/Testnet.md
 
+Secure Setup
+-----------------
+https://github.com/MyHush/hush/blob/master/SECURE_SETUP.md
+
 Deprecation Policy
 ------------------
 
