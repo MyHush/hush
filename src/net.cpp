@@ -601,18 +601,19 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
         }
 #endif  // USE_TLS
 
-        // Add node
-        CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false, ssl);
-        pnode->AddRef();
-
+        if ((GetBoolArg("-tlsforce", false) && ssl) || !(GetBoolArg("-tlsforce", false)))
         {
-            LOCK(cs_vNodes);
-            vNodes.push_back(pnode);
+            // Add node
+            CNode* pnode = new CNode(hSocket, addrConnect, pszDest ? pszDest : "", false, ssl);
+            pnode->AddRef();
+
+            {
+                LOCK(cs_vNodes);
+                vNodes.push_back(pnode);
+            }
+            pnode->nTimeConnected = GetTime();
+            return pnode;
         }
-
-        pnode->nTimeConnected = GetTime();
-
-        return pnode;
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
         // the proxy, mark this as an attempt.
@@ -1310,13 +1311,16 @@ static void AcceptConnection(const ListenSocket& hListenSocket) {
     }
 #endif // USE_TLS
 
-    CNode* pnode = new CNode(hSocket, addr, "", true, ssl);
-    pnode->AddRef();
-    pnode->fWhitelisted = whitelisted;
-
+    if ((GetBoolArg("-tlsforce", false) && ssl) || !(GetBoolArg("-tlsforce", false)))
     {
-        LOCK(cs_vNodes);
-        vNodes.push_back(pnode);
+        CNode* pnode = new CNode(hSocket, addr, "", true, ssl);
+        pnode->AddRef();
+        pnode->fWhitelisted = whitelisted;
+
+        {
+            LOCK(cs_vNodes);
+            vNodes.push_back(pnode);
+        }
     }
 }
 
