@@ -173,6 +173,11 @@ extern std::string HelpExampleRpc(const std::string& methodname, const std::stri
 extern void EnsureWalletIsUnlocked();
 
 extern UniValue getconnectioncount(const UniValue& params, bool fHelp); // in rpcnet.cpp
+extern UniValue getaddressmempool(const UniValue& params, bool fHelp);
+extern UniValue getaddressutxos(const UniValuey& params, bool fHelp);
+extern UniValue getaddressdeltas(const UniValue& params, bool fHelp);
+extern UniValue getaddresstxids(const UniValue& params, bool fHelp);
+extern UniValue getaddressbalance(const UniValue& params, bool fHelp);
 extern UniValue getpeerinfo(const UniValue& params, bool fHelp);
 extern UniValue ping(const UniValue& params, bool fHelp);
 extern UniValue addnode(const UniValue& params, bool fHelp);
@@ -265,6 +270,7 @@ extern UniValue getdifficulty(const UniValue& params, bool fHelp);
 extern UniValue settxfee(const UniValue& params, bool fHelp);
 extern UniValue getmempoolinfo(const UniValue& params, bool fHelp);
 extern UniValue getrawmempool(const UniValue& params, bool fHelp);
+extern UniValue getblockhashes(const UniValue& params, bool fHelp);
 extern UniValue getblockhash(const UniValue& params, bool fHelp);
 extern UniValue getblockheader(const UniValue& params, bool fHelp);
 extern UniValue getblock(const UniValue& params, bool fHelp);
@@ -274,7 +280,7 @@ extern UniValue verifychain(const UniValue& params, bool fHelp);
 extern UniValue getchaintips(const UniValue& params, bool fHelp);
 extern UniValue invalidateblock(const UniValue& params, bool fHelp);
 extern UniValue reconsiderblock(const UniValue& params, bool fHelp);
-
+extern UniValue getspentinfo(const UniValue& params, bool fHelp);
 extern UniValue getblocksubsidy(const UniValue& params, bool fHelp);
 
 extern UniValue z_exportkey(const UniValue& params, bool fHelp); // in rpcdump.cpp
