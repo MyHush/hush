@@ -389,7 +389,7 @@ CNode* FindNode(const CService& addr)
 static int WaitFor(SSLConnectionRoutine eRoutine, SOCKET hSocket, SSL *ssl, int timeoutSec)
 {
     int nErr = 0;
-
+    ERR_clear_error();
     while (true)
     {
         switch (eRoutine)
@@ -923,6 +923,7 @@ void SocketSendData(CNode *pnode)
 
             if (bIsSSL)
             {
+                ERR_clear_error();
                 nBytes = SSL_write(pnode->ssl, &data[pnode->nSendOffset], data.size() - pnode->nSendOffset);
                 nRet = SSL_get_error(pnode->ssl, nBytes);
             }
@@ -1589,6 +1590,7 @@ void ThreadSocketHandler()
 
                             if (bIsSSL)
                             {
+                                ERR_clear_error();
                                 nBytes = SSL_read(pnode->ssl, pchBuf, sizeof(pchBuf));
                                 nRet = SSL_get_error(pnode->ssl, nBytes);
                             }
@@ -2306,6 +2308,7 @@ static bool TLSInitialize()
     // Initialization routines for the OpenSSL library
     //
     SSL_load_error_strings();
+    ERR_load_crypto_strings();
     OpenSSL_add_ssl_algorithms(); // OpenSSL_add_ssl_algorithms() always returns "1", so it is safe to discard the return value.
 
     namespace fs = boost::filesystem;
