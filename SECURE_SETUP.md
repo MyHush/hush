@@ -34,7 +34,7 @@ This guide requires having your own domain. You can still use all of the above c
     * `MY_FQDN=FQDN` 
       * Where `FQDN` is the full `host.mydomain.com`
     * `echo $MY_FQDN`
-    * `sudo ~/.acme.sh/acme.sh --issue --standalone -d $MY_FQDN`
+    * `~/.acme.sh/acme.sh --issue --standalone -d $MY_FQDN`
     * Make a note of where your certificates are:
       * They should be in `~/.acme.sh/FQDN`
 5. Add a crontab to check the script expiration date and renew if necessary:
