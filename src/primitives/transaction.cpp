@@ -22,9 +22,6 @@ JSDescription::JSDescription(ZCJoinSplit& params,
 {
     boost::array<libzcash::Note, ZC_NUM_JS_OUTPUTS> notes;
 
-    if (computeProof) {
-        params.loadProvingKey();
-    }
     proof = params.prove(
         inputs,
         outputs,
