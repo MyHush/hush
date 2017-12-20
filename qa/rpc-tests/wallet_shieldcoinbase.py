@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python2
 # Copyright (c) 2017 The Zcash developers
 # Distributed under the MIT software license, see the accompanying
