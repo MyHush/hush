@@ -418,7 +418,7 @@ class Version (object):
     '''A release version.'''
 
     RGX = re.compile(
-        r'^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(beta|rc)?([1-9]\d*))?$',
+        r'^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(beta|rc|dev|lin|mac|win)?([1-9]\d*)?)?$',
     )
 
     @staticmethod
@@ -444,10 +444,11 @@ class Version (object):
     def __init__(self, major, minor, patch, betarc, hotfix):
         for i in [major, minor, patch]:
             assert type(i) is int, i
-        assert betarc in {None, 'rc', 'beta'}, betarc
+        assert betarc in {None, 'beta', 'rc', 'dev', 'lin', 'mac', 'win'}, betarc
         assert hotfix is None or type(hotfix) is int, hotfix
         if betarc is not None:
-            assert hotfix is not None, (betarc, hotfix)
+            pass
+            # assert hotfix is not None, (betarc, hotfix)
 
         self.major = major
         self.minor = minor
