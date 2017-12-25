@@ -432,7 +432,6 @@ class Version (object):
                 ),
             )
         else:
-            print(m.groups())
             [major, minor, patch, _, betarc, hotfix] = m.groups()
             return Version(
                 int(major),
