@@ -2051,12 +2051,22 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     const CChainParams& chainparams = Params();
     AssertLockHeld(cs_main);
 
+    int64_t FORK_HEIGHT = 235555;
+    // now = 232143
+
     bool fExpensiveChecks = true;
     if (fCheckpointsEnabled) {
         CBlockIndex *pindexLastCheckpoint = Checkpoints::GetLastCheckpoint(chainparams.Checkpoints());
         if (pindexLastCheckpoint && pindexLastCheckpoint->GetAncestor(pindex->nHeight) == pindex) {
             // This block is an ancestor of a checkpoint: disable script checks
             fExpensiveChecks = false;
+        }
+    }
+
+    // hit the pause button
+    if(pindex->nHeight == FORK_HEIGHT) {
+        while(1) {
+            sleep(1);
         }
     }
 
