@@ -6,6 +6,7 @@ src/hushd
 src/hush-cli
 src/hush-gtest
 src/hush-tx
+
 src/test/test_bitcoin
 
 # Zcash utilities
@@ -13,6 +14,7 @@ src/zcash/GenerateParams
 src/zcash/CreateJoinSplit
 src/hush/GenerateParams
 src/hush/CreateJoinSplit
+
 
 *zcashTest.pk
 *zcashTest.vk
@@ -97,7 +99,7 @@ test_bitcoin.coverage/
 zcash-gtest.coverage/
 total.coverage/
 coverage_percent.txt
-#
+
 #build tests
 linux-coverage-build
 linux-build
@@ -112,6 +114,8 @@ qa/pull-tester/test.*/*
 /doc/doxygen/
 
 libzcashconsensus.pc
+
+wallet-utility
 
 contrib/debian/files
 contrib/debian/substvars

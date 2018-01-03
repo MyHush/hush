@@ -700,3 +700,4 @@ TEST(proofs, g2_test_vectors)
         ASSERT_TRUE(expected.to_libsnark_g2<curve_G2>() == e);
     }
 }
+

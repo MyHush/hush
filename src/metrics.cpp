@@ -203,6 +203,7 @@ int printStats(bool mining)
     int64_t tipmediantime;
     size_t connections;
     size_t tlsConnections;
+
     int64_t netsolps;
     {
         LOCK2(cs_main, cs_vNodes);

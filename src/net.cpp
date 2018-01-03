@@ -614,6 +614,7 @@ CNode* ConnectNode(CAddress addrConnect, const char *pszDest)
             pnode->nTimeConnected = GetTime();
             return pnode;
         }
+
     } else if (!proxyConnectionFailed) {
         // If connecting to the node failed, and failure is not caused by a problem connecting to
         // the proxy, mark this as an attempt.
@@ -896,6 +897,7 @@ int CNetMessage::readData(const char *pch, unsigned int nBytes)
 
     return nCopy;
 }
+
 
 // requires LOCK(cs_vSend)
 void SocketSendData(CNode *pnode)
@@ -1566,6 +1568,7 @@ void ThreadSocketHandler()
             }
 
             if (recvSet || errorSet)
+
             {
                 TRY_LOCK(pnode->cs_vRecvMsg, lockRecv);
                 if (lockRecv)
@@ -1739,16 +1742,6 @@ void ThreadDNSAddressSeed()
 
     LogPrintf("%d addresses found from DNS seeds\n", found);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 void DumpAddresses()
@@ -2126,6 +2119,7 @@ bool BindListenPort(const CService &addrBind, string& strError, bool fWhiteliste
     // On Linux, the new socket returned by accept() does not inherit file
     // status flags such as O_NONBLOCK and O_ASYNC from the listening
     // socket. http://man7.org/linux/man-pages/man2/accept.2.html
+
     if (!SetSocketNonBlocking(hListenSocket, true)) {
         strError = strprintf("BindListenPort: Setting listening socket to non-blocking failed, error %s\n", NetworkErrorString(WSAGetLastError()));
         LogPrintf("%s\n", strError);
@@ -2390,7 +2384,6 @@ static bool TLSPrepareCredentials()
 
 #endif // USE_TLS
 
-
 void StartNode(boost::thread_group& threadGroup, CScheduler& scheduler)
 {
     uiInterface.InitMessage(_("Loading addresses..."));
@@ -2489,6 +2482,7 @@ public:
         // Close sockets
         BOOST_FOREACH(CNode* pnode, vNodes)
             pnode->CloseSocketDisconnect();
+
         BOOST_FOREACH(ListenSocket& hListenSocket, vhListenSocket)
             if (hListenSocket.socket != INVALID_SOCKET)
                 if (!CloseSocket(hListenSocket.socket))
@@ -2514,9 +2508,6 @@ public:
     }
 }
 instance_of_cnetcleanup;
-
-
-
 
 
 

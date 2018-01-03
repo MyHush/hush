@@ -103,3 +103,4 @@ typedef libzcash::JoinSplit<ZC_NUM_JS_INPUTS,
                             ZC_NUM_JS_OUTPUTS> ZCJoinSplit;
 
 #endif // _ZCJOINSPLIT_H_
+

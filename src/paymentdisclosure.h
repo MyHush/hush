@@ -143,3 +143,4 @@ typedef std::pair<PaymentDisclosureKey, PaymentDisclosureInfo> PaymentDisclosure
 
 
 #endif // ZCASH_PAYMENTDISCLOSURE_H
+
