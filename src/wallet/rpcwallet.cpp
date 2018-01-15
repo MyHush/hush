@@ -3042,13 +3042,14 @@ UniValue z_listreceivedbyaddress(const UniValue& params, bool fHelp)
     if (!EnsureWalletIsAvailable(fHelp))
         return NullUniValue;
 
-    if (fHelp || params.size()==0 || params.size() >2)
+    if (fHelp || params.size()==0 || params.size() >3)
         throw runtime_error(
             "z_listreceivedbyaddress \"address\" ( minconf )\n"
             "\nReturn a list of amounts received by a zaddr belonging to the node’s wallet.\n"
             "\nArguments:\n"
             "1. \"address\"      (string) The private address.\n"
             "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
+            "3. decode           (boolean, optional, default=False) Decode memo to Unicode text, if possible.\n"
             "\nResult:\n"
             "{\n"
             "  \"txid\": xxxxx,     (string) the transaction id\n"
@@ -3060,9 +3061,14 @@ UniValue z_listreceivedbyaddress(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     int nMinDepth = 1;
+    bool bDecode  = false;
     if (params.size() > 1) {
         nMinDepth = params[1].get_int();
+
+    if (params.size() > 2) {
+        bDecode   = params[2].get_bool();
     }
+
     if (nMinDepth < 0) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Minimum number of confirmations cannot be less than 0");
     }
@@ -3091,7 +3097,12 @@ UniValue z_listreceivedbyaddress(const UniValue& params, bool fHelp)
         obj.push_back(Pair("txid",entry.jsop.hash.ToString()));
         obj.push_back(Pair("amount", ValueFromAmount(CAmount(entry.plaintext.value))));
         std::string data(entry.plaintext.memo.begin(), entry.plaintext.memo.end());
-        obj.push_back(Pair("memo", HexStr(data)));
+        if (bDecode) {
+            // TODO: check for printable ascii/unicode vs binary data
+            obj.push_back(Pair("memo", data.ToString()));
+        } else {
+            obj.push_back(Pair("memo", HexStr(data)));
+        }
         result.push_back(obj);
     }
     return result;
