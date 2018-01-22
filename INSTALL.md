@@ -20,8 +20,11 @@ echo "addnode=zdash.suprnova.cc" >> ~/.hush/hush.conf
 
 ## Download proving key
 
+This will download a Zcash Sprout proving key, if you already have one on this system, you only need one
+and this script will just verify that it is correct.
+
 ```
-hush-fetch-params
+./zcutil/fetch-params.sh
 ```
 
 # Building Hush from source
