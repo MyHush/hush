@@ -1,12 +1,11 @@
-HUSH 1.0.12
-=======
+# HUSH 1.0.12
 
 What is HUSH?
 --------------
 
 ![Logo](doc/hush/hush.png "Logo")
 
-HUSH (formerly Zdash) is a private implementation of the "Zerocash" protocol forked from [ZCash](https://z.cash/).
+HUSH (formerly Zdash) is a code fork of [ZCash](https://z.cash/) which has it's own genesis block.
 Based on Bitcoin's code, it intends to offer a far higher standard of privacy
 through a sophisticated zero-knowledge proving scheme that preserves
 confidentiality of transaction metadata. 
@@ -16,13 +15,12 @@ of HUSH transactions; depending on the speed of your computer and network
 connection, the synchronization process could take a day or more once the
 blockchain has reached a significant size.
 
-
 **HUSH is unfinished and highly experimental.** Use at your own risk!
 
 TEAM
 ----
 
-* Iolar Demartini Junior: [@demartini](https://twitter.com/demartini) Web Developer (Front End).
+* Larry Ludlow [@madbuda](https://twitter.com/madbuda) Core Developer, Infrastructure
 * Matthew Reichardt: [@mreichardt](https://twitter.com/mreichardt) Core Developer, Tooling
 * Duke Leto: [@dukeleto](https://twitter.com/dukeleto) Core Developer, Yak Shaver
 * We are currently looking for other core members please get in touch!
