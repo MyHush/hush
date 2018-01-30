@@ -21,7 +21,6 @@ TEAM
 ----
 
 * Larry Ludlow [@madbuda](https://twitter.com/madbuda) Core Developer, Infrastructure
-* Matthew Reichardt: [@mreichardt](https://twitter.com/mreichardt) Core Developer, Tooling
 * Duke Leto: [@dukeleto](https://twitter.com/dukeleto) Core Developer, Yak Shaver
 * We are currently looking for other core members please get in touch!
 
