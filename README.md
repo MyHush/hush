@@ -17,18 +17,6 @@ blockchain has reached a significant size.
 
 **HUSH is unfinished and highly experimental.** Use at your own risk!
 
-TEAM
-----
-
-* Larry Ludlow [@madbuda](https://twitter.com/madbuda) Core Developer, Infrastructure
-* Duke Leto: [@dukeleto](https://twitter.com/dukeleto) Core Developer, Yak Shaver
-* We are currently looking for other core members please get in touch!
-
-Discord
------
-
-Please feel free to join us on Discord at https://discord.io/hush .
-There are many channels, some you might enjoy are #general, #exchanges and #mining.
 
 Forum
 -----
@@ -44,7 +32,6 @@ Bootstrap Nodes
 Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
 
 **IPV4**
-* mmc01.madbuda.me
 * myhush.network
 * 183.89.226.141
 * 163.172.70.26
