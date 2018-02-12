@@ -2329,8 +2329,14 @@ static bool TLSInitialize()
         // If specified directory can't be used, then setting the default trusted directories
         trustedDirs = GetDefaultTrustedDirectories();
 
+#if defined(WIN32) && !defined(TINYFORMAT_ALLOW_WCHAR_STRINGS)
+    // On win32, boost::filesystem defaults to wchar (as the os filesystem is using wchars).
+    for (fs::path dir : trustedDirs)
+        LogPrintf("TLS: trusted directory '%s' will be used\n", dir.string().c_str());
+#else
     for (fs::path dir : trustedDirs)
         LogPrintf("TLS: trusted directory '%s' will be used\n", dir.c_str());
+#endif
 
     // Initialization of the server and client contexts
     //
