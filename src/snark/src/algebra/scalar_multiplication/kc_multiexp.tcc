@@ -8,6 +8,7 @@
 #ifndef KC_MULTIEXP_TCC_
 #define KC_MULTIEXP_TCC_
 
+
 namespace libsnark {
 
 template<typename T1, typename T2, mp_size_t n>

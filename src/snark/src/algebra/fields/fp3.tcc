@@ -149,7 +149,7 @@ Fp3_model<n,modulus> Fp3_model<n,modulus>::sqrt() const
 {
     Fp3_model<n,modulus> one = Fp3_model<n,modulus>::one();
 
-    size_t v = Fp3_model<n,modulus>::s;
+    unsigned long long v = Fp3_model<n,modulus>::s;
     Fp3_model<n,modulus> z = Fp3_model<n,modulus>::nqr_to_t;
     Fp3_model<n,modulus> w = (*this)^Fp3_model<n,modulus>::t_minus_1_over_2;
     Fp3_model<n,modulus> x = (*this) * w;
@@ -173,7 +173,7 @@ Fp3_model<n,modulus> Fp3_model<n,modulus>::sqrt() const
 
     while (b != one)
     {
-        size_t m = 0;
+        unsigned long long m = 0;
         Fp3_model<n,modulus> b2m = b;
         while (b2m != one)
         {
@@ -237,7 +237,7 @@ std::istream& operator>>(std::istream& in, std::vector<Fp3_model<n, modulus> > &
 {
     v.clear();
 
-    size_t s;
+    unsigned long long s;
     in >> s;
 
     char b;

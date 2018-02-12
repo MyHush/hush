@@ -22,6 +22,8 @@
 #include <cassert>
 #include "algebra/fields/field_utils.hpp"
 #include "algebra/evaluation_domain/domains/basic_radix2_domain.hpp"
+#include "algebra/evaluation_domain/domains/extended_radix2_domain.hpp"
+#include "algebra/evaluation_domain/domains/step_radix2_domain.hpp"
 
 namespace libsnark {
 
@@ -41,7 +43,7 @@ std::shared_ptr<evaluation_domain<FieldT> > get_evaluation_domain(const size_t m
             {
                 print_indent(); printf("* Selected domain: extended_radix2\n");
             }
-            assert(0);
+            result.reset(new extended_radix2_domain<FieldT>(min_size));
         }
         else
         {
@@ -54,9 +56,9 @@ std::shared_ptr<evaluation_domain<FieldT> > get_evaluation_domain(const size_t m
     }
     else
     {
-        const size_t big = 1ul<<(log2(min_size)-1);
+        const size_t big = UINT64_C(1)<<(log2(min_size)-1);
         const size_t small = min_size - big;
-        const size_t rounded_small = (1ul<<log2(small));
+        const size_t rounded_small = (UINT64_C(1)<<log2(small));
         if (big == rounded_small)
         {
             if (log2(big + rounded_small) < FieldT::s+1)
@@ -73,7 +75,7 @@ std::shared_ptr<evaluation_domain<FieldT> > get_evaluation_domain(const size_t m
                 {
                     print_indent(); printf("* Selected domain: extended_radix2\n");
                 }
-                assert(0);
+                result.reset(new extended_radix2_domain<FieldT>(big + rounded_small));
             }
         }
         else
@@ -82,7 +84,7 @@ std::shared_ptr<evaluation_domain<FieldT> > get_evaluation_domain(const size_t m
             {
                 print_indent(); printf("* Selected domain: step_radix2\n");
             }
-            assert(0);
+            result.reset(new step_radix2_domain<FieldT>(big + rounded_small));
         }
     }
 
