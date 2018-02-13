@@ -20,11 +20,11 @@ std::istream& operator>>(std::istream &, alt_bn128_G2&);
 class alt_bn128_G2 {
 public:
 #ifdef PROFILE_OP_COUNTS
-    static long long add_cnt;
-    static long long dbl_cnt;
+    static int64_t add_cnt;
+    static int64_t dbl_cnt;
 #endif
-    static std::vector<size_t> wnaf_window_table;
-    static std::vector<size_t> fixed_base_exp_window_table;
+    static std::vector<uint64_t> wnaf_window_table;
+    static std::vector<uint64_t> fixed_base_exp_window_table;
     static alt_bn128_G2 G2_zero;
     static alt_bn128_G2 G2_one;
 
@@ -67,7 +67,7 @@ public:
     static alt_bn128_G2 one();
     static alt_bn128_G2 random_element();
 
-    static size_t size_in_bits() { return twist_field::size_in_bits() + 1; }
+    static unsigned long long size_in_bits() { return twist_field::size_in_bits() + 1; }
     static bigint<base_field::num_limbs> base_field_char() { return base_field::field_char(); }
     static bigint<scalar_field::num_limbs> order() { return scalar_field::field_char(); }
 

@@ -37,7 +37,7 @@ public:
     typedef Fp_model<n, modulus> my_Fp;
 
     static bigint<3*n> euler; // (modulus^3-1)/2
-    static size_t s;       // modulus^3 = 2^s * t + 1
+    static unsigned long long s;       // modulus^3 = 2^s * t + 1
     static bigint<3*n> t;  // with t odd
     static bigint<3*n> t_minus_1_over_2; // (t-1)/2
     static my_Fp non_residue; // X^6-non_residue irreducible over Fp; used for constructing Fp3 = Fp[X] / (X^3 - non_residue)
@@ -73,7 +73,7 @@ public:
     template<mp_size_t m>
     Fp3_model operator^(const bigint<m> &other) const;
 
-    static size_t size_in_bits() { return 3*my_Fp::size_in_bits(); }
+    static unsigned long long size_in_bits() { return 3*my_Fp::size_in_bits(); }
     static bigint<n> base_field_char() { return modulus; }
 
     friend std::ostream& operator<< <n, modulus>(std::ostream &out, const Fp3_model<n, modulus> &el);
@@ -93,7 +93,7 @@ template<mp_size_t n, const bigint<n>& modulus>
 bigint<3*n> Fp3_model<n, modulus>::euler;
 
 template<mp_size_t n, const bigint<n>& modulus>
-size_t Fp3_model<n, modulus>::s;
+unsigned long long Fp3_model<n, modulus>::s;
 
 template<mp_size_t n, const bigint<n>& modulus>
 bigint<3*n> Fp3_model<n, modulus>::t;
