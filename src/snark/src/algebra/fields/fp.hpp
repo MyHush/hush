@@ -50,9 +50,9 @@ public:
     static int64_t sqr_cnt;
     static int64_t inv_cnt;
 #endif
-    static size_t num_bits;
+    static unsigned long long num_bits;
     static bigint<n> euler; // (modulus-1)/2
-    static size_t s; // modulus = 2^s * t + 1
+    static unsigned long long s; // modulus = 2^s * t + 1
     static bigint<n> t; // with t odd
     static bigint<n> t_minus_1_over_2; // (t-1)/2
     static Fp_model<n, modulus> nqr; // a quadratic nonresidue
@@ -107,7 +107,7 @@ public:
     Fp_model inverse() const;
     Fp_model sqrt() const; // HAS TO BE A SQUARE (else does not terminate)
 
-    Fp_model operator^(const unsigned long long pow) const;
+    Fp_model operator^(const uint64_t pow) const;
     template<mp_size_t m>
     Fp_model operator^(const bigint<m> &pow) const;
 

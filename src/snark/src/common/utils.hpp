@@ -27,7 +27,7 @@ inline unsigned long long exp2(unsigned long long k) { return 1ull << k; }
 
 unsigned long long bitreverse(unsigned long long n, const unsigned long long l);
 bit_vector int_list_to_bits(const std::initializer_list<unsigned long long> &l, const unsigned long long wordsize);
-long long div_ceil(long long x, long long y);
+int64_t div_ceil(int64_t x, int64_t y);
 
 bool is_little_endian();
 

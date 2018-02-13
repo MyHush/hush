@@ -35,7 +35,7 @@
 
 namespace libsnark {
 
-long long get_nsec_time()
+int64_t get_nsec_time()
 {
     auto timepoint = std::chrono::high_resolution_clock::now();
     return std::chrono::duration_cast<std::chrono::nanoseconds>(timepoint.time_since_epoch()).count();
