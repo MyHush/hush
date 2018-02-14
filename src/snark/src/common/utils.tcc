@@ -13,7 +13,7 @@
 namespace libsnark {
 
 template<typename T>
-size_t size_in_bits(const std::vector<T> &v)
+unsigned long long size_in_bits(const std::vector<T> &v)
 {
     return v.size() * T::size_in_bits();
 }
