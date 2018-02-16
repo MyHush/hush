@@ -43,6 +43,8 @@
 
 #ifndef WIN32
 #include <signal.h>
+#else
+#include <windows.h>
 #endif
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -130,6 +132,7 @@ CClientUIInterface uiInterface; // Declared but not defined in ui_interface.h
 //
 
 std::atomic<bool> fRequestShutdown(false);
+std::atomic<bool> fShutdownCompleted(false);
 
 void StartShutdown()
 {
@@ -271,6 +274,8 @@ void Shutdown()
     globalVerifyHandle.reset();
     ECC_Stop();
     LogPrintf("%s: done\n", __func__);
+
+    fShutdownCompleted = true;
 }
 
 /**
@@ -285,6 +290,34 @@ void HandleSIGHUP(int)
 {
     fReopenDebugLog = true;
 }
+
+#ifdef WIN32
+BOOL CtrlHandler( DWORD fdwCtrlType ) 
+{ 
+  int64_t nMaxWait = 15; // seconds
+  int64_t nStart = GetTime();
+  switch (fdwCtrlType) { 
+    case CTRL_C_EVENT: 
+    case CTRL_CLOSE_EVENT: 
+    case CTRL_BREAK_EVENT: 
+    case CTRL_LOGOFF_EVENT: 
+    case CTRL_SHUTDOWN_EVENT: 
+      fRequestShutdown = true;
+      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;     
+      while (!fShutdownCompleted) {
+        if (GetTime() - nStart >= nMaxWait) {
+          error("Shutdown didn't complete in a timely manner");
+          break;
+        }
+        MilliSleep(100);
+      }
+      return TRUE; 
+
+    default: 
+      return FALSE; 
+  } 
+} 
+#endif
 
 bool static InitError(const std::string &str)
 {
@@ -781,6 +814,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     // Ignore SIGPIPE, otherwise it will bring the daemon down if the client closes unexpectedly
     signal(SIGPIPE, SIG_IGN);
+#else
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 #endif
 
     // ********************************************************* Step 2: parameter interactions
