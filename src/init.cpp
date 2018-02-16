@@ -43,6 +43,8 @@
 
 #ifndef WIN32
 #include <signal.h>
+#else
+#include <windows.h>
 #endif
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -285,6 +287,29 @@ void HandleSIGHUP(int)
 {
     fReopenDebugLog = true;
 }
+
+#ifdef WIN32
+BOOL CtrlHandler( DWORD fdwCtrlType ) 
+{ 
+  switch( fdwCtrlType ) 
+  { 
+    // Handle the CTRL-C signal. 
+    case CTRL_C_EVENT: 
+    // CTRL-CLOSE: confirm that the user wants to exit. 
+    case CTRL_CLOSE_EVENT: 
+    // Pass other signals to the next handler. 
+    case CTRL_BREAK_EVENT: 
+    case CTRL_LOGOFF_EVENT: 
+    case CTRL_SHUTDOWN_EVENT: 
+      fRequestShutdown = true;
+      std::cout << _("Stopping node.  This may take a while, be patient!") << std::endl;
+      return TRUE; 
+
+    default: 
+      return FALSE; 
+  } 
+} 
+#endif
 
 bool static InitError(const std::string &str)
 {
@@ -781,6 +806,8 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     // Ignore SIGPIPE, otherwise it will bring the daemon down if the client closes unexpectedly
     signal(SIGPIPE, SIG_IGN);
+#else
+    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
 #endif
 
     // ********************************************************* Step 2: parameter interactions
