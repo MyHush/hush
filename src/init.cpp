@@ -294,6 +294,8 @@ void HandleSIGHUP(int)
 #ifdef WIN32
 BOOL CtrlHandler( DWORD fdwCtrlType ) 
 { 
+  int64_t nMaxWait = 15; // seconds
+  int64_t nStart = GetTime();
   switch( fdwCtrlType ) 
   { 
     case CTRL_C_EVENT: 
@@ -302,8 +304,8 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT: 
       fRequestShutdown = true;
-      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;
-      while (!fShutdownCompleted)
+      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;     
+      while (!fShutdownCompleted && (GetTime() - nStart < nMaxWait))
       {
           MilliSleep(100);
       }
