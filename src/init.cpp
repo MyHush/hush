@@ -302,7 +302,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT: 
       fRequestShutdown = true;
-      std::cout << _("Stopping node.  This may take a while, be patient!") << std::endl;
+      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;
       while (!fShutdownCompleted)
       {
           MilliSleep(100);
@@ -811,7 +811,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
     // Ignore SIGPIPE, otherwise it will bring the daemon down if the client closes unexpectedly
     signal(SIGPIPE, SIG_IGN);
 #else
-    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
 #endif
 
     // ********************************************************* Step 2: parameter interactions
