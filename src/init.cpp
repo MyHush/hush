@@ -296,18 +296,20 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 { 
   int64_t nMaxWait = 15; // seconds
   int64_t nStart = GetTime();
-  switch( fdwCtrlType ) 
-  { 
+  switch (fdwCtrlType) { 
     case CTRL_C_EVENT: 
     case CTRL_CLOSE_EVENT: 
     case CTRL_BREAK_EVENT: 
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT: 
       fRequestShutdown = true;
-      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;
-      while (!fShutdownCompleted && (GetTime() - nStart < nMaxWait))
-      {
-          MilliSleep(100);
+      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;     
+      while (!fShutdownCompleted) {
+        if (GetTime() - nStart >= nMaxWait) {
+          error("Shutdown didn't complete in a timely manner");
+          break;
+        }
+        MilliSleep(100);
       }
       return TRUE; 
 
