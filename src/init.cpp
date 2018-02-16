@@ -132,6 +132,7 @@ CClientUIInterface uiInterface; // Declared but not defined in ui_interface.h
 //
 
 std::atomic<bool> fRequestShutdown(false);
+std::atomic<bool> fShutdownCompleted(false);
 
 void StartShutdown()
 {
@@ -273,6 +274,8 @@ void Shutdown()
     globalVerifyHandle.reset();
     ECC_Stop();
     LogPrintf("%s: done\n", __func__);
+
+    fShutdownCompleted = true;
 }
 
 /**
@@ -293,16 +296,17 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 { 
   switch( fdwCtrlType ) 
   { 
-    // Handle the CTRL-C signal. 
     case CTRL_C_EVENT: 
-    // CTRL-CLOSE: confirm that the user wants to exit. 
     case CTRL_CLOSE_EVENT: 
-    // Pass other signals to the next handler. 
     case CTRL_BREAK_EVENT: 
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT: 
       fRequestShutdown = true;
       std::cout << _("Stopping node.  This may take a while, be patient!") << std::endl;
+      while (!fShutdownCompleted)
+      {
+          MilliSleep(100);
+      }
       return TRUE; 
 
     default: 
