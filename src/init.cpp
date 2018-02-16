@@ -304,7 +304,7 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT: 
       fRequestShutdown = true;
-      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;     
+      std::cout << _("Shutting down node.  This may take a while, be patient!") << std::endl;
       while (!fShutdownCompleted && (GetTime() - nStart < nMaxWait))
       {
           MilliSleep(100);
