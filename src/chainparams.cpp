@@ -98,8 +98,9 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("node1", "dnsseed.myhush.org"));   // Duke
-        vSeeds.push_back(CDNSSeedData("node2", "dnsseed.bleuzero.com")); // FiremartZ
+        vSeeds.push_back(CDNSSeedData("node1", "dnsseed.myhush.org"));    // Duke
+        vSeeds.push_back(CDNSSeedData("node2", "dnsseed2.myhush.org"));   // Duke
+        vSeeds.push_back(CDNSSeedData("node3", "dnsseed.bleuzero.com"));  // FiremartZ
 
         // guarantees the first 2 characters, when base58 encoded, are "t1"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1C,0xB8};
