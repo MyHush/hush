@@ -55,7 +55,6 @@ Build HUSH along with most dependencies from source by running:
 ## Linux
 Get dependencies:
 ```{r, engine='bash'}
-
 sudo apt-get install \
       build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python \
