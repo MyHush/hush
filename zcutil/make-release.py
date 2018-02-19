@@ -15,7 +15,7 @@ from functools import wraps
 
 def main(args=sys.argv[1:]):
     """
-    Perform the final Zcash release process up to the git tag.
+    Perform the final Hush release process up to the git tag.
     """
     opts = parse_args(args)
     chdir_to_repo(opts.REPO)
@@ -250,8 +250,8 @@ def gen_release_notes(release):
 
 @phase('Updating debian changelog.')
 def update_debian_changelog(release):
-    os.environ['DEBEMAIL'] = 'team@z.cash'
-    os.environ['DEBFULLNAME'] = 'Zcash Company'
+    os.environ['DEBEMAIL'] = 'contact@myhush.org'
+    os.environ['DEBFULLNAME'] = 'Hush Team'
     sh_log(
         'debchange',
         '--newversion', release.debversion,
@@ -278,10 +278,10 @@ def chdir_to_repo(repo):
 def patch_README(release, releaseprev):
     with PathPatcher('README.md') as (inf, outf):
         firstline = inf.readline()
-        assert firstline == 'Zcash {}\n'.format(releaseprev.novtext), \
+        assert firstline == 'HUSH {}\n'.format(releaseprev.novtext), \
             repr(firstline)
 
-        outf.write('Zcash {}\n'.format(release.novtext))
+        outf.write('HUSH {}\n'.format(release.novtext))
         outf.write(inf.read())
 
 
@@ -309,11 +309,11 @@ def patch_gitian_linux_yml(release, releaseprev):
         outf.write(inf.readline())
 
         secondline = inf.readline()
-        assert secondline == 'name: "zcash-{}"\n'.format(
+        assert secondline == 'name: "hush-{}"\n'.format(
             releaseprev.novtext
         ), repr(secondline)
 
-        outf.write('name: "zcash-{}"\n'.format(release.novtext))
+        outf.write('name: "hush-{}"\n'.format(release.novtext))
         outf.write(inf.read())
 
 
@@ -339,7 +339,7 @@ def _patch_build_defs(release, path, pattern):
 
 
 def initialize_logging():
-    logname = './zcash-make-release.log'
+    logname = './hush-make-release.log'
     fmtr = logging.Formatter(
         '%(asctime)s L%(lineno)-4d %(levelname)-5s | %(message)s',
         '%Y-%m-%d %H:%M:%S'
@@ -357,7 +357,7 @@ def initialize_logging():
     root.setLevel(logging.DEBUG)
     root.addHandler(hout)
     root.addHandler(hpath)
-    logging.info('zcash make-release.py debug log: %r', logname)
+    logging.info('hush make-release.py debug log: %r', logname)
 
 
 def sh_out(*args):
@@ -418,7 +418,7 @@ class Version (object):
     '''A release version.'''
 
     RGX = re.compile(
-        r'^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(beta|rc)?([1-9]\d*))?$',
+        r'^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(beta|rc|dev|lin|mac|win)?([1-9]\d*)?)?$',
     )
 
     @staticmethod
@@ -444,10 +444,11 @@ class Version (object):
     def __init__(self, major, minor, patch, betarc, hotfix):
         for i in [major, minor, patch]:
             assert type(i) is int, i
-        assert betarc in {None, 'rc', 'beta'}, betarc
+        assert betarc in {None, 'beta', 'rc', 'dev', 'lin', 'mac', 'win'}, betarc
         assert hotfix is None or type(hotfix) is int, hotfix
         if betarc is not None:
-            assert hotfix is not None, (betarc, hotfix)
+            pass
+            # assert hotfix is not None, (betarc, hotfix)
 
         self.major = major
         self.minor = minor

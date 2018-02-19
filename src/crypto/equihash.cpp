@@ -17,6 +17,9 @@
 #endif
 
 #include "crypto/equihash.h"
+#ifndef __linux__
+#include "compat/endian.h"
+#endif
 #include "util.h"
 
 #include <algorithm>

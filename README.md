@@ -1,7 +1,6 @@
-# HUSH 1.0.12
+# HUSH 1.0.13
 
-What is HUSH?
---------------
+## What is HUSH?
 
 ![Logo](doc/hush/hush.png "Logo")
 
@@ -18,6 +17,13 @@ blockchain has reached a significant size.
 **HUSH is unfinished and highly experimental.** Use at your own risk!
 
 
+## Discord
+
+Please feel free to join us on Discord at https://myhush.org/hush .
+There are many channels, some you might enjoy are #general, #support and #mining.
+
+Please feel free to join us on Discord at https://myhush.org/discord.html
+
 Forum
 -----
 https://forum.myhush.org/
@@ -32,19 +38,12 @@ Bootstrap Nodes
 Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
 
 **IPV4**
-* myhush.network
-* 183.89.226.141
-* 163.172.70.26
-* 76.188.211.191
-* 173.212.196.148
-* 78.94.32.197
-* 77.78.12.89
-* 78.46.88.113
-* 163.172.70.26
-* 192.99.3.29
-* 144.76.62.229
-* 163.172.64.208
-* 37.187.167.145
+ * dnsseed.myhush.org
+ * dnsseed2.myhush.org
+ * stilgar.myhush.org
+ * explorer.myhush.org
+ * dnsseed.bleuzero.com
+ * dnsseed.hush.quebec
 
 **IPV6**
 * [2607:4f00:0:509::4]
@@ -62,7 +61,6 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 * hushnodexptkgea3.onion
 * keyrx4lugtnya7ax.onion
 * j7h7df2tylc57xeo.onion
-* madminingja2ozys.onion
 
 -----------------
 **Hush is experimental and a work-in-progress.** Use at your own risk.
@@ -71,6 +69,10 @@ Testnet
 -----------------
 
 https://github.com/MyHush/hush/blob/master/Testnet.md
+
+Secure Setup
+-----------------
+https://github.com/MyHush/hush/blob/master/SECURE_SETUP.md
 
 Deprecation Policy
 ------------------

@@ -16,7 +16,12 @@
 #include <boost/thread.hpp>
 #include <boost/thread/synchronized_value.hpp>
 #include <string>
-#include <sys/ioctl.h>
+#ifdef WIN32
+  #include <io.h>
+  #include <windows.h>
+#else
+  #include <sys/ioctl.h>
+#endif
 #include <unistd.h>
 
 void AtomicTimer::start()
@@ -202,12 +207,14 @@ int printStats(bool mining)
     int height;
     int64_t tipmediantime;
     size_t connections;
+    size_t tlsConnections;
     int64_t netsolps;
     {
         LOCK2(cs_main, cs_vNodes);
         height = chainActive.Height();
         tipmediantime = chainActive.Tip()->GetMedianTimePast();
         connections = vNodes.size();
+        tlsConnections = std::count_if(vNodes.begin(), vNodes.end(), [](CNode* n) {return n->ssl != NULL;});
         netsolps = GetNetworkHashPS(120, -1);
     }
     auto localsolps = GetLocalSolPS();
@@ -219,7 +226,7 @@ int printStats(bool mining)
     } else {
         std::cout << "           " << _("Block height") << " | " << height << std::endl;
     }
-    std::cout << "            " << _("Connections") << " | " << connections << std::endl;
+    std::cout << "            " << _("Connections") << " | " << connections << " (TLS: " << tlsConnections << ")" << std::endl;
     std::cout << "  " << _("Network solution rate") << " | " << netsolps << " Sol/s" << std::endl;
     if (mining && miningTimer.running()) {
         std::cout << "    " << _("Local solution rate") << " | " << strprintf("%.4f Sol/s", localsolps) << std::endl;
@@ -441,11 +448,18 @@ void ThreadShowMetricsScreen()
 
         // Get current window size
         if (isTTY) {
+          #ifdef WIN32
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+          #else
+            cols = 80;
             struct winsize w;
             w.ws_col = 0;
             if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) != -1 && w.ws_col != 0) {
                 cols = w.ws_col;
             }
+          #endif
         }
 
         if (isScreen) {
