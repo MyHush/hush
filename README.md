@@ -96,7 +96,7 @@ The section of using the command line is relevant to HUSH.
 
 ### Not content with command line use of HUSH?
 
-A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/tree/v1.0.12-win) 
+A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/releases/tag/v0.71.2-beta)
 
 License
 -------
