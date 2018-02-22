@@ -119,6 +119,7 @@ bool UniValue::setNumStr(const string& val_)
     return true;
 }
 
+#ifdef __APPLE__
 bool UniValue::setInt(size_t val_)
 {
     ostringstream oss;
@@ -127,6 +128,7 @@ bool UniValue::setInt(size_t val_)
 
     return setNumStr(oss.str());
 }
+#endif
 
 bool UniValue::setInt(uint64_t val_)
 {
