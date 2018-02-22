@@ -19,10 +19,8 @@ blockchain has reached a significant size.
 
 ## Discord
 
-Please feel free to join us on Discord at https://myhush.org/hush .
+Please feel free to join us on Discord at https://myhush.org/discord.html .
 There are many channels, some you might enjoy are #general, #support and #mining.
-
-Please feel free to join us on Discord at https://myhush.org/discord.html
 
 Forum
 -----
