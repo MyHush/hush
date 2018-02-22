@@ -71,7 +71,7 @@ You can use the RPC call `lockunspent` to see which UTXOs have been locked.  You
 
 The number of coinbase UTXOs selected for shielding can be adjusted by setting the limit parameter. The default value is 50.
 
-If the limit parameter is set to zero, the zcashd `mempooltxinputlimit` option will be used instead, where the default value for `mempooltxinputlimit` is zero, which means no limit.
+If the limit parameter is set to zero, the hushd `mempooltxinputlimit` option will be used instead, where the default value for `mempooltxinputlimit` is zero, which means no limit.
 
 Any limit is constrained by a hard limit due to the consensus rule defining a maximum transaction size of 100,000 bytes.
 
