@@ -13,9 +13,11 @@
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
 echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-echo "addnode=node.myhush.network" >> ~/.hush/hush.conf
-echo "addnode=mmc01.madbuda.me" >> ~/.hush/hush.conf
-echo "addnode=zdash.suprnova.cc" >> ~/.hush/hush.conf
+echo "addnode=explorer.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed2.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.bleuzero.com" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.hush.quebec" >> ~/.hush/hush.conf
 ```
 
 ## Download proving key
@@ -51,19 +53,18 @@ The following build process generally applies to Ubuntu (and similar) Linux
 distributions. For best results it is recommended to use Ubuntu Linux 16.04
 or later.
 
-Build HUSH along with most dependencies from source by running
+Build HUSH along with most dependencies from source by running:
+
+## Linux
 Get dependencies:
 ```{r, engine='bash'}
-
 sudo apt-get install \
       build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python \
       zlib1g-dev wget bsdmainutils automake
 ```
 
-Make sure to create a HUSH configuration file as described above.
-
-## Downloading Git source repo, building and running Hush
+Downloading Git source repo, building and running Hush:
 
 ```{r, engine='bash'}
 # pull
@@ -76,6 +77,58 @@ cd hush
 # Run a HUSH node
 ./src/hushd
 ```
+
+## Windows (cross-compiled on Linux)
+Get dependencies:
+```{r, engine='bash'}
+sudo apt-get install \
+      build-essential pkg-config libc6-dev m4 g++-multilib \
+      autoconf libtool ncurses-dev unzip git python \
+      zlib1g-dev wget bsdmainutils automake mingw-w64
+```
+
+Downloading Git source repo, building and running Hush:
+
+```{r, engine='bash'}
+# pull
+git clone https://github.com/MyHush/hush.git
+cd hush
+# fetch key
+./zcutil/fetch-params.sh
+# Build
+./zcutil/build-win.sh -j$(nproc)
+# Run a HUSH node
+./src/hushd
+```
+
+## Mac
+Get dependencies:
+
+```{r, engine='bash'}
+# Install xcode
+xcode-select --install
+
+# Install brew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+brew install cmake autoconf libtool automake coreutils pkgconfig gmp wget
+brew install gcc5 --without-multilib
+```
+Downloading Git source repo, building and running Hush:
+
+```{r, engine='bash'}
+# pull
+git clone https://github.com/MyHush/hush.git
+cd hush
+# fetch key
+./zcutil/fetch-params.sh
+# Build
+./zcutil/build-mac.sh
+# Run a HUSH node
+./src/hushd
+```
+
+Make sure to create a HUSH configuration file as described above.
 
 ## Supported Platforms
 
