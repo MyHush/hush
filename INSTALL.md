@@ -120,7 +120,7 @@ cd hush
 # fetch key
 ./zcutil/fetch-params.sh
 # Build
-./zcutil/build-mac.sh --disable-rust
+./zcutil/build-mac.sh
 # Run a HUSH node
 ./src/hushd
 ```
