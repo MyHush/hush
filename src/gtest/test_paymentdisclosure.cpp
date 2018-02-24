@@ -208,3 +208,4 @@ TEST(paymentdisclosure, mainnet) {
 
     ECC_Stop();
 }
+

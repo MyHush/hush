@@ -231,3 +231,4 @@ class PaymentDisclosureTest (BitcoinTestFramework):
 
 if __name__ == '__main__':
     PaymentDisclosureTest().main()
+

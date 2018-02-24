@@ -12,6 +12,7 @@ HUSHTX=${HUSHTX:-$SRCDIR/hush-tx}
 
 # The autodetected version git tag can screw up manpage output a little bit
 ZECVERSTR=$($HUSHCLI --version | head -n1 | awk '{ print $NF }')
+
 ZECVER=$(echo $ZECVERSTR | awk -F- '{ OFS="-"; NF--; print $0; }')
 ZECCOMMIT=$(echo $ZECVERSTR | awk -F- '{ print $NF }')
 

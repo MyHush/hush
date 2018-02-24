@@ -1,4 +1,5 @@
-[zdash] dependencies
+[hush] dependencies
+
 
 ### Usage
 

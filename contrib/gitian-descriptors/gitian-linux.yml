@@ -27,6 +27,7 @@ packages:
 remotes:
 - "url": "https://github.com/MyHush/hush.git"
   "dir": "hush"
+
 files: []
 script: |
   WRAP_DIR=$HOME/wrapped
@@ -97,12 +98,14 @@ script: |
   CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
   make dist
   SOURCEDIST=`echo hush-*.tar.gz`
+
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
   # Correct tar file order
   mkdir -p temp
   pushd temp
   tar xf ../$SOURCEDIST
   find hush* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+
   popd
 
   ORIGPATH="$PATH"

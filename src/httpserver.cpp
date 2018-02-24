@@ -187,6 +187,7 @@ static WorkQueue<HTTPClosure>* workQueue = 0;
 std::vector<HTTPPathHandler> pathHandlers;
 //! Bound listening sockets
 std::vector<evhttp_bound_socket *> boundSockets;
+
 /** Check if a network address is allowed to access the HTTP server */
 static bool ClientAllowed(const CNetAddr& netaddr)
 {
@@ -295,7 +296,6 @@ static void http_request_cb(struct evhttp_request* req, void* arg)
     }
 }
 
-
 /** Callback to reject HTTP requests after shutdown. */
 static void http_reject_request_cb(struct evhttp_request* req, void*)
 {
@@ -307,6 +307,7 @@ static void http_reject_request_cb(struct evhttp_request* req, void*)
 static void ThreadHTTP(struct event_base* base, struct evhttp* http)
 {
     RenameThread("hush-http");
+
     LogPrint("http", "Entering http event loop\n");
     event_base_dispatch(base);
     // Event loop will be interrupted by InterruptHTTPServer()
