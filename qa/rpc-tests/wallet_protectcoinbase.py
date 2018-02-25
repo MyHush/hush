@@ -339,3 +339,4 @@ class WalletProtectCoinbaseTest (BitcoinTestFramework):
 
 if __name__ == '__main__':
     WalletProtectCoinbaseTest().main()
+

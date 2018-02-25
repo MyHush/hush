@@ -1,5 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
+// Copyright (c) 2016-2018 Hush developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -95,14 +96,11 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x0003a67bc26fe564b75daf11186d360652eb435a35ba3d9d3e7e5d5f8e62dc17"));
         assert(genesis.hashMerkleRoot == uint256S("0x830539f9ec196f36a2759638b674a51b668eba7bbf6af10c56fed4af666be177"));
 
-
-  
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("node1", "192.99.3.29")); // node1
-        vSeeds.push_back(CDNSSeedData("node2", "zdash.suprnova.cc")); // node2
-        vSeeds.push_back(CDNSSeedData("node3", "76.188.211.191")); // node3
-        //vSeeds.push_back(CDNSSeedData("znodes.org", "dnsseed.znodes.org")); //
+        vSeeds.push_back(CDNSSeedData("node1", "dnsseed.myhush.org"));    // Duke
+        vSeeds.push_back(CDNSSeedData("node2", "dnsseed2.myhush.org"));   // Duke
+        vSeeds.push_back(CDNSSeedData("node3", "dnsseed.bleuzero.com"));  // FiremartZ
 
         // guarantees the first 2 characters, when base58 encoded, are "t1"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1C,0xB8};
@@ -232,9 +230,8 @@ public:
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        vSeeds.push_back(CDNSSeedData("tush1", "tush.cryptominingpools.org")); // Zcash
-        vSeeds.push_back(CDNSSeedData("node1", "testnet.myhush.network")); // madbuda
-        vSeeds.push_back(CDNSSeedData("node2", "testnet.madmining.club")); // madmining
+        vSeeds.push_back(CDNSSeedData("tush1", "tush.cryptominingpools.org")); // Down?
+        vSeeds.push_back(CDNSSeedData("node1", "stilgar.myhush.org")); // Duke
 
         // guarantees the first 2 characters, when base58 encoded, are "tm"
         base58Prefixes[PUBKEY_ADDRESS]     = {0x1D,0x25};

@@ -88,6 +88,7 @@ qrc_*.cpp
 # Mac specific
 .DS_Store
 build
+*.dSYM
 
 #lcov
 *.gcno
@@ -97,7 +98,7 @@ test_bitcoin.coverage/
 zcash-gtest.coverage/
 total.coverage/
 coverage_percent.txt
-#
+
 #build tests
 linux-coverage-build
 linux-build
@@ -112,6 +113,8 @@ qa/pull-tester/test.*/*
 /doc/doxygen/
 
 libzcashconsensus.pc
+
+wallet-utility
 
 contrib/debian/files
 contrib/debian/substvars
