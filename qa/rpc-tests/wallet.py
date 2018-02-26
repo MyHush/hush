@@ -33,18 +33,20 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[0].generate(4)
 
         walletinfo = self.nodes[0].getwalletinfo()
-        assert_equal(walletinfo['immature_balance'], 40)
+        assert_equal(walletinfo['immature_balance'], 160000)
         assert_equal(walletinfo['balance'], 0)
 
         self.sync_all()
         self.nodes[1].generate(101)
         self.sync_all()
 
-        assert_equal(self.nodes[0].getbalance(), 40)
-        assert_equal(self.nodes[1].getbalance(), 10)
+	# These are different from upstream because Hush does not have a
+	# Founders Reward
+        assert_equal(self.nodes[0].getbalance(), 160000)
+        assert_equal(self.nodes[1].getbalance(), 12.5)
         assert_equal(self.nodes[2].getbalance(), 0)
-        assert_equal(self.nodes[0].getbalance("*"), 40)
-        assert_equal(self.nodes[1].getbalance("*"), 10)
+        assert_equal(self.nodes[0].getbalance("*"), 160000)
+        assert_equal(self.nodes[1].getbalance("*"), 12.5)
         assert_equal(self.nodes[2].getbalance("*"), 0)
 
         # Send 21 HUSH from 0 to 2 using sendtoaddress call.
@@ -64,22 +66,22 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].generate(100)
         self.sync_all()
 
-        # node0 should end up with 50 btc in block rewards plus fees, but
+        # node0 should end up with 160000 HUSH in block rewards plus fees, but
         # minus the 21 plus fees sent to node2
-        assert_equal(self.nodes[0].getbalance(), 50-21)
+        assert_equal(self.nodes[0].getbalance(), 159991.50000000 )
         assert_equal(self.nodes[2].getbalance(), 21)
-        assert_equal(self.nodes[0].getbalance("*"), 50-21)
+        assert_equal(self.nodes[0].getbalance("*"), 159991.50000000 )
         assert_equal(self.nodes[2].getbalance("*"), 21)
 
-        # Node0 should have three unspent outputs.
+        # Node0 should have five unspent outputs.
         # Create a couple of transactions to send them to node2, submit them through
         # node1, and make sure both node0 and node2 pick them up properly:
         node0utxos = self.nodes[0].listunspent(1)
-        assert_equal(len(node0utxos), 3)
+        assert_equal(len(node0utxos), 5)
 
         # Check 'generated' field of listunspent
-        # Node 0: has one coinbase utxo and two regular utxos
-        assert_equal(sum(int(uxto["generated"] is True) for uxto in node0utxos), 1)
+        # Node 0: has three coinbase utxo and two regular utxos
+        assert_equal(sum(int(uxto["generated"] is True) for uxto in node0utxos), 3)
         # Node 1: has 101 coinbase utxos and no regular utxos
         node1utxos = self.nodes[1].listunspent(1)
         assert_equal(len(node1utxos), 101)
@@ -109,7 +111,8 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].generate(1)
         self.sync_all()
 
-        assert_equal(self.nodes[0].getbalance(), 0)
+	# TODO: this is the first failing test
+        assert_equal(self.nodes[0].getbalance(), 40002.500002)
         assert_equal(self.nodes[2].getbalance(), 50)
         assert_equal(self.nodes[0].getbalance("*"), 0)
         assert_equal(self.nodes[2].getbalance("*"), 50)
