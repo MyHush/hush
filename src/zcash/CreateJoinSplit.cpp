@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 
     auto p = ZCJoinSplit::Prepared((ZC_GetParamsDir() / "sprout-verifying.key").string(),
                                    (ZC_GetParamsDir() / "sprout-proving.key").string());
-    
+
     // construct a proof.
 
     for (int i = 0; i < 5; i++) {

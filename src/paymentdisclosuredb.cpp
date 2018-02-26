@@ -91,3 +91,4 @@ bool PaymentDisclosureDB::Get(const PaymentDisclosureKey& key, PaymentDisclosure
     }
     return true;
 }
+

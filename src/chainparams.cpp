@@ -312,13 +312,13 @@ public:
         BOOST_STATIC_ASSERT(equihash_parameters_acceptable(N, K));
         nEquihashN = N;
         nEquihashK = K;
-        genesis.nTime = 1296688602;
+        genesis.nTime = 1519568466;
         genesis.nBits = 0x200f0f0f;
-        genesis.nNonce = uint256S("0x0000000000000000000000000000000000000000000000000000000000000009");
-        genesis.nSolution = ParseHex("01936b7db1eb4ac39f151b8704642d0a8bda13ec547d54cd5e43ba142fc6d8877cab07b3");
+        genesis.nNonce = uint256S("0x0000000000000000000000000000000000000000000000000000000000000016");
+        genesis.nSolution = ParseHex("0d1d1ef025037da781252f695ff279c12d492c5ed53e565c8ecdc044ede53cea96cff5fc");
         consensus.hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 18444;
-        assert(consensus.hashGenesisBlock == uint256S("0x" + consensus.hashGenesisBlock.ToString()));
+        assert(consensus.hashGenesisBlock == uint256S("0x0379ff1530af893f2f2e61146db6e900dd828dc8254215b9de23df2dba06664f"));
         nPruneAfterHeight = 1000;
 
         vFixedSeeds.clear(); //! Regtest mode doesn't have any fixed seeds.

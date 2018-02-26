@@ -40,3 +40,4 @@ public:
 
 
 #endif // ZCASH_PAYMENTDISCLOSUREDB_H
+

@@ -99,4 +99,3 @@ setting the BITCOIND and FLAGS environment variables in the file
 
 Auto respawning is currently only configured for Upstart and systemd.
 Reasonable defaults have been chosen but YMMV.
-

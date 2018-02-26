@@ -61,3 +61,4 @@ PaymentDisclosure::PaymentDisclosure(const uint256 &joinSplitPubKey, const Payme
     std::string sigString = HexStr(payloadSig.data(), payloadSig.data() + payloadSig.size());
     LogPrint("paymentdisclosure", "Payment Disclosure: signature = %s\n", sigString);
 }
+

@@ -297,3 +297,4 @@ UniValue z_validatepaymentdisclosure(const UniValue& params, bool fHelp)
 
     return o;
 }
+

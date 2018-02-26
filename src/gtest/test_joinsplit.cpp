@@ -547,3 +547,4 @@ TEST(joinsplit, note_plaintexts)
 
     ASSERT_TRUE(decrypted.memo == note_pt.memo);
 }
+

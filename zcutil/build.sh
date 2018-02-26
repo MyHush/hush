@@ -48,6 +48,7 @@ $0 [ --enable-lcov || --disable-tests ] [ --disable-mining ] [ --disable-rust ] 
   assets. It must be passed after test/mining arguments, if present.
 
   If --enable-proton is passed, Hush is configured to build the Apache Qpid Proton
+
   library required for AMQP support. This library is not built by default.
   It must be passed after the test/mining/Rust arguments, if present.
 
@@ -84,7 +85,7 @@ then
 fi
 
 # If --disable-rust is the next argument, disable Rust code:
-RUST_ARG='--disable-rust'
+RUST_ARG=''
 if [ "x${1:-}" = 'x--disable-rust' ]
 then
     RUST_ARG='--enable-rust=no'
@@ -98,7 +99,6 @@ then
     PROTON_ARG=''
     shift
 fi
-
 
 # Arch workaround for gcc 7
 # might break the entry above to find gcc- on arm
