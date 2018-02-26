@@ -47,7 +47,7 @@ class WalletTest (BitcoinTestFramework):
         assert_equal(self.nodes[1].getbalance("*"), 10)
         assert_equal(self.nodes[2].getbalance("*"), 0)
 
-        # Send 21 BTC from 0 to 2 using sendtoaddress call.
+        # Send 21 HUSH from 0 to 2 using sendtoaddress call.
         # Second transaction will be child of first, and will require a fee
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 11)
         self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 10)
@@ -114,7 +114,7 @@ class WalletTest (BitcoinTestFramework):
         assert_equal(self.nodes[0].getbalance("*"), 0)
         assert_equal(self.nodes[2].getbalance("*"), 50)
 
-        # Send 10 BTC normal
+        # Send 10 HUSH normal
         address = self.nodes[0].getnewaddress("")
         self.nodes[2].settxfee(Decimal('0.001'))
         self.nodes[2].sendtoaddress(address, 10, "", "", False)
@@ -126,7 +126,7 @@ class WalletTest (BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance("*"), Decimal('39.99900000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('10.00000000'))
 
-        # Send 10 BTC with subtract fee from amount
+        # Send 10 HUSH with subtract fee from amount
         self.nodes[2].sendtoaddress(address, 10, "", "", True)
         self.sync_all()
         self.nodes[2].generate(1)
@@ -136,7 +136,7 @@ class WalletTest (BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance("*"), Decimal('29.99900000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('19.99900000'))
 
-        # Sendmany 10 BTC
+        # Sendmany 10 HUSH
         self.nodes[2].sendmany("", {address: 10}, 0, "", [])
         self.sync_all()
         self.nodes[2].generate(1)
@@ -146,7 +146,7 @@ class WalletTest (BitcoinTestFramework):
         assert_equal(self.nodes[2].getbalance("*"), Decimal('19.99800000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('29.99900000'))
 
-        # Sendmany 10 BTC with subtract fee from amount
+        # Sendmany 10 HUSH with subtract fee from amount
         self.nodes[2].sendmany("", {address: 10}, 0, "", [address])
         self.sync_all()
         self.nodes[2].generate(1)
