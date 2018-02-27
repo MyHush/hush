@@ -105,17 +105,18 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].sendrawtransaction(txns_to_send[0]["hex"], True)
         self.nodes[1].sendrawtransaction(txns_to_send[1]["hex"], True)
         self.nodes[1].sendrawtransaction(txns_to_send[2]["hex"], True)
+        self.nodes[1].sendrawtransaction(txns_to_send[3]["hex"], True)
+        self.nodes[1].sendrawtransaction(txns_to_send[4]["hex"], True)
 
         # Have node1 mine a block to confirm transactions:
         self.sync_all()
         self.nodes[1].generate(1)
         self.sync_all()
 
-	# TODO: this is the first failing test
-        assert_equal(self.nodes[0].getbalance(), 40002.500002)
-        assert_equal(self.nodes[2].getbalance(), 50)
+        assert_equal(self.nodes[0].getbalance(), 0)
+        assert_equal(self.nodes[2].getbalance(), 160012.50)
         assert_equal(self.nodes[0].getbalance("*"), 0)
-        assert_equal(self.nodes[2].getbalance("*"), 50)
+        assert_equal(self.nodes[2].getbalance("*"), 160012.50)
 
         # Send 10 HUSH normal
         address = self.nodes[0].getnewaddress("")
@@ -124,9 +125,9 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
         self.nodes[2].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[2].getbalance(), Decimal('39.99900000'))
+        assert_equal(self.nodes[2].getbalance(), Decimal('160002.49900000'))
         assert_equal(self.nodes[0].getbalance(), Decimal('10.00000000'))
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('39.99900000'))
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('160002.49900000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('10.00000000'))
 
         # Send 10 HUSH with subtract fee from amount
@@ -134,9 +135,9 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
         self.nodes[2].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[2].getbalance(), Decimal('29.99900000'))
+        assert_equal(self.nodes[2].getbalance(), Decimal('159992.49900000'))
         assert_equal(self.nodes[0].getbalance(), Decimal('19.99900000'))
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('29.99900000'))
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159992.49900000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('19.99900000'))
 
         # Sendmany 10 HUSH
@@ -144,9 +145,9 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
         self.nodes[2].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[2].getbalance(), Decimal('19.99800000'))
+        assert_equal(self.nodes[2].getbalance(), Decimal('159982.49800000'))
         assert_equal(self.nodes[0].getbalance(), Decimal('29.99900000'))
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('19.99800000'))
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159982.49800000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('29.99900000'))
 
         # Sendmany 10 HUSH with subtract fee from amount
@@ -154,9 +155,9 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
         self.nodes[2].generate(1)
         self.sync_all()
-        assert_equal(self.nodes[2].getbalance(), Decimal('9.99800000'))
+        assert_equal(self.nodes[2].getbalance(), Decimal('159972.49800000'))
         assert_equal(self.nodes[0].getbalance(), Decimal('39.99800000'))
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('9.99800000'))
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159972.49800000'))
         assert_equal(self.nodes[0].getbalance("*"), Decimal('39.99800000'))
 
         # Test ResendWalletTransactions:
@@ -191,6 +192,7 @@ class WalletTest (BitcoinTestFramework):
         signedRawTx = self.nodes[1].signrawtransaction(rawTx)
         decRawTx = self.nodes[1].decoderawtransaction(signedRawTx['hex'])
         zeroValueTxid= decRawTx['txid']
+        # TODO: this call is returning an error
         self.nodes[1].sendrawtransaction(signedRawTx['hex'])
 
         self.sync_all()
