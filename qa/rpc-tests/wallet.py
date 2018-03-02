@@ -185,14 +185,13 @@ class WalletTest (BitcoinTestFramework):
         #4. check if recipient (node0) can list the zero value tx
         usp = self.nodes[1].listunspent()
         inputs = [{"txid":usp[0]['txid'], "vout":usp[0]['vout']}]
-        outputs = {self.nodes[1].getnewaddress(): 9.998, self.nodes[0].getnewaddress(): 11.11}
+        outputs = {self.nodes[1].getnewaddress(): 12.498, self.nodes[0].getnewaddress(): 11.11}
 
         rawTx = self.nodes[1].createrawtransaction(inputs, outputs).replace("c0833842", "00000000") #replace 11.11 with 0.0 (int32)
         decRawTx = self.nodes[1].decoderawtransaction(rawTx)
         signedRawTx = self.nodes[1].signrawtransaction(rawTx)
         decRawTx = self.nodes[1].decoderawtransaction(signedRawTx['hex'])
         zeroValueTxid= decRawTx['txid']
-        # TODO: this call is returning an error
         self.nodes[1].sendrawtransaction(signedRawTx['hex'])
 
         self.sync_all()
@@ -221,8 +220,8 @@ class WalletTest (BitcoinTestFramework):
         self.sync_all()
         self.nodes[1].generate(1) #mine a block, tx should not be in there
         self.sync_all()
-        assert_equal(self.nodes[2].getbalance(), Decimal('9.99800000')); #should not be changed because tx was not broadcasted
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('9.99800000')); #should not be changed because tx was not broadcasted
+        assert_equal(self.nodes[2].getbalance(), Decimal('159972.49800000')); #should not be changed because tx was not broadcasted
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159972.49800000')); #should not be changed because tx was not broadcasted
 
         #now broadcast from another node, mine a block, sync, and check the balance
         self.nodes[1].sendrawtransaction(txObjNotBroadcasted['hex'])
@@ -230,8 +229,8 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].generate(1)
         self.sync_all()
         txObjNotBroadcasted = self.nodes[0].gettransaction(txIdNotBroadcasted)
-        assert_equal(self.nodes[2].getbalance(), Decimal('11.99800000')); #should not be
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('11.99800000')); #should not be
+        assert_equal(self.nodes[2].getbalance(), Decimal('159974.49800000')); #should not be
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159974.49800000')); #should not be
 
         #create another tx
         txIdNotBroadcasted  = self.nodes[0].sendtoaddress(self.nodes[2].getnewaddress(), 2);
@@ -249,8 +248,8 @@ class WalletTest (BitcoinTestFramework):
         sync_blocks(self.nodes)
 
         #tx should be added to balance because after restarting the nodes tx should be broadcastet
-        assert_equal(self.nodes[2].getbalance(), Decimal('13.99800000')); #should not be
-        assert_equal(self.nodes[2].getbalance("*"), Decimal('13.99800000')); #should not be
+        assert_equal(self.nodes[2].getbalance(), Decimal('159976.49800000')); #should not be
+        assert_equal(self.nodes[2].getbalance("*"), Decimal('159976.49800000')); #should not be
 
         # send from node 0 to node 2 taddr
         mytaddr = self.nodes[2].getnewaddress();
@@ -276,6 +275,16 @@ class WalletTest (BitcoinTestFramework):
         for i in xrange(0,num_t_recipients):
             newtaddr = self.nodes[2].getnewaddress()
             recipients.append({"address":newtaddr, "amount":amount_per_recipient})
+
+        # Issue #2759 Workaround START
+        # HTTP connection to node 0 may fall into a state, during the few minutes it takes to process
+        # loop above to create new addresses, that when z_sendmany is called with a large amount of
+        # rpc data in recipients, the connection fails with a 'broken pipe' error.  Making a RPC call
+        # to node 0 before calling z_sendmany appears to fix this issue, perhaps putting the HTTP
+        # connection into a good state to handle a large amount of data in recipients.
+        self.nodes[0].getinfo()
+        # Issue #2759 Workaround END
+
         try:
             self.nodes[0].z_sendmany(myzaddr, recipients)
         except JSONRPCException,e:
@@ -293,6 +302,11 @@ class WalletTest (BitcoinTestFramework):
         for i in xrange(0,num_z_recipients):
             newzaddr = self.nodes[2].z_getnewaddress()
             recipients.append({"address":newzaddr, "amount":amount_per_recipient})
+
+        # Issue #2759 Workaround START
+        self.nodes[0].getinfo()
+        # Issue #2759 Workaround END
+
         try:
             self.nodes[0].z_sendmany(myzaddr, recipients)
         except JSONRPCException,e:
@@ -306,6 +320,11 @@ class WalletTest (BitcoinTestFramework):
         for i in xrange(0,num_z_recipients):
             newzaddr = self.nodes[2].z_getnewaddress()
             recipients.append({"address":newzaddr, "amount":amount_per_recipient})
+
+        # Issue #2759 Workaround START
+        self.nodes[0].getinfo()
+        # Issue #2759 Workaround END
+
         try:
             self.nodes[0].z_sendmany(myzaddr, recipients)
         except JSONRPCException,e:
@@ -342,7 +361,7 @@ class WalletTest (BitcoinTestFramework):
         # check balances
         zsendmanynotevalue = Decimal('7.0')
         zsendmanyfee = Decimal('0.0001')
-        node2utxobalance = Decimal('23.998') - zsendmanynotevalue - zsendmanyfee
+        node2utxobalance = Decimal('159986.498') - zsendmanynotevalue - zsendmanyfee
 
         assert_equal(self.nodes[2].getbalance(), node2utxobalance)
         assert_equal(self.nodes[2].getbalance("*"), node2utxobalance)
