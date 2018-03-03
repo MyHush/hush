@@ -13,12 +13,6 @@ define $(package)_build_cmds
   $(MAKE) -C make GTEST_DIR='$(host_prefix)' CXXFLAGS='-fPIC' gmock-all.o
 endef
 
-BUILD_OS := $(shell uname)
-ifeq ($(BUILD_OS),Darwin)
-    $(package)_install=ginstall
-else
-    $(package)_install=install
-endif
 
 define $(package)_stage_cmds
   install -D ./make/gmock-all.o $($(package)_staging_dir)$(host_prefix)/lib/libgmock.a && \
