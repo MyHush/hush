@@ -27,13 +27,13 @@ INSTALL_LIBS = $(LIB_FILE)
 # Sentinel file to check existence of this directory (since directories don't work as a Make dependency):
 DEPINST_EXISTS = $(DEPINST)/.exists
 
-
-COMPILE_GTEST :=
 ifneq ($(NO_GTEST),1)
-	GTESTDIR=/usr/src/gtest
-# Compile GTest from sourcecode if we can (e.g., Ubuntu). Otherwise use precompiled one (e.g., Fedora).
-# See https://code.google.com/p/googletest/wiki/FAQ#Why_is_it_not_recommended_to_install_a_pre-compiled_copy_of_Goog .
-	COMPILE_GTEST :=$(shell test -d $(GTESTDIR) && echo -n 1)
+	# Compile GTest from sourcecode if we can (e.g., Ubuntu). Otherwise use precompiled one (e.g., Fedora).
+	# See https://github.com/google/googletest/blob/master/googletest/docs/FAQ.md#why-is-it-not-recommended-to-install-a-pre-compiled-copy-of-google-test-for-example-into-usrlocal
+	ifneq ($(NO_COMPILE_LIBGTEST),1)
+		GTESTDIR=/usr/src/gtest
+		COMPILE_LIBGTEST = $(shell test -d $(GTESTDIR) && echo -n 1)
+	endif
 	GTEST_LDLIBS += -lgtest -lpthread
 endif
 
@@ -198,12 +198,9 @@ $(LIBGTEST_A): $(GTESTDIR)/src/gtest-all.cc $(DEPINST_EXISTS)
 
 # libsnark.a will contains all of our relevant object files, and we also mash in the .a files of relevant dependencies built by ./prepare-depends.sh
 $(LIBSNARK_A): $(LIB_OBJS) $(AR_LIBS)
-	( \
-	  echo " $(LIBSNARK_A)"; \
-	  echo " $(LIB_OBJS)"; \
-	  if [ -n "$(AR_LIBS)" ]; then for AR_LIB in $(AR_LIBS); do echo addlib $$AR_LIB; done; fi; \
-	) | xargs  $(AR) -r
-	 $(AR) s $(LIBSNARK_A)
+	$(AR) q $(LIBSNARK_A) $(LIB_OBJS)
+	if [ -n "$(AR_LIBS)" ]; then mkdir -p tmp-ar; cd tmp-ar; for AR_LIB in $(AR_LIBS); do $(AR) x $$AR_LIB; done; $(AR) qc $(LIBSNARK_A) tmp-ar/*; cd ..; rm -r tmp-ar; fi;
+	$(AR) s $(LIBSNARK_A)
 
 libsnark.so: $(LIBSNARK_A) $(DEPINST_EXISTS)
 	$(CXX) -o $@   --shared -Wl,--whole-archive $(LIBSNARK_A) $(CXXFLAGS) $(LDFLAGS) -Wl,--no-whole-archive $(LDLIBS)
@@ -219,13 +216,13 @@ src/gadgetlib2/tests/gadgetlib2_test: \
 $(EXECUTABLES): %: %.o $(LIBSNARK_A) $(DEPINST_EXISTS)
 	$(CXX) -o $@   $@.o $(LIBSNARK_A) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)
 
-$(EXECUTABLES_WITH_GTEST): %: %.o $(LIBSNARK_A) $(if $(COMPILE_GTEST),$(LIBGTEST_A)) $(DEPINST_EXISTS)
+$(EXECUTABLES_WITH_GTEST): %: %.o $(LIBSNARK_A) $(if $(COMPILE_LIBGTEST),$(LIBGTEST_A)) $(DEPINST_EXISTS)
 	$(CXX) -o $@   $@.o $(LIBSNARK_A) $(CXXFLAGS) $(LDFLAGS) $(GTEST_LDLIBS) $(LDLIBS)
 
 $(EXECUTABLES_WITH_SUPERCOP): %: %.o $(LIBSNARK_A) $(DEPINST_EXISTS)
 	$(CXX) -o $@   $@.o $(LIBSNARK_A) $(CXXFLAGS) $(LDFLAGS) $(SUPERCOP_LDLIBS) $(LDLIBS)
 
-$(GTEST_TESTS): %: $(GTEST_OBJS) $(LIBSNARK_A) $(if $(COMPILE_GTEST),$(LIBGTEST_A)) $(DEPINST_EXISTS)
+$(GTEST_TESTS): %: $(GTEST_OBJS) $(LIBSNARK_A) $(if $(COMPILE_LIBGTEST),$(LIBGTEST_A)) $(DEPINST_EXISTS)
 	$(CXX) -o $@   $(GTEST_OBJS) $(LIBSNARK_A) $(CXXFLAGS) $(LDFLAGS) $(GTEST_LDLIBS) $(LDLIBS)
 
 
