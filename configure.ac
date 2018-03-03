@@ -461,7 +461,11 @@ if test x$use_hardening != xno; then
 
     # All windows code is PIC, forcing it on just adds useless compile warnings
     AX_CHECK_COMPILE_FLAG([-fPIE],[PIE_FLAGS="-fPIE"],[AC_MSG_ERROR(Cannot enable -fPIE)])
-    AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"],[AC_MSG_ERROR(Cannot enable -pie)])
+    if test x$BUILD_OS = xdarwin; then
+      AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"],[AC_MSG_WARN(Cannot enable -pie)])
+    else
+      AX_CHECK_LINK_FLAG([[-pie]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -pie"],[AC_MSG_ERROR(Cannot enable -pie)])
+    fi
   else
     # These are only available on Windows.
     AX_CHECK_LINK_FLAG([[-Wl,--dynamicbase]], [HARDENED_LDFLAGS="$HARDENED_LDFLAGS -Wl,--dynamicbase"],[AC_MSG_ERROR(Cannot enable --dynamicbase)])
@@ -720,6 +724,10 @@ fi
 AX_CHECK_COMPILE_FLAG([-fwrapv],[CXXFLAGS="$CXXFLAGS -fwrapv"])
 AX_CHECK_COMPILE_FLAG([-fno-strict-aliasing],[CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"])
 AX_CHECK_COMPILE_FLAG([-Wno-builtin-declaration-mismatch],[CXXFLAGS="$CXXFLAGS -Wno-builtin-declaration-mismatch"],,[[$CXXFLAG_WERROR]])
+
+if test x$BUILD_OS = xdarwin; then
+  AX_CHECK_COMPILE_FLAG([-Wno-undefined-var-template],[CXXFLAGS="$CXXFLAGS -Wno-undefined-var-template"],,[[$CXXFLAG_WERROR]])
+fi
 
 LIBZCASH_LIBS="-lgmp -lgmpxx -lboost_system-mt -lcrypto -lsodium $RUST_LIBS"
 
