@@ -340,38 +340,6 @@ bool CBitcoinSecret::SetString(const std::string& strSecret)
     return SetString(strSecret.c_str());
 }
 
-bool CZCPaymentAddress::Set(const libzcash::PaymentAddress& addr)
-{
-    CDataStream ss(SER_NETWORK, PROTOCOL_VERSION);
-    ss << addr;
-    std::vector<unsigned char> addrSerialized(ss.begin(), ss.end());
-    assert(addrSerialized.size() == libzcash::SerializedPaymentAddressSize);
-    SetData(Params().Base58Prefix(CChainParams::ZCPAYMENT_ADDRRESS), &addrSerialized[0], libzcash::SerializedPaymentAddressSize);
-    return true;
-}
-
-libzcash::PaymentAddress CZCPaymentAddress::Get() const
-{
-    if (vchData.size() != libzcash::SerializedPaymentAddressSize) {
-        throw std::runtime_error(
-            "payment address is invalid"
-        );
-    }
-
-    if (vchVersion != Params().Base58Prefix(CChainParams::ZCPAYMENT_ADDRRESS)) {
-        throw std::runtime_error(
-            "payment address is for wrong network type"
-        );
-    }
-
-    std::vector<unsigned char> serialized(vchData.begin(), vchData.end());
-
-    CDataStream ss(serialized, SER_NETWORK, PROTOCOL_VERSION);
-    libzcash::PaymentAddress ret;
-    ss >> ret;
-    return ret;
-}
-
 template<class DATA_TYPE, CChainParams::Base58Type PREFIX, size_t SER_SIZE>
 bool CZCEncoding<DATA_TYPE, PREFIX, SER_SIZE>::Set(const DATA_TYPE& addr)
 {
