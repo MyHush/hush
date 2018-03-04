@@ -137,4 +137,3 @@ def addr_to_hex(addr):
     else:
         raise ValueError('Could not parse address %s' % addr)
     return binascii.hexlify(bytearray(addr))
-
