@@ -181,4 +181,3 @@ TEST(circuit, merkle_tree_gadget_weirdness)
     // Test the last again, except this time write the root first.
     ASSERT_TRUE(test_merkle_gadget<FieldT>(false, true, true));
 }
-

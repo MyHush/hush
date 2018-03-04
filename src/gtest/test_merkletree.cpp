@@ -299,4 +299,3 @@ TEST(merkletree, testZeroElements) {
         ASSERT_TRUE(newTree.root() == oldroot);
     }
 }
-

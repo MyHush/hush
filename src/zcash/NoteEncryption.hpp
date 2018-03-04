@@ -123,4 +123,3 @@ typedef libzcash::NoteDecryption<ZC_NOTEPLAINTEXT_SIZE> ZCNoteDecryption;
 typedef libzcash::PaymentDisclosureNoteDecryption<ZC_NOTEPLAINTEXT_SIZE> ZCPaymentDisclosureNoteDecryption;
 
 #endif /* ZC_NOTE_ENCRYPTION_H_ */
-
