@@ -76,4 +76,3 @@ def create_transaction(prevtx, n, sig, value):
     tx.vout.append(CTxOut(value, ""))
     tx.calc_sha256()
     return tx
-

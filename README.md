@@ -1,4 +1,4 @@
-# HUSH 1.0.13
+# HUSH 1.0.14
 
 ## What is HUSH?
 
