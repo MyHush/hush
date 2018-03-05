@@ -94,4 +94,3 @@ class BIP65Test(ComparisonTestFramework):
 
 if __name__ == '__main__':
     BIP65Test().main()
-

@@ -225,4 +225,3 @@ template class NoteDecryption<ZC_NOTEPLAINTEXT_SIZE>;
 template class PaymentDisclosureNoteDecryption<ZC_NOTEPLAINTEXT_SIZE>;
 
 }
-
