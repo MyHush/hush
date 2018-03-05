@@ -67,9 +67,9 @@ public:
 
     Fp_model() {};
     Fp_model(const bigint<n> &b);
-    Fp_model(const long x, const bool is_unsigned=false);
+    Fp_model(const long long x, const bool is_unsigned=false);
 
-    void set_ulong(const unsigned long x);
+    void set_ulong(const unsigned long long x);
 
     void mul_reduce(const bigint<n> &other);
 
@@ -82,7 +82,7 @@ public:
     /* Return the last limb of the standard representation of the
        field element. E.g. on 64-bit architectures Fp(123).as_ulong()
        and Fp(2^64+123).as_ulong() would both return 123. */
-    unsigned long as_ulong() const;
+    unsigned long long as_ulong() const;
 
     bool operator==(const Fp_model& other) const;
     bool operator!=(const Fp_model& other) const;
@@ -93,7 +93,7 @@ public:
     Fp_model& operator+=(const Fp_model& other);
     Fp_model& operator-=(const Fp_model& other);
     Fp_model& operator*=(const Fp_model& other);
-    Fp_model& operator^=(const unsigned long pow);
+    Fp_model& operator^=(const unsigned long long pow);
 
     template<mp_size_t m>
     Fp_model& operator^=(const bigint<m> &pow);
@@ -107,7 +107,7 @@ public:
     Fp_model inverse() const;
     Fp_model sqrt() const; // HAS TO BE A SQUARE (else does not terminate)
 
-    Fp_model operator^(const unsigned long pow) const;
+    Fp_model operator^(const unsigned long long pow) const;
     template<mp_size_t m>
     Fp_model operator^(const bigint<m> &pow) const;
 

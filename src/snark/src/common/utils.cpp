@@ -41,14 +41,14 @@ size_t bitreverse(size_t n, const size_t l)
     return r;
 }
 
-bit_vector int_list_to_bits(const std::initializer_list<unsigned long> &l, const size_t wordsize)
+bit_vector int_list_to_bits(const std::initializer_list<unsigned long long> &l, const size_t wordsize)
 {
     bit_vector res(wordsize*l.size());
     for (size_t i = 0; i < l.size(); ++i)
     {
         for (size_t j = 0; j < wordsize; ++j)
         {
-            res[i*wordsize + j] = (*(l.begin()+i) & (1ul<<(wordsize-1-j)));
+            res[i*wordsize + j] = (*(l.begin()+i) & (1ull<<(wordsize-1-j)));
         }
     }
     return res;
