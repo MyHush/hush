@@ -430,7 +430,9 @@ void ThreadShowMetricsScreen()
 
     if (isScreen) {
         // Clear screen
+#ifndef WIN32
         std::cout << "\e[2J";
+#endif
 
     // Thank you text
     std::cout << _("Thank you for running a HUSH node!") << std::endl;
@@ -465,7 +467,16 @@ void ThreadShowMetricsScreen()
 
         if (isScreen) {
             // Erase below current position
+#ifndef WIN32
             std::cout << "\e[J";
+#else
+            DWORD count;
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            COORD homeCoords = { 0, csbi.dwCursorPosition.Y };
+            FillConsoleOutputCharacter(GetStdHandle(STD_OUTPUT_HANDLE), (TCHAR) ' ', csbi.dwSize.X * (csbi.dwSize.Y-csbi.dwCursorPosition.Y), homeCoords, &count);
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), homeCoords);
+#endif
         }
 
         // Miner status
@@ -499,7 +510,14 @@ void ThreadShowMetricsScreen()
 
         if (isScreen) {
             // Return to the top of the updating section
+#ifndef WIN32
             std::cout << "\e[" << lines << "A";
+#else
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            COORD homeCoords = { 0, csbi.dwCursorPosition.Y - lines };
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), homeCoords);
+#endif
         }
     }
 }
