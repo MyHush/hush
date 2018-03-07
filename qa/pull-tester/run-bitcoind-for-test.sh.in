@@ -28,6 +28,7 @@ else
 fi
 
 (sleep "$HUSH_LOAD_TIMEOUT" && kill -0 $BITCOIND 2>/dev/null && kill -9 $BITCOIND $$)&
+
 kill $BITCOIND && wait $BITCOIND
 
 # timeout returns 124 on timeout, otherwise the return value of the child
