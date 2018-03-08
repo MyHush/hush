@@ -29,7 +29,7 @@ def rpc_port(n):
     return 12000 + n + os.getpid()%999
 
 def check_json_precision():
-    """Make sure json library being used does not lose precision converting BTC values"""
+    """Make sure json library being used does not lose precision converting HUSH values"""
     n = Decimal("20000000.00000003")
     satoshis = int(json.loads(json.dumps(float(n)))*1.0e8)
     if satoshis != 2000000000000003:
@@ -368,3 +368,33 @@ def assert_raises(exc, fun, *args, **kwds):
         raise AssertionError("Unexpected exception raised: "+type(e).__name__)
     else:
         raise AssertionError("No exception raised")
+
+# Returns txid if operation was a success or None
+def wait_and_assert_operationid_status(node, myopid, in_status='success', in_errormsg=None):
+    print('waiting for async operation {}'.format(myopid))
+    opids = []
+    opids.append(myopid)
+    timeout = 300
+    status = None
+    errormsg = None
+    txid = None
+    for x in xrange(1, timeout):
+        results = node.z_getoperationresult(opids)
+        if len(results)==0:
+            time.sleep(1)
+        else:
+            status = results[0]["status"]
+            if status == "failed":
+                errormsg = results[0]['error']['message']
+            elif status == "success":
+                txid = results[0]['result']['txid']
+            break
+    assert_equal(in_status, status)
+    if errormsg is not None:
+        assert(in_errormsg is not None)
+        assert_equal(in_errormsg in errormsg, True)
+    if os.getenv("PYTHON_DEBUG", ""):
+        print('...returned status: {}'.format(status))
+        if errormsg is not None:
+            print('...returned error: {}'.format(errormsg))
+    return txid

@@ -1,12 +1,10 @@
-HUSH 1.0.13
-=======
+# HUSH 1.0.14
 
-What is HUSH?
---------------
+## What is HUSH?
 
 ![Logo](doc/hush/hush.png "Logo")
 
-HUSH (formerly Zdash) is a private implementation of the "Zerocash" protocol forked from [ZCash](https://z.cash/).
+HUSH (formerly Zdash) is a code fork of [ZCash](https://z.cash/) which has it's own genesis block.
 Based on Bitcoin's code, it intends to offer a far higher standard of privacy
 through a sophisticated zero-knowledge proving scheme that preserves
 confidentiality of transaction metadata. 
@@ -16,11 +14,13 @@ of HUSH transactions; depending on the speed of your computer and network
 connection, the synchronization process could take a day or more once the
 blockchain has reached a significant size.
 
-
 **HUSH is unfinished and highly experimental.** Use at your own risk!
 
 
-Please feel free to join us on Discord at https://myhush.org/discord.html
+## Discord
+
+Please feel free to join us on Discord at https://myhush.org/discord.html .
+There are many channels, some you might enjoy are #general, #support and #mining.
 
 Forum
 -----
@@ -38,6 +38,7 @@ Choose to add any of the following bootstrap nodes, per your preferred network c
 **IPV4**
  * dnsseed.myhush.org
  * dnsseed2.myhush.org
+ * stilgar.myhush.org
  * explorer.myhush.org
  * dnsseed.bleuzero.com
  * dnsseed.hush.quebec
@@ -93,7 +94,7 @@ The section of using the command line is relevant to HUSH.
 
 ### Not content with command line use of HUSH?
 
-A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/tree/v1.0.12-win) 
+A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/releases/tag/v0.71.2-beta)
 
 License
 -------
