@@ -46,7 +46,7 @@ MY_SUBVERSION = "/python-mininode-tester:0.0.1/"
 MAX_INV_SZ = 50000
 
 
-COIN = 100000000 # 1 zec in zatoshis
+COIN = 100000000 # 1 HUSH in puposhis
 
 # Keep our own socket map for asyncore, so that we can track disconnects
 # ourselves (to workaround an issue with closing an asyncore socket when
@@ -1496,3 +1496,4 @@ class EarlyDisconnectError(Exception):
 
     def __str__(self):
         return repr(self.value)
+

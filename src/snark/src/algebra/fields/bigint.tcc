@@ -9,7 +9,6 @@
 
 #ifndef BIGINT_TCC_
 #define BIGINT_TCC_
-#include <iostream>
 #include <cassert>
 #include <climits>
 #include <cstring>
@@ -18,9 +17,9 @@
 namespace libsnark {
 
 template<mp_size_t n>
-bigint<n>::bigint(const uint64_t x) /// Initalize from a small integer
+bigint<n>::bigint(const unsigned long long x) /// Initalize from a small integer
 {
-    static_assert(UINT64_MAX <= GMP_NUMB_MAX, "uint64_t does not fit in a GMP limb");
+    static_assert(ULLONG_MAX <= GMP_NUMB_MAX, "unsigned long long does not fit in a GMP limb");
     this->data[0] = x;
 }
 
@@ -106,7 +105,7 @@ template<mp_size_t n>
 size_t bigint<n>::num_bits() const
 {
 /*
-    for (int64_t i = max_bits(); i >= 0; --i)
+    for (long long i = max_bits(); i >= 0; --i)
     {
         if (this->test_bit(i))
         {
@@ -116,7 +115,7 @@ size_t bigint<n>::num_bits() const
 
     return 0;
 */
-    for (int64_t i = n-1; i >= 0; --i)
+    for (long long i = n-1; i >= 0; --i)
     {
         mp_limb_t x = this->data[i];
         if (x == 0)
@@ -125,14 +124,14 @@ size_t bigint<n>::num_bits() const
         }
         else
         {
-            return (((i+1) * GMP_NUMB_BITS) - __builtin_clzl(x)) / 2;
+            return ((i+1) * GMP_NUMB_BITS) - __builtin_clzl(x);
         }
     }
     return 0;
 }
 
 template<mp_size_t n>
-uint64_t bigint<n>::as_ulong() const
+unsigned long long bigint<n>::as_ulong() const
 {
     return this->data[0];
 }
@@ -202,7 +201,7 @@ inline bigint<m> bigint<n>::shorten(const bigint<m>& q, const char *msg) const
         }
     }
     bigint<m> res;
-    mpn_copyi(res.data, data, n);
+    mpn_copyi(res.data, data, m);
     res.limit(q, msg);
     return res;
 }

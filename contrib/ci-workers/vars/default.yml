@@ -33,7 +33,7 @@ dist_deps: []
 grind_deps:
   - lcov
   - valgrind
-  
+
 # Python modules required for a Zcash Buildbot worker
 buildbot_modules:
   - pip # Needs to be updated first so Buildbot installs

@@ -2,6 +2,22 @@
 
 set -eu -o pipefail
 
+function cmd_pref() {
+    if type -p "$2" > /dev/null; then
+        eval "$1=$2"
+    else
+        eval "$1=$3"
+    fi
+}
+
+# If a g-prefixed version of the command exists, use it preferentially.
+function gprefix() {
+    cmd_pref "$1" "g$2" "$2"
+}
+
+gprefix READLINK readlink
+cd "$(dirname "$("$READLINK" -f "$0")")/.."
+
 # Allow user overrides to $MAKE. Typical usage for users who need it:
 #   MAKE=gmake ./zcutil/build.sh -j$(nproc)
 if [[ -z "${MAKE-}" ]]; then
@@ -11,10 +27,10 @@ fi
 # Allow overrides to $BUILD and $HOST for porters. Most users will not need it.
 #   BUILD=i686-pc-linux-gnu ./zcutil/build.sh
 if [[ -z "${BUILD-}" ]]; then
-    BUILD=x86_64-unknown-linux-gnu
+    BUILD="$(./depends/config.guess)"
 fi
 if [[ -z "${HOST-}" ]]; then
-    HOST=x86_64-unknown-linux-gnu
+    HOST="$BUILD"
 fi
 
 # Allow override to $CC and $CXX for porters. Most users will not need it.
@@ -48,6 +64,7 @@ $0 [ --enable-lcov || --disable-tests ] [ --disable-mining ] [ --disable-rust ] 
   assets. It must be passed after test/mining arguments, if present.
 
   If --enable-proton is passed, Hush is configured to build the Apache Qpid Proton
+
   library required for AMQP support. This library is not built by default.
   It must be passed after the test/mining/Rust arguments, if present.
 
@@ -58,7 +75,6 @@ EOF
 fi
 
 set -x
-cd "$(dirname "$(readlink -f "$0")")/.."
 
 # If --enable-lcov is the first argument, enable lcov coverage support:
 LCOV_ARG=''
@@ -84,7 +100,7 @@ then
 fi
 
 # If --disable-rust is the next argument, disable Rust code:
-RUST_ARG='--disable-rust'
+RUST_ARG=''
 if [ "x${1:-}" = 'x--disable-rust' ]
 then
     RUST_ARG='--enable-rust=no'
@@ -97,19 +113,6 @@ if [ "x${1:-}" = 'x--enable-proton' ]
 then
     PROTON_ARG=''
     shift
-fi
-
-
-# Arch workaround for gcc 7
-# might break the entry above to find gcc- on arm
-if [ -f "/etc/arch-release" ]; then
-    if [ -f "/usr/bin/gcc-5" ]; then
-      CC=gcc-5
-      CXX=g++-5
-    else
-      echo 'gcc5 required, please install using "sudo pacman -S gss5"'
-      exit 1
-    fi
 fi
 
 # If --disable-libs is the next argument, build without libs:
@@ -130,6 +133,5 @@ ld -v
 
 HOST="$HOST" BUILD="$BUILD" NO_RUST="$RUST_ARG" NO_PROTON="$PROTON_ARG" "$MAKE" "$@" -C ./depends/ V=1
 ./autogen.sh
-CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" "$RUST_ARG" "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" "$PROTON_ARG" "$LIBS_ARG" CXXFLAGS='-fwrapv -fno-strict-aliasing -Wno-builtin-declaration-mismatch -Werror -g'
-cd src
+CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" "$RUST_ARG" "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" "$PROTON_ARG" "$LIBS_ARG" --enable-werror CXXFLAGS='-g'
 "$MAKE" "$@" V=1

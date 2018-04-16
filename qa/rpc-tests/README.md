@@ -35,8 +35,7 @@ If you set the environment variable `PYTHON_DEBUG=1` you will get some debug out
 
 A 200-block -regtest blockchain and wallets for four nodes
 is created the first time a regression test is run and
-is stored in the cache/ directory. Each node has 25 mature
-blocks (25*50=1250 BTC) in its wallet.
+is stored in the cache/ directory.
 
 After the first run, the cache/ blockchain and wallets are
 copied into a temporary directory and used as the initial
@@ -47,5 +46,5 @@ to recover with:
 
 ```bash
 rm -rf cache
-killall bitcoind
+killall hushd
 ```
