@@ -13,9 +13,11 @@
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
 echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
-echo "addnode=node.myhush.network" >> ~/.hush/hush.conf
-echo "addnode=mmc01.madbuda.me" >> ~/.hush/hush.conf
-echo "addnode=zdash.suprnova.cc" >> ~/.hush/hush.conf
+echo "addnode=explorer.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed2.myhush.org" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.bleuzero.com" >> ~/.hush/hush.conf
+echo "addnode=dnsseed.hush.quebec" >> ~/.hush/hush.conf
 ```
 
 ## Download proving key
