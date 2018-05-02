@@ -1,15 +1,93 @@
 # Installing Hush
 
-## Install
+## Linux Install with Windows via VirtualBox
+VirtualBox 5.2.8 (released February 27 2018)
+https://www.virtualbox.org/wiki/Download_Old_Builds_5_2
 
-    echo 'deb https://dl.bintray.com/myhush/hush/ hush main' | sudo tee --append /etc/apt/sources.list.d/hush.list
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
-    sudo apt-get update
-    sudo apt-get install hush
+Or click below for direct download
+https://download.virtualbox.org/virtualbox/5.2.8/VirtualBox-5.2.8-121009-Win.exe
+
+Ubuntu Install
+Download Ubuntu 16.04.4 LTS (Xenial Xerus) from your favorite mirror, or find it below.
+http://www.gtlib.gatech.edu/pub/ubuntu-releases/xenial/
+
+Or click below for direct download
+http://www.gtlib.gatech.edu/pub/ubuntu-releases/xenial/ubuntu-16.04.4-desktop-amd64.iso
+
+Set up VirtualBox to install from Ubuntu ISO, 4 Gigs of RAM and 20 GB of storage will work.  
+
+---
+
+## Linux Install with VPS (<$3/month)
+Ubuntu 16.04 VPS with CPU: 1 vCore, RAM: 512 MB, Storage: and 20 GB SSD will work.
+
+Create a new username, just replace "CREATE_NEW_USERNAME" with a new name.
+```sh
+adduser CREATE_NEW_USERNAME && adduser CREATE_NEW_USERNAME sudo
+```
+Reboot and log in as new user
+
+---
+
+## Update Ubuntu
+
+After installation is complete open terminal and do an update.
+```sh
+sudo apt-get update && sudo apt-get upgrade -y
+```
+
+## Swap Space (Optional)
+You will need at least 4GB of RAM to build hush from git source, OR you can
+enable a swap file. To enable a 4GB swap file on modern Linux distributions:
+
+```sh
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+```
+
+Now make the swap work better. Add a line to sysctl.conf
+```sh
+sudo nano /etc/sysctl.conf
+```
+add to last line of file:
+```
+vm.swappiness=10
+```
+
+Then make it so the swap gets mounted when the server reboots. Edit the fstab file
+```sh
+sudo nano /etc/fstab
+```
+add to last line of file:
+```
+/swapfile   none    swap    sw    0   0
+```
+
+## Build HUSH dependencies
+The following build process generally applies to Ubuntu (and similar) Linux
+distributions. For best results it is recommended to use Ubuntu Linux 16.04
+or later.
+
+```sh
+sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python zlib1g-dev wget bsdmainutils automake curl unzip nano
+```
+
+## Download and Install Hush v1.0.13 Stable Release
+```sh
+cd ~
+sudo wget https://github.com/MyHush/hush/releases/download/v1.0.13/hush-1.0.13-afad8af-amd64.deb
+sudo dpkg -i hush-1.0.13-afad8af-amd64.deb
+```
+
+## Download proving key
+```sh
+./zcutil/fetch-params.sh
+```
 
 ## Create a HUSH configuration file (*important*):
-
-```
+```sh
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
 echo "rpcpassword=`head -c 32 /dev/urandom | base64`" >>~/.hush/hush.conf
@@ -20,67 +98,14 @@ echo "addnode=dnsseed.bleuzero.com" >> ~/.hush/hush.conf
 echo "addnode=dnsseed.hush.quebec" >> ~/.hush/hush.conf
 ```
 
-## Download proving key
-
-This will download a Zcash Sprout proving key, if you already have one on this system, you only need one
-and this script will just verify that it is correct.
-
-```
-./zcutil/fetch-params.sh
-```
-
-# Building Hush from source
-
-Building Hush from source will take some time but your efforts will be rewarded :)
-
-## Requirements
-
-You will need at least 4GB of RAM to build hush from git source, OR
-you can enable a swap file. To enable a 4GB swap file on modern Linux
-distributions:
-
-    sudo fallocate -l 4G /swapfile
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-    sudo swapon /swapfile
-
-You will need to have Git and a C++ compiler and libtool and a
-a few other libraries, depending on your setup.
-
-## Building
-
-The following build process generally applies to Ubuntu (and similar) Linux
-distributions. For best results it is recommended to use Ubuntu Linux 16.04
-or later.
-
-Build HUSH along with most dependencies from source by running:
-
-## Linux
-Get dependencies:
-```{r, engine='bash'}
-sudo apt-get install \
-      build-essential pkg-config libc6-dev m4 g++-multilib \
-      autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake
-```
-
-Downloading Git source repo, building and running Hush:
-
-```{r, engine='bash'}
-# pull
-git clone https://github.com/MyHush/hush.git
-cd hush
-# fetch key
-./zcutil/fetch-params.sh
-# Build
-./zcutil/build.sh -j$(nproc)
-# Run a HUSH node
-./src/hushd
+## Run a HUSH Node
+```ssh
+./hushd
 ```
 
 ## Windows (cross-compiled on Linux)
 Get dependencies:
-```{r, engine='bash'}
+```ssh
 sudo apt-get install \
       build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python \
@@ -89,7 +114,7 @@ sudo apt-get install \
 
 Downloading Git source repo, building and running Hush:
 
-```{r, engine='bash'}
+```sh
 # pull
 git clone https://github.com/MyHush/hush.git
 cd hush
@@ -104,7 +129,7 @@ cd hush
 ## Mac
 Get dependencies:
 
-```{r, engine='bash'}
+```sh
 # Install xcode
 xcode-select --install
 
@@ -116,7 +141,7 @@ brew install gcc5 --without-multilib
 ```
 Downloading Git source repo, building and running Hush:
 
-```{r, engine='bash'}
+```sh
 # pull
 git clone https://github.com/MyHush/hush.git
 cd hush
@@ -144,4 +169,3 @@ set.
 
 This also means that RaspberryPi devices will not work, unless they have a
 newer ARMv8-based Raspberry Pi.
-
