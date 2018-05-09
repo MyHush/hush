@@ -10,8 +10,11 @@ from test_framework.util import assert_equal, assert_greater_than, \
     initialize_chain_clean, start_nodes, start_node, connect_nodes_bi, \
     stop_nodes, sync_blocks, sync_mempools, wait_bitcoinds
 
+import logging
 import time
 from decimal import Decimal
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 class WalletTest (BitcoinTestFramework):
 
@@ -290,6 +293,20 @@ class WalletTest (BitcoinTestFramework):
         except JSONRPCException,e:
             errorString = e.error['message']
         assert("Too many outputs, size of raw transaction" in errorString)
+
+        ###### Test that duplicate receiver addresses are allowed
+        recipients = []
+        recipients.append({"address":myzaddr, "amount":amount_per_recipient})
+        recipients.append({"address":myzaddr, "amount":amount_per_recipient})
+
+        try:
+            myopid = self.nodes[0].z_sendmany(myzaddr, recipients)
+            assert( myopid )
+        except JSONRPCException,e:
+            errorString = e.error['message']
+            logging.info(errorString)
+            assert( False )
+        #####
 
         recipients = []
         num_t_recipients = 2000
