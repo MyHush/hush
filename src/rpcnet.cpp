@@ -14,6 +14,7 @@
 #include "util.h"
 #include "version.h"
 #include "utiltls.h"
+#include "deprecation.h"
 
 #include <boost/foreach.hpp>
 
