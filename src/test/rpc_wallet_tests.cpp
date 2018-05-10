@@ -16,6 +16,7 @@
 #include "rpcserver.h"
 #include "asyncrpcqueue.h"
 #include "asyncrpcoperation.h"
+#include "wallet/asyncrpcoperation_mergetoaddress.h"
 #include "wallet/asyncrpcoperation_sendmany.h"
 #include "wallet/asyncrpcoperation_shieldcoinbase.h"
 
