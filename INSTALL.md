@@ -71,7 +71,9 @@ distributions. For best results it is recommended to use Ubuntu Linux 16.04
 or later.
 
 ```sh
-sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib autoconf libtool ncurses-dev unzip git python zlib1g-dev wget bsdmainutils automake curl unzip nano
+sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib \
+      autoconf libtool ncurses-dev unzip git python zlib1g-dev wget \
+      bsdmainutils automake curl unzip nano
 ```
 
 ## Download and Install Hush v1.0.13 Stable Release
@@ -109,7 +111,7 @@ Get dependencies:
 sudo apt-get install \
       build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake mingw-w64
+      zlib1g-dev wget bsdmainutils automake mingw-w64 cmake
 ```
 
 Downloading Git source repo, building and running Hush:
