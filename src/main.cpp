@@ -6234,3 +6234,22 @@ public:
         mapOrphanTransactionsByPrev.clear();
     }
 } instance_of_cmaincleanup;
+
+
+// Set default values of new CMutableTransaction based on consensus rules at given height.
+CMutableTransaction CreateNewContextualCMutableTransaction(const Consensus::Params& consensusParams, int nHeight)
+{
+    CMutableTransaction mtx;
+
+    bool isOverwintered = NetworkUpgradeActive(nHeight, consensusParams, Consensus::UPGRADE_OVERWINTER);
+    if (isOverwintered) {
+        mtx.fOverwintered = true;
+        mtx.nVersionGroupId = OVERWINTER_VERSION_GROUP_ID;
+        mtx.nVersion = 3;
+        // Expiry height is not set. Only fields required for a parser to treat as a valid Overwinter V3 tx.
+
+        // TODO: In future, when moving from Overwinter to Sapling, it will be useful
+        // to set the expiry height to: min(activation_height - 1, default_expiry_height)
+    }
+    return mtx;
+}
