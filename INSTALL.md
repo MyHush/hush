@@ -61,7 +61,7 @@ Get dependencies:
 sudo apt-get install \
       build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python \
-      zlib1g-dev wget bsdmainutils automake
+      zlib1g-dev wget bsdmainutils automake cmake g++-mingw-w64-x86-64
 ```
 
 Downloading Git source repo, building and running Hush:
