@@ -8,9 +8,7 @@ src/hush-gtest
 src/hush-tx
 src/test/test_bitcoin
 
-# Zcash utilities
-src/zcash/GenerateParams
-src/zcash/CreateJoinSplit
+# Hush utilities
 src/hush/GenerateParams
 src/hush/CreateJoinSplit
 
