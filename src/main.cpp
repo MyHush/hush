@@ -1956,6 +1956,8 @@ bool DisconnectBlock(CBlock& block, CValidationState& state, CBlockIndex* pindex
     if (blockUndo.vtxundo.size() + 1 != block.vtx.size())
         return error("DisconnectBlock(): block and undo data inconsistent");
 
+    komodo_disconnect((CBlockIndex *)pindex,(CBlock *)&block);
+
     std::vector<std::pair<CAddressIndexKey, CAmount> > addressIndex;
     std::vector<std::pair<CAddressUnspentKey, CAddressUnspentValue> > addressUnspentIndex;
     std::vector<std::pair<CSpentIndexKey, CSpentIndexValue> > spentIndex;
@@ -3354,6 +3356,15 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         CBlockIndex* pcheckpoint = Checkpoints::GetLastCheckpoint(chainParams.Checkpoints());
         if (pcheckpoint && nHeight < pcheckpoint->nHeight)
             return state.DoS(100, error("%s: forked chain older than last checkpoint (height %d)", __func__, nHeight));
+        else if ( komodo_checkpoint(&notarized_height,(int32_t)nHeight,hash) < 0 )
+        {
+            CBlockIndex *heightblock = chainActive[nHeight];
+            if ( heightblock != 0 && heightblock->GetBlockHash() == hash )
+            {
+                //fprintf(stderr,"got a pre notarization block that matches height.%d\n",(int32_t)nHeight);
+                return true;
+            } else return state.DoS(100, error("%s: forked chain %d older than last notarized (height %d) vs %d", __func__,nHeight, notarized_height));
+        }
     }
 
     // Reject block.nVersion < 4 blocks
