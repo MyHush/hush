@@ -3333,6 +3333,8 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     const CChainParams& chainParams = Params();
     const Consensus::Params& consensusParams = chainParams.GetConsensus();
     uint256 hash = block.GetHash();
+    int32_t notarized_height;
+
     if (hash == consensusParams.hashGenesisBlock)
         return true;
 

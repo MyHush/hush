@@ -54,7 +54,7 @@
 }*/
 
 #include <wallet/wallet.h>
-#include <key_io.h>
+#include <key.h>
 #include <base58.h>
 
 #define SATOSHIDEN ((uint64_t)100000000L)
