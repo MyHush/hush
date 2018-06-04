@@ -762,9 +762,9 @@ void komodo_importpubkeys()
 
 int32_t komodo_init()
 {
-    NOTARY_PUBKEY = gArgs.GetArg("-pubkey", "");
+    NOTARY_PUBKEY = GetArg("-pubkey", "");
     decode_hex(NOTARY_PUBKEY33,33,(char *)NOTARY_PUBKEY.c_str());
-    if ( gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX) == 0 )
+    if ( GetBoolArg("-txindex", DEFAULT_TXINDEX) == 0 )
     {
         fprintf(stderr,"txindex is off, import notary pubkeys\n");
         KOMODO_NEEDPUBKEYS = 1;
