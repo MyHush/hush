@@ -4,7 +4,6 @@
 
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
 #include "main.h"
 
 #include "sodium.h"
@@ -47,9 +46,6 @@ using namespace std;
 # error "Hush cannot be compiled without assertions."
 
 #endif
-
-char ASSETCHAINS_SYMBOL[65] = { "HUSH" };
-#include "komodo_validation015.h"
 
 /**
  * Global state
@@ -214,6 +210,9 @@ namespace {
     /** Dirty block file entries. */
     set<int> setDirtyFileInfo;
 } // anon namespace
+
+char ASSETCHAINS_SYMBOL[65] = { "HUSH" };
+#include "komodo_validation015.h"
 
 //////////////////////////////////////////////////////////////////////////////
 //
