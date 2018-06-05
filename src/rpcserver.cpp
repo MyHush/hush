@@ -27,6 +27,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/thread.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper()
+#include "komodo_rpcblockchain.h"
 
 using namespace RPCServer;
 using namespace std;
@@ -295,6 +296,8 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true  },
     { "blockchain",         "verifychain",            &verifychain,            true  },
     { "blockchain",         "getspentinfo",           &getspentinfo,           false },
+    { "blockchain",         "calc_MoM",               &calc_MoM,               true  },
+    { "blockchain",         "height_MoM",             &height_MoM,             true  },
 
     /* Mining */
     { "mining",             "getblocktemplate",       &getblocktemplate,       true  },
