@@ -85,7 +85,7 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
     LOCK(cs_main);
     if ( KOMODO_TXINDEX != 0 )
     {
-        if ( GetTransaction(txid,tx,Params().GetConsensus(),hashBlock,false) == 0 )
+        if ( GetTransaction(txid,(CTransaction &)tx,hashBlock,false) == 0 )
         {
             //fprintf(stderr,"ht.%d couldnt get txid.%s\n",height,txid.GetHex().c_str());
             return(-1);
