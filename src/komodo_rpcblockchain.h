@@ -13,7 +13,6 @@
  *                                                                            *
  ******************************************************************************/
 
-
 #ifndef komodo_rpcblockchain_h
 #define komodo_rpcblockchain_h
 
@@ -38,16 +37,16 @@ int32_t komodo_MoM(int32_t *notarized_heightp,uint256 *MoMp,uint256 *kmdtxidp,in
     return(depth);
 }
 
-UniValue calc_MoM(const JSONRPCRequest& request)
+UniValue calc_MoM(const UniValue& params, bool fHelp)
 {
     int32_t height,MoMdepth; uint256 MoM; UniValue ret(UniValue::VOBJ); UniValue a(UniValue::VARR);
-    if ( request.params.size() != 2 )
-        throw std::runtime_error("calc_MoM height MoMdepth\n");
+    if ( fHelp || params.size() != 2 )
+        throw runtime_error("calc_MoM height MoMdepth\n");
     LOCK(cs_main);
-    height = atoi(request.params[0].get_str().c_str());
-    MoMdepth = atoi(request.params[1].get_str().c_str());
+    height = atoi(params[0].get_str().c_str());
+    MoMdepth = atoi(params[1].get_str().c_str());
     if ( height <= 0 || MoMdepth <= 0 || MoMdepth >= height )
-        throw std::runtime_error("calc_MoM illegal height or MoMdepth\n");
+        throw runtime_error("calc_MoM illegal height or MoMdepth\n");
     //fprintf(stderr,"height_MoM height.%d\n",height);
     MoM = komodo_calcMoM(height,MoMdepth);
     ret.push_back(Pair("coin",(char *)(ASSETCHAINS_SYMBOL[0] == 0 ? "KMD" : ASSETCHAINS_SYMBOL)));
@@ -57,13 +56,13 @@ UniValue calc_MoM(const JSONRPCRequest& request)
     return ret;
 }
 
-UniValue height_MoM(const JSONRPCRequest& request)
+UniValue height_MoM(const UniValue& params, bool fHelp)
 {
     int32_t height,depth,notarized_height,MoMoMdepth,MoMoMoffset,kmdstarti,kmdendi; uint256 MoM,MoMoM,kmdtxid; uint32_t timestamp = 0; UniValue ret(UniValue::VOBJ); UniValue a(UniValue::VARR);
-    if ( request.params.size() != 1 )
-        throw std::runtime_error("height_MoM height\n");
+    if ( fHelp || params.size() != 1 )
+        throw runtime_error("height_MoM height\n");
     LOCK(cs_main);
-    height = atoi(request.params[0].get_str().c_str());
+    height = atoi(params[0].get_str().c_str());
     if ( height <= 0 )
     {
         if ( chainActive.Tip() == 0 )
@@ -93,7 +92,7 @@ UniValue height_MoM(const JSONRPCRequest& request)
             ret.push_back(Pair("kmdendi",kmdendi));
         }
     } else ret.push_back(Pair("error",(char *)"no MoM for height"));
-    
+
     return ret;
 }
 
