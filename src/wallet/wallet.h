@@ -288,6 +288,7 @@ private:
     int GetDepthInMainChainINTERNAL(const CBlockIndex* &pindexRet) const;
 
 public:
+    CTransactionRef tx;
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
     int nIndex;
@@ -298,6 +299,13 @@ public:
 
     CMerkleTx()
     {
+	SetTx(MakeTransactionRef());
+        Init();
+    }
+
+    explicit CMerkleTx(CTransactionRef arg)
+    {
+        SetTx(std::move(arg));
         Init();
     }
 
@@ -311,6 +319,11 @@ public:
         hashBlock = uint256();
         nIndex = -1;
         fMerkleVerified = false;
+    }
+
+    void SetTx(CTransactionRef arg)
+    {
+        tx = std::move(arg);
     }
 
     ADD_SERIALIZE_METHODS;

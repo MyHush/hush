@@ -81,7 +81,7 @@ void ImportAddress(CWallet*, const CTxDestination& dest, const std::string& strL
 
 int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsize,uint256 txid,int32_t n)
 {
-    static uint256 zero; int32_t i,m; uint8_t *ptr; CTransactionRef tx=0; uint256 hashBlock;
+    static uint256 zero; int32_t i,m; uint8_t *ptr; CTransactionRef tx = MakeTransactionRef(); uint256 hashBlock;
     LOCK(cs_main);
     if ( KOMODO_TXINDEX != 0 )
     {
