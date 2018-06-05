@@ -81,7 +81,7 @@ void ImportAddress(CWallet*, const CTxDestination& dest, const std::string& strL
 
 int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsize,uint256 txid,int32_t n)
 {
-    static uint256 zero; int32_t i,m; uint8_t *ptr; CTransactionRef tx = MakeTransactionRef(); uint256 hashBlock;
+    static uint256 zero; int32_t i,m; uint8_t *ptr; CTransactionRef tx=0; uint256 hashBlock;
     LOCK(cs_main);
     if ( KOMODO_TXINDEX != 0 )
     {
@@ -1181,15 +1181,15 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
         for (i=0; i<txn_count; i++)
         {
             //txhash = block.vtx[i]->GetHash();
-            numvouts = block.vtx[i]->vout.size();
+            numvouts = block.vtx[i].vout.size();
             specialtx = notarizedheight = notarized = 0;
             signedmask = 0;
-            numvins = block.vtx[i]->vin.size();
+            numvins = block.vtx[i].vin.size();
             for (j=0; j<numvins; j++)
             {
                 if ( i == 0 && j == 0 )
                     continue;
-                if ( block.vtx[i]->vin[j].prevout.hash != zero && (scriptlen= gettxout_scriptPubKey(height,scriptPubKey,sizeof(scriptPubKey),block.vtx[i]->vin[j].prevout.hash,block.vtx[i]->vin[j].prevout.n)) == 35 )
+                if ( block.vtx[i].vin[j].prevout.hash != zero && (scriptlen= gettxout_scriptPubKey(height,scriptPubKey,sizeof(scriptPubKey),block.vtx[i].vin[j].prevout.hash,block.vtx[i].vin[j].prevout.n)) == 35 )
                 {
                     for (k=0; k<numnotaries; k++)
                         if ( memcmp(&scriptPubKey[1],pubkeys[k],33) == 0 )
@@ -1208,11 +1208,11 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             {
                 //if ( NOTARY_PUBKEY33[0] != 0 )
                 //    printf("%.8f ",dstr(block.vtx[i]->vout[j].nValue));
-                len = block.vtx[i]->vout[j].scriptPubKey.size();
+                len = block.vtx[i].vout[j].scriptPubKey.size();
                 if ( len >= (int32_t)sizeof(uint32_t) && len <= (int32_t)sizeof(scriptbuf) )
                 {
-                    memcpy(scriptbuf,block.vtx[i]->vout[j].scriptPubKey.data(),len);
-                    komodo_voutupdate(i,j,scriptbuf,len,height,&specialtx,&notarizedheight,(uint64_t)block.vtx[i]->vout[j].nValue,notarized,signedmask);
+                    memcpy(scriptbuf,block.vtx[i].vout[j].scriptPubKey.data(),len);
+                    komodo_voutupdate(i,j,scriptbuf,len,height,&specialtx,&notarizedheight,(uint64_t)block.vtx[i].vout[j].nValue,notarized,signedmask);
                 }
             }
             //if ( NOTARY_PUBKEY33[0] != 0 )
