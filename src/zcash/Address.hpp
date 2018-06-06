@@ -4,15 +4,8 @@
 #include "uint256.h"
 #include "uint252.h"
 #include "serialize.h"
-#include <boost/variant.hpp>
 
 namespace libzcash {
-
-class InvalidEncoding {
-public:
-    friend bool operator==(const InvalidEncoding &a, const InvalidEncoding &b) { return true; }
-    friend bool operator<(const InvalidEncoding &a, const InvalidEncoding &b) { return true; }
-};
 
 const size_t SerializedPaymentAddressSize = 64;
 const size_t SerializedViewingKeySize = 64;
@@ -81,7 +74,7 @@ public:
     }
 };
 
-class SproutSpendingKey : public uint252 {
+class SpendingKey : public uint252 {
 public:
     SpendingKey() : uint252() { }
     SpendingKey(uint252 a_sk) : uint252(a_sk) { }
@@ -93,19 +86,6 @@ public:
     PaymentAddress address() const;
 };
 
-typedef boost::variant<InvalidEncoding, SproutPaymentAddress> PaymentAddress;
-typedef boost::variant<InvalidEncoding, SproutViewingKey> ViewingKey;
-typedef boost::variant<InvalidEncoding, SproutSpendingKey> SpendingKey;
-
 }
-
-/** Check whether a PaymentAddress is not an InvalidEncoding. */
-bool IsValidPaymentAddress(const libzcash::PaymentAddress& zaddr);
-
-/** Check whether a ViewingKey is not an InvalidEncoding. */
-bool IsValidViewingKey(const libzcash::ViewingKey& vk);
-
-/** Check whether a SpendingKey is not an InvalidEncoding. */
-bool IsValidSpendingKey(const libzcash::SpendingKey& zkey);
 
 #endif // ZC_ADDRESS_H_
