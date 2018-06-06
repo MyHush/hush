@@ -74,6 +74,42 @@ std::string DecodeDumpString(const std::string &str) {
     return ret.str();
 }
 
+void ImportAddress(CWallet*, const CBitcoinAddress& address, const std::string& strLabel);
+void ImportScript(CWallet* const pwallet, const CScript& script, const std::string& strLabel, bool isRedeemScript)
+{
+    if (!isRedeemScript && ::IsMine(*pwallet, script) == ISMINE_SPENDABLE) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "The wallet already contains the private key for this address or script");
+    }
+
+    pwallet->MarkDirty();
+
+    if (!pwallet->HaveWatchOnly(script) && !pwallet->AddWatchOnly(script)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Error adding address to wallet");
+    }
+
+    if (isRedeemScript) {
+        if (!pwallet->HaveCScript(script) && !pwallet->AddCScript(script)) {
+            throw JSONRPCError(RPC_WALLET_ERROR, "Error adding p2sh redeemScript to wallet");
+        }
+        ImportAddress(pwallet, CBitcoinAddress(CScriptID(script)), strLabel);
+    } else {
+        CTxDestination destination;
+        if (ExtractDestination(script, destination)) {
+            pwallet->SetAddressBook(destination, strLabel, "receive");
+        }
+    }
+}
+
+void ImportAddress(CWallet* const pwallet, const CBitcoinAddress& address, const std::string& strLabel)
+{
+    CScript script = GetScriptForDestination(address.Get());
+    ImportScript(pwallet, script, strLabel, false);
+    // add to address book or update label
+    if (address.IsValid())
+        pwallet->SetAddressBook(address.Get(), strLabel, "receive");
+}
+
+
 UniValue importprivkey(const UniValue& params, bool fHelp)
 {
     if (!EnsureWalletIsAvailable(fHelp))
