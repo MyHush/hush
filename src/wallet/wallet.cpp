@@ -37,6 +37,7 @@ unsigned int nTxConfirmTarget = DEFAULT_TX_CONFIRM_TARGET;
 bool bSpendZeroConfChange = true;
 bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
+std::vector<CWalletRef> vpwallets;
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
