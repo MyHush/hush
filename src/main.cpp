@@ -1361,7 +1361,7 @@ bool GetTransaction(const uint256 &hash, CTransaction &txOut, uint256 &hashBlock
             if (txOut.GetHash() != hash)
                 return error("%s: txid mismatch", __func__);
             return true;
-        }
+	}
     }
 
     if (fAllowSlow) { // use coin database to locate block that contains transaction, and scan it
