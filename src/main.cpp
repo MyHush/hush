@@ -213,7 +213,7 @@ namespace {
 } // anon namespace
 
 char ASSETCHAINS_SYMBOL[65] = { "HUSH" };
-#include "komodo_validation015.h"
+#include "komodo_validation011.h"
 
 //////////////////////////////////////////////////////////////////////////////
 //
