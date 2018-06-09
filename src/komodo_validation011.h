@@ -751,10 +751,6 @@ void komodo_importpubkeys()
 	    fprintf(stderr,"pubkey=%s\n", pubkey );
 
 	    const std::vector<unsigned char> vPubkey(pubkey, pubkey + m);
-	    //const unsigned char *charpubkey = &*vPubkey.begin();
-	    //fprintf(stderr, "vpubkey=%s\n", charpubkey);
-
-	    //std::string addr = CBitcoinAddress(CPubKey(ParseHex(vPubkey)).GetID()).ToString();
 	    std::string addr = CBitcoinAddress(CPubKey(ParseHex(pubkey)).GetID()).ToString();
 
 	    fprintf(stderr,"addr=%s\n", addr.c_str() );
