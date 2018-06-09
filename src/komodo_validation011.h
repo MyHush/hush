@@ -1169,7 +1169,7 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
     static int32_t hwmheight;
     uint64_t signedmask; uint8_t scriptbuf[4096],pubkeys[64][33],scriptPubKey[35]; uint256 zero; int32_t i,j,k,numnotaries,notarized,scriptlen,numvalid,specialtx,notarizedheight,len,numvouts,numvins,height,txn_count;
 
-    if ( KOMODO_NEEDPUBKEYS != 0 )
+    if ( KOMODO_NEEDPUBKEYS >= 0 )
     {
         komodo_importpubkeys();
         KOMODO_NEEDPUBKEYS = 0;

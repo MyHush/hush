@@ -1583,6 +1583,9 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
                 strErrors << _("Error loading wallet.dat") << "\n";
         }
 
+	// Wallet has been successfully loaded
+	vpwallets.push_back(pwalletMain);
+
         if (GetBoolArg("-upgradewallet", fFirstRun))
         {
             int nMaxVersion = GetArg("-upgradewallet", 0);
