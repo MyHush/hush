@@ -123,7 +123,8 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
 
 int32_t komodo_importaddress(std::string addr)
 {
-    CBitcoinAddress address(addr); CWallet * const pwallet = vpwallets[0];
+    CBitcoinAddress address(addr);
+    CWallet * const pwallet = vpwallets[0];
     if ( pwallet != 0 )
     {
         LOCK2(cs_main, pwallet->cs_wallet);
@@ -736,21 +737,26 @@ portable_mutex_t komodo_mutex;
 
 void komodo_importpubkeys()
 {
-    int32_t i,n,j,m,offset,val,dispflag = 0; std::string addr; char *ptr;
-    offset = 2;
-    if ( strcmp(ASSETCHAINS_SYMBOL,"HUSH") == 0 )
-        offset++;
+    int32_t i,n,j,m,offset = 1,val,dispflag = 0; std::string addr; char *ptr;
+    char *pubkey;
+
     n = (int32_t)(sizeof(Notaries_elected1)/sizeof(*Notaries_elected1));
+
     for (i=0; i<n; i++) // each year add new notaries too
     {
         if ( Notaries_elected1[i][offset] == 0 )
             continue;
         if ( (m= (int32_t)strlen((char *)Notaries_elected1[i][offset])) > 0 )
         {
-            addr.resize(m);
-            ptr = (char *)addr.data();
-            for (j=0; j<m; j++)
-                ptr[j] = Notaries_elected1[i][offset][j];
+	    pubkey = (char*) Notaries_elected1[i][offset];
+	    fprintf(stderr,"pubkey=%s\n", pubkey );
+
+	    const std::vector<unsigned char> vPubkey(pubkey, pubkey + m);
+
+	    addr   = CBitcoinAddress(CPubKey(vPubkey).GetID()).ToString();
+
+	    fprintf(stderr,"addr=%s\n", addr.c_str() );
+
             if ( (val= komodo_importaddress(addr)) < 0 )
                 fprintf(stderr,"error importing (%s)\n",addr.c_str());
             else if ( val == 0 )
