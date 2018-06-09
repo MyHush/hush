@@ -737,8 +737,7 @@ portable_mutex_t komodo_mutex;
 
 void komodo_importpubkeys()
 {
-    int32_t i,n,j,m,offset = 1,val,dispflag = 0; std::string addr; char *ptr;
-    char *pubkey;
+    int32_t i,n,j,m,offset = 1,val,dispflag = 0; char *pubkey;
 
     n = (int32_t)(sizeof(Notaries_elected1)/sizeof(*Notaries_elected1));
 
@@ -752,8 +751,11 @@ void komodo_importpubkeys()
 	    fprintf(stderr,"pubkey=%s\n", pubkey );
 
 	    const std::vector<unsigned char> vPubkey(pubkey, pubkey + m);
+	    //const unsigned char *charpubkey = &*vPubkey.begin();
+	    //fprintf(stderr, "vpubkey=%s\n", charpubkey);
 
-	    addr   = CBitcoinAddress(CPubKey(vPubkey).GetID()).ToString();
+	    //std::string addr = CBitcoinAddress(CPubKey(ParseHex(vPubkey)).GetID()).ToString();
+	    std::string addr = CBitcoinAddress(CPubKey(ParseHex(pubkey)).GetID()).ToString();
 
 	    fprintf(stderr,"addr=%s\n", addr.c_str() );
 
