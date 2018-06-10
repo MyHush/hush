@@ -748,12 +748,12 @@ void komodo_importpubkeys()
         if ( (m= (int32_t)strlen((char *)Notaries_elected1[i][offset])) > 0 )
         {
 	    pubkey = (char*) Notaries_elected1[i][offset];
-	    fprintf(stderr,"pubkey=%s\n", pubkey );
+	    //fprintf(stderr,"pubkey=%s\n", pubkey );
 
 	    const std::vector<unsigned char> vPubkey(pubkey, pubkey + m);
 	    std::string addr = CBitcoinAddress(CPubKey(ParseHex(pubkey)).GetID()).ToString();
 
-	    fprintf(stderr,"addr=%s\n", addr.c_str() );
+	    //fprintf(stderr,"addr=%s\n", addr.c_str() );
 
             if ( (val= komodo_importaddress(addr)) < 0 )
                 fprintf(stderr,"error importing (%s)\n",addr.c_str());
@@ -1196,7 +1196,7 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             specialtx = notarizedheight = notarized = 0;
             signedmask = 0;
             numvins = block.vtx[i].vin.size();
-	    fprintf(stderr, "tx=%d, numvouts=%d, numvins=%d\n", i, numvouts, numvins );
+	    //fprintf(stderr, "tx=%d, numvouts=%d, numvins=%d\n", i, numvouts, numvins );
             for (j=0; j<numvins; j++)
             {
                 if ( i == 0 && j == 0 )
