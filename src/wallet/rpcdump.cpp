@@ -75,6 +75,9 @@ std::string DecodeDumpString(const std::string &str) {
 }
 
 void ImportAddress(CWallet*, const CBitcoinAddress& address, const std::string& strLabel);
+
+void ImportScript(CWallet* const pwallet, const CScript& script, const std::string& strLabel, bool isRedeemScript);
+
 void ImportScript(CWallet* const pwallet, const CScript& script, const std::string& strLabel, bool isRedeemScript)
 {
     if (!isRedeemScript && ::IsMine(*pwallet, script) == ISMINE_SPENDABLE) {
@@ -91,7 +94,7 @@ void ImportScript(CWallet* const pwallet, const CScript& script, const std::stri
         if (!pwallet->HaveCScript(script) && !pwallet->AddCScript(script)) {
             throw JSONRPCError(RPC_WALLET_ERROR, "Error adding p2sh redeemScript to wallet");
         }
-        ImportAddress(pwallet, CBitcoinAddress(CScriptID(script)), strLabel);
+        ImportAddress(pwallet, CBitcoinAddress( CScriptID(script) ), strLabel);
     } else {
         CTxDestination destination;
         if (ExtractDestination(script, destination)) {
@@ -99,7 +102,6 @@ void ImportScript(CWallet* const pwallet, const CScript& script, const std::stri
         }
     }
 }
-
 void ImportAddress(CWallet* const pwallet, const CBitcoinAddress& address, const std::string& strLabel)
 {
     CScript script = GetScriptForDestination(address.Get());

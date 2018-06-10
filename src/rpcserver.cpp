@@ -253,6 +253,8 @@ UniValue stop(const UniValue& params, bool fHelp)
     return "Hush server stopping";
 }
 
+extern UniValue importpubkey(const UniValue &params, bool fHelp);
+
 /**
  * Call Table
  */
@@ -369,6 +371,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "getunconfirmedbalance",  &getunconfirmedbalance,  false },
     { "wallet",             "getwalletinfo",          &getwalletinfo,          false },
     { "wallet",             "importprivkey",          &importprivkey,          true  },
+    { "wallet",             "importpubkey",           &importpubkey,           true  },
     { "wallet",             "importwallet",           &importwallet,           true  },
     { "wallet",             "importaddress",          &importaddress,          true  },
     { "wallet",             "keypoolrefill",          &keypoolrefill,          true  },
