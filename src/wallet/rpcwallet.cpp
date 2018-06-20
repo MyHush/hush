@@ -3646,6 +3646,7 @@ UniValue z_sendmany(const UniValue& params, bool fHelp)
         }
 
         // This allows amount=0 (and all amount < nDefaultFee) transactions to use the default network fee
+        // or anything less than nDefaultFee
         // instead of being forced to use a custom fee and leak metadata
         if (nTotalOut < nDefaultFee) {
             if (nFee > nDefaultFee) {
