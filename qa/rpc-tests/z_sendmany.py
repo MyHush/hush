@@ -48,7 +48,45 @@ class WalletTest (BitcoinTestFramework):
             errorString = e.error['message']
             assert(False, errorString)
 
-        # Small transaction amount %s has fee %s that is greater than the default fee %s
+        # This fee is larger than the default fee and since amount=0
+        # it should trigger error
+        fee         = Decimal('0.1')
+        recipients  = [ {"address": myzaddr, "amount": Decimal('0.0') } ]
+        minconf     = 1
+        errorString = ''
+
+        try:
+            myopid = self.nodes[0].z_sendmany(myzaddr, recipients, minconf, fee)
+        except JSONRPCException,e:
+            errorString = e.error['message']
+            assert('Small transaction amount' in errorString)
+
+        #### This fee is less than default and greater than amount, but still valid
+        fee         = Decimal('0.0000001')
+        recipients  = [ {"address": myzaddr, "amount": Decimal('0.00000001') } ]
+        minconf     = 1
+        errorString = ''
+
+        try:
+            myopid = self.nodes[0].z_sendmany(myzaddr, recipients, minconf, fee)
+            assert(False, myopid)
+        except JSONRPCException,e:
+            errorString = e.error['message']
+            assert(False, errorString)
+
+        ### Make sure amount=0, fee=0 transaction are valid to add to mempool
+        # though miners decide whether to add to a block
+        fee         = Decimal('0.0')
+        minconf     = 1
+        recipients  = [ {"address": myzaddr, "amount": Decimal('0.0') } ]
+        errorString = ''
+
+        try:
+            myopid = self.nodes[0].z_sendmany(myzaddr, recipients, minconf, fee)
+            assert(myopid)
+        except JSONRPCException,e:
+            errorString = e.error['message']
+            assert(False, errorString)
 
 
 if __name__ == '__main__':
