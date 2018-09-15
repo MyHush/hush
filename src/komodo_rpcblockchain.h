@@ -46,8 +46,11 @@ UniValue calc_MoM(const UniValue& params, bool fHelp)
     LOCK(cs_main);
     height = atoi(params[0].get_str().c_str());
     MoMdepth = atoi(params[1].get_str().c_str());
-    if ( height <= 0 || MoMdepth <= 0 || MoMdepth >= height )
-        throw runtime_error("calc_MoM illegal height or MoMdepth\n");
+    if ( height <= 0 )
+        throw runtime_error("calc_MoM illegal height, must be positive\n");
+    if ( MoMdepth <= 0 || MoMdepth >= height )
+        throw runtime_error("calc_MoM illegal MoMdepth, must be positive and less than height\n");
+
     //fprintf(stderr,"height_MoM height.%d\n",height);
     MoM = komodo_calcMoM(height,MoMdepth);
     ret.push_back(Pair("coin",(char *)(ASSETCHAINS_SYMBOL[0] == 0 ? "KMD" : ASSETCHAINS_SYMBOL)));
