@@ -32,6 +32,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <mutex>
+
+typedef CWallet* CWalletRef;
+extern std::vector<CWalletRef> vpwallets;
+static const int64_t TIMESTAMP_MIN = 0;
 
 /**
  * Settings
@@ -67,6 +72,13 @@ class CReserveKey;
 class CScript;
 class CTxMemPool;
 class CWalletTx;
+
+enum class OutputType {
+    NONE,
+    LEGACY,
+    P2SH_SEGWIT,
+    BECH32,
+};
 
 /** (client) version numbers for particular wallet features */
 enum WalletFeature
@@ -285,6 +297,7 @@ private:
     int GetDepthInMainChainINTERNAL(const CBlockIndex* &pindexRet) const;
 
 public:
+    CTransactionRef tx;
     uint256 hashBlock;
     std::vector<uint256> vMerkleBranch;
     int nIndex;
@@ -295,6 +308,13 @@ public:
 
     CMerkleTx()
     {
+	SetTx(MakeTransactionRef());
+        Init();
+    }
+
+    explicit CMerkleTx(CTransactionRef arg)
+    {
+        SetTx(std::move(arg));
         Init();
     }
 
@@ -308,6 +328,11 @@ public:
         hashBlock = uint256();
         nIndex = -1;
         fMerkleVerified = false;
+    }
+
+    void SetTx(CTransactionRef arg)
+    {
+        tx = std::move(arg);
     }
 
     ADD_SERIALIZE_METHODS;
@@ -657,6 +682,8 @@ private:
 };
 
 
+class WalletRescanReserver; //forward declarations for ScanForWalletTransactions/RescanFromTime
+
 /** 
  * A CWallet is an extension of a keystore, which also maintains a set of transactions and balances,
  * and provides the ability to create new transactions.
@@ -667,6 +694,10 @@ private:
     bool SelectCoins(const CAmount& nTargetValue, std::set<std::pair<const CWalletTx*,unsigned int> >& setCoinsRet, CAmount& nValueRet, bool& fOnlyCoinbaseCoinsRet, bool& fNeedCoinbaseCoinsRet, const CCoinControl *coinControl = NULL) const;
 
     CWalletDB *pwalletdbEncryption;
+
+    std::atomic<bool> fScanningWallet; //controlled by WalletRescanReserver
+    std::mutex mutexScanning;
+    friend class WalletRescanReserver;
 
     //! the current wallet version: clients below this version are not able to load the wallet
     int nWalletVersion;
@@ -1002,6 +1033,8 @@ public:
          std::vector<uint256> commitments,
          std::vector<boost::optional<ZCIncrementalWitness>>& witnesses,
          uint256 &final_anchor);
+    int64_t RescanFromTime(int64_t startTime, const WalletRescanReserver& reserver, bool update);
+    //CBlockIndex* ScanForWalletTransactions(CBlockIndex* pindexStart, CBlockIndex* pindexStop, const WalletRescanReserver& reserver, bool fUpdate = false);
     int ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate = false);
     void ReacceptWalletTransactions();
     void ResendWalletTransactions(int64_t nBestBlockTime);
@@ -1148,6 +1181,19 @@ public:
                                  int minDepth=1,
                                  int maxDepth=INT_MAX,
                                  bool ignoreUnspendable=true);
+    /**
+     * Explicitly make the wallet learn the related scripts for outputs to the
+     * given key. This is purely to make the wallet file compatible with older
+     * software, as CBasicKeyStore automatically does this implicitly for all
+     * keys now.
+     */
+    void LearnRelatedScripts(const CPubKey& key, OutputType);
+
+    /**
+     * Same as LearnRelatedScripts, but when the OutputType is not known (and could
+     * be anything).
+     */
+    void LearnAllRelatedScripts(const CPubKey& key);
 };
 
 /** A key allocated from the key pool. */
@@ -1203,5 +1249,42 @@ public:
         READWRITE(vchPubKey);
     }
 };
+
+/** RAII object to check and reserve a wallet rescan */
+class WalletRescanReserver
+{
+private:
+    CWalletRef m_wallet;
+    bool m_could_reserve;
+public:
+    explicit WalletRescanReserver(CWalletRef w) : m_wallet(w), m_could_reserve(false) {}
+
+    bool reserve()
+    {
+        assert(!m_could_reserve);
+        std::lock_guard<std::mutex> lock(m_wallet->mutexScanning);
+        if (m_wallet->fScanningWallet) {
+            return false;
+        }
+        m_wallet->fScanningWallet = true;
+        m_could_reserve = true;
+        return true;
+    }
+
+    bool isReserved() const
+    {
+        return (m_could_reserve && m_wallet->fScanningWallet);
+    }
+
+    ~WalletRescanReserver()
+    {
+        std::lock_guard<std::mutex> lock(m_wallet->mutexScanning);
+        if (m_could_reserve) {
+            m_wallet->fScanningWallet = false;
+        }
+    }
+};
+
+std::vector<CTxDestination> GetAllDestinationsForKey(const CPubKey& key);
 
 #endif // BITCOIN_WALLET_WALLET_H
