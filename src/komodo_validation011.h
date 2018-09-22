@@ -1001,11 +1001,11 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
         char fname[512];int32_t latestht = 0;
         //decode_hex(NOTARY_PUBKEY33,33,(char *)NOTARY_PUBKEY.c_str());
         pthread_mutex_init(&komodo_mutex,NULL);
-//#ifdef _WIN32
+#ifdef _WIN32
         sprintf(fname,"%s\\notarizations",GetDefaultDataDir().string().c_str());
-//#else
+#else
         sprintf(fname,"%s/notarizations",GetDefaultDataDir().string().c_str());
-//#endif
+#endif
 //       printf("fname.(%s)\n",fname);
         if ( (fp= fopen(fname,"rb+")) == 0 )
             fp = fopen(fname,"wb+");
