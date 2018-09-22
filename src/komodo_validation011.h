@@ -1002,9 +1002,9 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
         //decode_hex(NOTARY_PUBKEY33,33,(char *)NOTARY_PUBKEY.c_str());
         pthread_mutex_init(&komodo_mutex,NULL);
 //#ifdef _WIN32
-//        sprintf(fname,"%s\\notarizations",GetDefaultDataDir().string().c_str());
+        sprintf(fname,"%s\\notarizations",GetDefaultDataDir().string().c_str());
 //#else
-//        sprintf(fname,"%s/notarizations",GetDefaultDataDir().string().c_str());
+        sprintf(fname,"%s/notarizations",GetDefaultDataDir().string().c_str());
 //#endif
 //       printf("fname.(%s)\n",fname);
         if ( (fp= fopen(fname,"rb+")) == 0 )
