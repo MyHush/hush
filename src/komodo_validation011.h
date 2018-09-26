@@ -1210,32 +1210,23 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             {
                 if ( i == 0 && j == 0 )
                     continue;
-				bool nonzero = (block.vtx[i].vin[j].prevout.hash != zero);
-
-                if (nonzero) {
-				    scriptlen = gettxout_scriptPubKey(height,scriptPubKey,sizeof(scriptPubKey),block.vtx[i].vin[j].prevout.hash,block.vtx[i].vin[j].prevout.n);
-                    fprintf(stderr, "scriptlen=%d\n", scriptlen);
-				    if (scriptlen == 35) 
-                    {
-                        for (k=0; k<numnotaries; k++) {
-                            fprintf(stderr,"pubkeys[%d]=", k);
-                            for (i=0; i<33; i++) {
-                            		fprintf(stderr,"%02x",pubkeys[k][i]) ;
-                            }
-                            fprintf(stderr,"\n");
-                            fprintf(stderr,"memcmp\n");
-                            if ( memcmp(&scriptPubKey[1],pubkeys[k],33) == 0 )
-                            {
-				    			fprintf(stderr,"setting signedmask\n");
-                                signedmask |= (1LL << k);
-                                break;
-                            } else {
-				    				fprintf(stderr,"memcmp failed\n");
-				    		}
-				    	}
-					    fprintf(stderr,"done checking pubkeys\n");
+                if ( block.vtx[i].vin[j].prevout.hash != zero && (scriptlen= gettxout_scriptPubKey(height,scriptPubKey,sizeof(scriptPubKey),block.vtx[i].vin[j].prevout.hash,block.vtx[i].vin[j].prevout.n)) == 35 )
+                {
+                    for (k=0; k<numnotaries; k++) {
+                        fprintf(stderr,"pubkeys[%d]=", k);
+                        for (i=0; i<33; i++) {
+                                   fprintf(stderr,"%02x",pubkeys[k][i]) ;
+                        }
+                        fprintf(stderr,"\n");
+                        if ( memcmp(&scriptPubKey[1],pubkeys[k],33) == 0 )
+                        {
+                            signedmask |= (1LL << k);
+							fprintf(stderr,"set signedmask!\n");
+                            break;
+                        }
 					}
-                }   else if ( block.vtx[i].vin[j].prevout.hash != zero ) printf("%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
+                } else if ( block.vtx[i].vin[j].prevout.hash != zero ) printf("%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
+            
             }
             numvalid = bitweight(signedmask);
             if ( numvalid >= KOMODO_MINRATIFY )
