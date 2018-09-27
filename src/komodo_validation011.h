@@ -84,10 +84,9 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
     LOCK(cs_main);
     if ( KOMODO_TXINDEX != 0 )
     {
-        //if ( GetTransaction(txid,tx,hashBlock,false) == 0 )
-        if ( GetTransaction(txid,tx,hashBlock,true) == 0 )
+        if ( GetTransaction(txid,tx,hashBlock,false) == 0 )
         {
-            fprintf(stderr,"ht.%d couldnt get txid.%s\n",height,txid.GetHex().c_str());
+            fprintf(stderr,"ht.%d couldnt get txid.%s !\n",height,txid.GetHex().c_str());
             return(-1);
         }
     }
@@ -111,13 +110,11 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
         ptr = (uint8_t *)tx.vout[n].scriptPubKey.data();
         m = tx.vout[n].scriptPubKey.size();
 
-	    fprintf(stderr,"m=%d\n", m);
-	    fprintf(stderr,"maxsize=%d\n", maxsize);
         for (i=0; i<maxsize&&i<m; i++) {
-			 fprintf(stderr,"%02x",ptr[i]);
+			//fprintf(stderr,"%02x",ptr[i]);
             scriptPubKey[i] = ptr[i];
 		}
-	    fprintf(stderr,"\n");
+	    //fprintf(stderr,"\n");
         fprintf(stderr,"got scriptPubKey[%d] via rawtransaction ht.%d %s\n",m,height,txid.GetHex().c_str());
         return(i);
     }
@@ -1174,7 +1171,7 @@ void komodo_voutupdate(int32_t txi,int32_t vout,uint8_t *scriptbuf,int32_t scrip
 void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
 {
     static int32_t hwmheight;
-    uint64_t signedmask; uint8_t scriptbuf[4096],pubkeys[64][33],scriptPubKey[35]; uint256 zero; int32_t i,j,k,numnotaries,notarized,scriptlen,numvalid,specialtx,notarizedheight,len,numvouts,numvins,height,txn_count;
+    uint64_t signedmask; uint8_t scriptbuf[4096],pubkeys[64][33],scriptPubKey[35]; uint256 zero; int32_t i,j,k,m,numnotaries,notarized,scriptlen,numvalid,specialtx,notarizedheight,len,numvouts,numvins,height,txn_count;
 
     if ( KOMODO_NEEDPUBKEYS != 0 )
     {
@@ -1211,12 +1208,13 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             {
                 if ( i == 0 && j == 0 )
                     continue;
+                fprintf(stderr,"i=%d j=%d\n", i, j);
                 if ( block.vtx[i].vin[j].prevout.hash != zero && (scriptlen= gettxout_scriptPubKey(height,scriptPubKey,sizeof(scriptPubKey),block.vtx[i].vin[j].prevout.hash,block.vtx[i].vin[j].prevout.n)) == 35 )
                 {
                     for (k=0; k<numnotaries; k++) {
                         fprintf(stderr,"pubkeys[%d]=", k);
-                        for (i=0; i<33; i++) {
-                                   fprintf(stderr,"%02x",pubkeys[k][i]) ;
+                        for (m=0; m<33; m++) {
+                                   fprintf(stderr,"%02x",pubkeys[k][m]) ;
                         }
                         fprintf(stderr,"\n");
                         if ( memcmp(&scriptPubKey[1],pubkeys[k],33) == 0 )
@@ -1226,7 +1224,9 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
                             break;
                         }
 					}
-                } else if ( block.vtx[i].vin[j].prevout.hash != zero ) printf("%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
+                } else if ( block.vtx[i].vin[j].prevout.hash != zero ) {
+					printf("%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
+				}
             
             }
             numvalid = bitweight(signedmask);
@@ -1234,8 +1234,10 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
                 notarized = 1;
             //if ( NOTARY_PUBKEY33[0] != 0 )
             //    printf("(tx.%d: ",i);
+		    fprintf(stderr,"vouts\n");
             for (j=0; j<numvouts; j++)
             {
+				fprintf(stderr,"i=%d j=%d\n", i, j);
                 //if ( NOTARY_PUBKEY33[0] != 0 )
                 //    printf("%.8f ",dstr(block.vtx[i].vout[j].nValue));
                 len = block.vtx[i].vout[j].scriptPubKey.size();
