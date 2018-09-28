@@ -83,6 +83,10 @@ def initialize_datadir(dirname, n):
         f.write("port="+str(p2p_port(n))+"\n");
         f.write("rpcport="+str(rpc_port(n))+"\n");
         f.write("listenonion=0\n");
+        # TODO: maybe make these optional, defaulted to on for now
+        f.write("addressindex=1\n");
+        f.write("spentindex=1\n");
+        f.write("timestampindex=1\n");
     return datadir
 
 def initialize_chain(test_dir):
@@ -103,6 +107,7 @@ def initialize_chain(test_dir):
             bitcoind_processes[i] = subprocess.Popen(args)
             if os.getenv("PYTHON_DEBUG", ""):
                 print "initialize_chain: hushd started, calling hush-cli -rpcwait getblockcount"
+            print [ os.getenv("BITCOINCLI", "hush-cli"), "-datadir="+datadir, "-rpcwait", "getblockcount"]
             subprocess.check_call([ os.getenv("BITCOINCLI", "hush-cli"), "-datadir="+datadir,
                                     "-rpcwait", "getblockcount"], stdout=devnull)
             if os.getenv("PYTHON_DEBUG", ""):

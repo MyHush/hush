@@ -12,7 +12,8 @@ class DPoWTest(BitcoinTestFramework):
 
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 1)
+	num_nodes = 1
+        initialize_chain_clean(self.options.tmpdir, num_nodes)
 
     def setup_network(self):
         self.nodes = []
