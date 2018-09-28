@@ -70,6 +70,9 @@
 #define KOMODO_NOTARIES_TIMESTAMP1 1525132800 // May 1st 2018 1530921600 // 7/7/2017
 #define KOMODO_NOTARIES_HEIGHT1 ((814000 / KOMODO_ELECTION_GAP) * KOMODO_ELECTION_GAP)
 
+// Is the current node a notary node?
+#define IS_NOTARY (NOTARY_PUBKEY33[0] != 0)
+
 union _bits256 { uint8_t bytes[32]; uint16_t ushorts[16]; uint32_t uints[8]; uint64_t ulongs[4]; uint64_t txid; };
 typedef union _bits256 bits256;
 
@@ -1037,7 +1040,7 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
             if ( ftell(fp) !=  fpos )
                 fseek(fp,fpos,SEEK_SET);
         }
-        LogPrintf("dpow: finished loading %s [%s]\n",fname,NOTARY_PUBKEY.c_str());
+        LogPrintf("dpow: finished loading %s [pubkey %s]\n",fname,NOTARY_PUBKEY.c_str());
         didinit = 1;
     }
     if ( notarized_height == 0 )
@@ -1065,7 +1068,7 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
     NOTARIZED_HEIGHT = np->notarized_height = notarized_height;
     NOTARIZED_HASH = np->notarized_hash = notarized_hash;
     NOTARIZED_DESTTXID = np->notarized_desttxid = notarized_desttxid;
-    printf("NOTARIZED (HEIGHT,HASH,DESTTXID) = (%d, %s, %s)\n", NOTARIZED_HEIGHT, NOTARIZED_HASH.GetHex().c_str(), NOTARIZED_DESTTXID.GetHex().c_str());
+    LogPrintf("dpow: NOTARIZED (HEIGHT,HASH,DESTTXID) = (%d, %s, %s)\n", NOTARIZED_HEIGHT, NOTARIZED_HASH.GetHex().c_str(), NOTARIZED_DESTTXID.GetHex().c_str());
     if ( MoM != zero && MoMdepth > 0 )
     {
         NOTARIZED_MOM = np->MoM = MoM;
@@ -1224,12 +1227,12 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             numvalid = bitweight(signedmask);
             if ( numvalid >= KOMODO_MINRATIFY )
                 notarized = 1;
-            //if ( NOTARY_PUBKEY33[0] != 0 )
-            //    printf("(tx.%d: ",i);
+            if ( IS_NOTARY )
+                printf("(tx.%d: ",i);
             for (j=0; j<numvouts; j++)
             {
-                //if ( NOTARY_PUBKEY33[0] != 0 )
-                //    printf("%.8f ",dstr(block.vtx[i].vout[j].nValue));
+                if ( IS_NOTARY )
+                    printf("%.8f ",dstr(block.vtx[i].vout[j].nValue));
                 len = block.vtx[i].vout[j].scriptPubKey.size();
                 if ( len >= (int32_t)sizeof(uint32_t) && len <= (int32_t)sizeof(scriptbuf) )
                 {
