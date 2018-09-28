@@ -18,6 +18,7 @@ class DPoWTest(BitcoinTestFramework):
         self.nodes = []
         self.is_network_split = False
         self.nodes.append(start_node(0, self.options.tmpdir))
+        self.sync_all()
 
     def run_test(self):
         self.nodes[0].generate(3)
@@ -26,6 +27,9 @@ class DPoWTest(BitcoinTestFramework):
         # Verify that basic RPC functions exist and work
         result = rpc.calc_MoM(2,20)
         print result
+
+	result = rpc.getinfo()
+	assert result.notarized,42
 
 if __name__ == '__main__':
     DPoWTest().main()
