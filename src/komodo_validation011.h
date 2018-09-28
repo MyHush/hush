@@ -1197,7 +1197,7 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
     {
         height = pindex->nHeight;
         //txn_count = block.vtx.size();
-        fprintf(stderr, "txn_count=%d\n", txn_count);
+        //fprintf(stderr, "txn_count=%d\n", txn_count);
         for (i=0; i<txn_count; i++)
         {
             //txhash = block.vtx[i]->GetHash();
