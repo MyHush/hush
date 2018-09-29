@@ -999,7 +999,6 @@ int32_t komodo_notarizeddata(int32_t nHeight,uint256 *notarized_hashp,uint256 *n
 void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 notarized_hash,uint256 notarized_desttxid,uint256 MoM,int32_t MoMdepth)
 {
     static int didinit; static uint256 zero; static FILE *fp; CBlockIndex *pindex; struct notarized_checkpoint *np,N; long fpos;
-	LogPrintf("dpow: komodod_notarized_update\n");
     if ( didinit == 0 )
     {
         char fname[512];int32_t latestht = 0;
@@ -1094,7 +1093,8 @@ int32_t komodo_checkpoint(int32_t *notarized_heightp,int32_t nHeight,uint256 has
     if ( notarized_height >= 0 && notarized_height <= pindex->nHeight && mapBlockIndex.count(notarized_hash) != 0 )
     {
         notary = mapBlockIndex[notarized_hash];
-        printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
+        if ( IS_NOTARY )
+            printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
         if ( notary->nHeight == notarized_height ) // if notarized_hash not in chain, reorg
         {
             if ( nHeight < notarized_height )
