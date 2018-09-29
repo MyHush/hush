@@ -43,8 +43,8 @@ class WalletTest (BitcoinTestFramework):
         self.nodes[1].generate(101)
         self.sync_all()
 
-	# These are different from upstream because Hush does not have a
-	# Founders Reward
+        # These are different from upstream because Hush does not have a
+        # Founders Reward
         assert_equal(self.nodes[0].getbalance(), 160000)
         assert_equal(self.nodes[1].getbalance(), 12.5)
         assert_equal(self.nodes[2].getbalance(), 0)
@@ -480,7 +480,7 @@ class WalletTest (BitcoinTestFramework):
             assert(myopid)
         except JSONRPCException,e:
             errorString = e.error['message']
-	    print errorString
+            print errorString
             assert(False)
 
         # This fee is larger than the default fee and since amount=0
