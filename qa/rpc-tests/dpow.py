@@ -12,12 +12,14 @@ class DPoWTest(BitcoinTestFramework):
 
     def setup_chain(self):
         print("Initializing test directory "+self.options.tmpdir)
-        initialize_chain_clean(self.options.tmpdir, 1)
+	num_nodes = 1
+        initialize_chain_clean(self.options.tmpdir, num_nodes)
 
     def setup_network(self):
         self.nodes = []
         self.is_network_split = False
         self.nodes.append(start_node(0, self.options.tmpdir))
+        self.sync_all()
 
     def run_test(self):
         self.nodes[0].generate(3)
@@ -26,6 +28,9 @@ class DPoWTest(BitcoinTestFramework):
         # Verify that basic RPC functions exist and work
         result = rpc.calc_MoM(2,20)
         print result
+
+	result = rpc.getinfo()
+	assert result.notarized,42
 
 if __name__ == '__main__':
     DPoWTest().main()
