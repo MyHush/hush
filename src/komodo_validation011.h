@@ -106,7 +106,7 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
         }
     }
 
-    if ( txref != 0 && n >= 0 && n <= (int32_t)txref->vout.size() ) // vout.size() seems off by 1
+    if ( txref != 0 && n >= 0 && n < (int32_t)txref->vout.size() )
     {
         ptr = (uint8_t *)txref->vout[n].scriptPubKey.data();
         m = txref->vout[n].scriptPubKey.size();
@@ -1084,8 +1084,9 @@ int32_t komodo_checkpoint(int32_t *notarized_heightp,int32_t nHeight,uint256 has
         return(-1);
     notarized_height = komodo_notarizeddata(pindex->nHeight,&notarized_hash,&notarized_desttxid);
     *notarized_heightp = notarized_height;
-    if ( notarized_height >= 0 && notarized_height <= pindex->nHeight && (notary= mapBlockIndex[notarized_hash]) != 0 )
+    if ( notarized_height >= 0 && notarized_height <= pindex->nHeight && mapBlockIndex.count(notarized_hash) != 0 )
     {
+        notary = mapBlockIndex[notarized_hash];
         printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
         if ( notary->nHeight == notarized_height ) // if notarized_hash not in chain, reorg
         {
