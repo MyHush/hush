@@ -54,6 +54,7 @@
 }*/
 
 #include <wallet/wallet.h>
+#include <chainparams.h>
 #include <base58.h>
 
 #define SATOSHIDEN ((uint64_t)100000000L)
@@ -1001,17 +1002,19 @@ int32_t komodo_notarizeddata(int32_t nHeight,uint256 *notarized_hashp,uint256 *n
 void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 notarized_hash,uint256 notarized_desttxid,uint256 MoM,int32_t MoMdepth)
 {
     static int didinit; static uint256 zero; static FILE *fp; CBlockIndex *pindex; struct notarized_checkpoint *np,N; long fpos;
-	LogPrintf("dpow: komodod_notarized_update\n");
     if ( didinit == 0 )
     {
         char fname[512];int32_t latestht = 0;
         //decode_hex(NOTARY_PUBKEY33,33,(char *)NOTARY_PUBKEY.c_str());
         pthread_mutex_init(&komodo_mutex,NULL);
+        std::string suffix = Params().NetworkIDString() == "mainnet" ? "" : "_" + Params.NetworkIDString();
+        std::string sep;
 #ifdef _WIN32
-        sprintf(fname,"%s\\notarizations",GetDefaultDataDir().string().c_str());
+        sep = "\\";
 #else
-        sprintf(fname,"%s/notarizations",GetDefaultDataDir().string().c_str());
+        sep = "/";
 #endif
+        sprintf(fname,"%s%snotarizations%s",GetDefaultDataDir().string().c_str(), sep.c_str(), suffix.c_str());
         LogPrintf("dpow: fname.(%s)\n",fname);
         if ( (fp= fopen(fname,"rb+")) == 0 )
             fp = fopen(fname,"wb+");
