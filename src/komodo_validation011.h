@@ -109,20 +109,18 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
         }
     }
 
-    if ( n >= 0 && n < (int32_t)tx.vout.size() )
+    if ( !tx.IsNull() && n >= 0 && n < (int32_t)tx.vout.size() )
     {
         ptr = (uint8_t *)tx.vout[n].scriptPubKey.data();
         m = tx.vout[n].scriptPubKey.size();
 
         for (i=0; i<maxsize&&i<m; i++) {
-			//fprintf(stderr,"%02x",ptr[i]);
             scriptPubKey[i] = ptr[i];
-		}
-	    //fprintf(stderr,"\n");
+        }
         fprintf(stderr,"got scriptPubKey[%d] via rawtransaction ht.%d %s\n",m,height,txid.GetHex().c_str());
         return(i);
     }
-    else
+    else if ( !tx.IsNull() )
         fprintf(stderr,"gettxout_scriptPubKey ht.%d n.%d > voutsize.%d\n",height,n,(int32_t)tx.vout.size());
 
     return(-1);
@@ -777,7 +775,7 @@ int32_t komodo_init()
     decode_hex(NOTARY_PUBKEY33,33,(char *)NOTARY_PUBKEY.c_str());
     if ( GetBoolArg("-txindex", DEFAULT_TXINDEX) == 0 )
     {
-        fprintf(stderr,"txindex is off, import notary pubkeys\n");
+        //fprintf(stderr,"txindex is off, import notary pubkeys\n");
         KOMODO_NEEDPUBKEYS = 1;
         KOMODO_TXINDEX = 0;
     }
@@ -1099,7 +1097,8 @@ int32_t komodo_checkpoint(int32_t *notarized_heightp,int32_t nHeight,uint256 has
     if ( notarized_height >= 0 && notarized_height <= pindex->nHeight && mapBlockIndex.count(notarized_hash) != 0 )
     {
         notary = mapBlockIndex[notarized_hash];
-        printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
+        if ( IS_NOTARY )
+            printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
         if ( notary->nHeight == notarized_height ) // if notarized_hash not in chain, reorg
         {
             if ( nHeight < notarized_height )
