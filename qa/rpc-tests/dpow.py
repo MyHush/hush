@@ -25,12 +25,13 @@ class DPoWTest(BitcoinTestFramework):
         self.nodes[0].generate(3)
         rpc = self.nodes[0]
 
-        # Verify that basic RPC functions exist and work
-        result = rpc.calc_MoM(2,20)
-        print result
-
 	result = rpc.getinfo()
-	assert result.notarized,42
+	print result
+	# TODO: actually do notarizations on regtest and test for specific data
+	# regtest should have no notarization data, this test makes sure we do not see mainnet values as well!
+	assert_equal(result['notarized'],0)
+	assert_equal(result['notarizedhash'],'0000000000000000000000000000000000000000000000000000000000000000')
+	assert_equal(result['notarizedtxid'],'0000000000000000000000000000000000000000000000000000000000000000')
 
 if __name__ == '__main__':
     DPoWTest().main()
