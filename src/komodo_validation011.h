@@ -1195,7 +1195,7 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
     if ( pindex != 0 )
     {
         height = pindex->nHeight;
-        //txn_count = block.vtx.size();
+        txn_count = block.vtx.size();
         //fprintf(stderr, "txn_count=%d\n", txn_count);
         for (i=0; i<txn_count; i++)
         {
