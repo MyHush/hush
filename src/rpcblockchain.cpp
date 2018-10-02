@@ -998,6 +998,10 @@ UniValue getchaintips(const UniValue& params, bool fHelp)
 
     LOCK(cs_main);
 
+    int minBranchLen = 0;
+    if (params.size() > 0)
+        minBranchLen = params[0].get_int();
+
     /* Build up a list of chain tips.  We start with the list of all
        known blocks, and successively remove blocks that appear as pprev
        of another block.  */
@@ -1018,11 +1022,13 @@ UniValue getchaintips(const UniValue& params, bool fHelp)
     UniValue res(UniValue::VARR);
     BOOST_FOREACH(const CBlockIndex* block, setTips)
     {
+        const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
+        if (branchLen < minBranchLen)
+            continue;
+
         UniValue obj(UniValue::VOBJ);
         obj.push_back(Pair("height", block->nHeight));
         obj.push_back(Pair("hash", block->phashBlock->GetHex()));
-
-        const int branchLen = block->nHeight - chainActive.FindFork(block)->nHeight;
         obj.push_back(Pair("branchlen", branchLen));
 
         string status;

@@ -16,6 +16,7 @@ class GetChainTipsTest (BitcoinTestFramework):
         BitcoinTestFramework.run_test (self)
 
         tips = self.nodes[0].getchaintips ()
+        print tips
         assert_equal (len (tips), 1)
         assert_equal (tips[0]['branchlen'], 0)
         assert_equal (tips[0]['height'], 200)
