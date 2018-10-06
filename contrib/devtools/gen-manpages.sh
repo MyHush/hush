@@ -1,5 +1,4 @@
 #!/bin/sh
-alias sed=gsed
 
 TOPDIR=${TOPDIR:-$(git rev-parse --show-toplevel)}
 SRCDIR=${SRCDIR:-$TOPDIR/src}
