@@ -88,28 +88,19 @@ cd hush
 ```
 
 ## Mac
-Get dependencies:
+Install Xcode CLI tools:
 
 ```sh
-# Install xcode
 xcode-select --install
-
-# Install brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-brew install cmake autoconf libtool automake coreutils pkgconfig gmp wget
-brew install gcc5 --without-multilib
 ```
 Downloading Git source repo, building and running Hush:
 
 ```sh
 # pull
-git clone https://github.com/MyHush/hush.git
-cd hush
-# fetch key
-./zcutil/fetch-params.sh
-# Build
-./zcutil/build-mac.sh
+git clone -b v2.0.0 https://github.com/FireMartZ/hush-apple.git
+cd hush-apple
+source environment
+make
 # Run a HUSH node
 ./src/hushd
 ```
