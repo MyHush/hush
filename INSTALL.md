@@ -6,8 +6,8 @@ This method can be used to install release packages:
 
 ```sh
 cd ~
-sudo wget https://github.com/MyHush/hush/releases/download/v2.0.0/hush-2.0.0-b4f1a4ce-amd64.deb
-sudo dpkg -i hush-2.0.0-b4f1a4ce-amd64.deb
+sudo wget https://github.com/MyHush/hush/releases/download/v2.0.0/hush-2.0.0-c7d6ba61-amd64.deb
+sudo dpkg -i hush-2.0.0-c7d6ba61-amd64.deb
 ```
 
 To install Hush from source, read on.
