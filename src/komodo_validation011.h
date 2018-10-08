@@ -96,16 +96,10 @@ int32_t gettxout_scriptPubKey(int32_t height,uint8_t *scriptPubKey,int32_t maxsi
     }
     else
     {
-        CWallet * const pwallet = vpwallets[0];
-        if ( pwallet != 0 )
+        if ( GetTransaction(txid,tx,hashBlock,true) == 0 )
         {
-            auto it = pwallet->mapWallet.find(txid);
-            if ( it != pwallet->mapWallet.end() )
-            {
-                const CWalletTx& wtx = it->second;
-                tx = *wtx.tx;
-                LogPrint("dpow","found tx in wallet\n");
-            }
+            LogPrint("dpow","ht.%d couldnt get txid.%s !\n",height,txid.GetHex().c_str());
+            return(-1);
         }
     }
 
@@ -1223,9 +1217,9 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
                         }
 					}
                 } else if ( block.vtx[i].vin[j].prevout.hash != zero ) {
-					LogPrint("dpow","%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
+                    //if (IS_NOTARY)
+                    //    LogPrint("dpow","%s cant get scriptPubKey for ht.%d txi.%d vin.%d\n",ASSETCHAINS_SYMBOL,height,i,j);
 				}
-            
             }
             numvalid = bitweight(signedmask);
             if ( numvalid >= KOMODO_MINRATIFY )
