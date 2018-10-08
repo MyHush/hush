@@ -1,13 +1,13 @@
 # Installing Hush
 
-## Download and Install Hush v1.0.13 Stable Release
+## Download and Install Hush v2.0.0 Stable Release
 
 This method can be used to install release packages:
 
 ```sh
 cd ~
-sudo wget https://github.com/MyHush/hush/releases/download/v1.0.13/hush-1.0.13-afad8af-amd64.deb
-sudo dpkg -i hush-1.0.13-afad8af-amd64.deb
+sudo wget https://github.com/MyHush/hush/releases/download/v2.0.0/hush-2.0.0-bc73961-amd64.deb
+sudo dpkg -i hush-2.0.0-bc73961-amd64.deb
 ```
 
 To install Hush from source, read on.
