@@ -16,6 +16,10 @@
 
 #include <boost/foreach.hpp>
 
+static const int SPROUT_VALUE_VERSION = 1001400;
+static const int64_t MAX_FUTURE_BLOCK_TIME = 2 * 60 * 60;
+static const int64_t TIMESTAMP_WINDOW = MAX_FUTURE_BLOCK_TIME;
+
 struct CDiskBlockPos
 {
     int nFile;
@@ -144,6 +148,15 @@ public:
     //! (memory only) The anchor for the tree state up to the end of this block
     uint256 hashAnchorEnd;
 
+    //! Change in value held by the Sprout circuit over this block.
+    //! Will be boost::none for older blocks on old nodes until a reindex has taken place.
+    boost::optional<CAmount> nSproutValue;
+
+    //! (memory only) Total value held by the Sprout circuit up to and including this block.
+    //! Will be boost::none for on old nodes until a reindex has taken place.
+    //! Will be boost::none if nChainTx is zero.
+    boost::optional<CAmount> nChainSproutValue;
+
     //! block header
     int nVersion;
     uint256 hashMerkleRoot;
@@ -155,6 +168,9 @@ public:
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     uint32_t nSequenceId;
+
+    //! (memory only) Maximum nTime in the chain up to and including this block.
+    unsigned int nTimeMax;
 
     void SetNull()
     {
@@ -172,6 +188,8 @@ public:
         hashAnchor = uint256();
         hashAnchorEnd = uint256();
         nSequenceId = 0;
+        nSproutValue = boost::none;
+        nChainSproutValue = boost::none;
 
         nVersion       = 0;
         hashMerkleRoot = uint256();
@@ -241,6 +259,11 @@ public:
     int64_t GetBlockTime() const
     {
         return (int64_t)nTime;
+    }
+
+    int64_t GetBlockTimeMax() const
+    {
+        return (int64_t)nTimeMax;
     }
 
     enum { nMedianTimeSpan=11 };
@@ -339,6 +362,12 @@ public:
         READWRITE(nBits);
         READWRITE(nNonce);
         READWRITE(nSolution);
+
+        // Only read/write nSproutValue if the client version used to create
+        // this index was storing them.
+        if ((nType & SER_DISK) && (nVersion >= SPROUT_VALUE_VERSION)) {
+            READWRITE(nSproutValue);
+        }
     }
 
     uint256 GetBlockHash() const
@@ -422,6 +451,9 @@ public:
 
     /** Find the last common block between this chain and a block index entry. */
     const CBlockIndex *FindFork(const CBlockIndex *pindex) const;
+
+    /** Find the earliest block with timestamp equal or greater than the given. */
+    CBlockIndex* FindEarliestAtLeast(int64_t nTime) const;
 };
 
 #endif // BITCOIN_CHAIN_H

@@ -11,6 +11,7 @@ export BITCOIND=${REAL_BITCOIND}
 #Run the tests
 
 testScripts=(
+    'dpow.py'
     'paymentdisclosure.py'
     'prioritisetransaction.py'
     'wallet_treestate.py'
@@ -39,10 +40,14 @@ testScripts=(
     'key_import_export.py'
     'nodehandling.py'
     'reindex.py'
+    'addressindex.py'
+    'timestampindex.py'
+    'spentindex.py'
     'decodescript.py'
     'disablewallet.py'
     'zcjoinsplit.py'
     'zcjoinsplitdoublespend.py'
+    'zkey_import_export.py'
     'getblocktemplate.py'
     'bip65-cltv-p2p.py'
     'bipdersig-p2p.py'

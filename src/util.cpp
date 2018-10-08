@@ -425,6 +425,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
     const char* pszModule = "Hush";
+
 #endif
     if (pex)
         return strprintf(
@@ -452,6 +453,7 @@ boost::filesystem::path GetDefaultDataDir()
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Hush";
+
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -467,6 +469,7 @@ boost::filesystem::path GetDefaultDataDir()
 #else
     // Unix
     return pathRet / ".hush";
+
 #endif
 #endif
 }
@@ -584,6 +587,7 @@ void ClearDatadirCache()
 boost::filesystem::path GetConfigFile()
 {
     boost::filesystem::path pathConfigFile(GetArg("-conf", "hush.conf"));
+
     if (!pathConfigFile.is_complete())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
@@ -603,6 +607,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
     for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
     {
         // Don't overwrite existing settings so command line settings override hush.conf
+
         string strKey = string("-") + it->string_key;
         if (mapSettingsRet.count(strKey) == 0)
         {
@@ -620,6 +625,7 @@ void ReadConfigFile(map<string, string>& mapSettingsRet,
 boost::filesystem::path GetPidFile()
 {
     boost::filesystem::path pathPidFile(GetArg("-pid", "hushd.pid"));
+
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -913,10 +919,6 @@ std::string LicenseInfo()
 
 int GetNumCores()
 {
-#if BOOST_VERSION >= 105600
     return boost::thread::physical_concurrency();
-#else // Must fall back to hardware_concurrency, which unfortunately counts virtual cores
-    return boost::thread::hardware_concurrency();
-#endif
 }
 

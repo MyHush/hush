@@ -208,6 +208,7 @@ int printStats(bool mining)
     int64_t tipmediantime;
     size_t connections;
     size_t tlsConnections;
+
     int64_t netsolps;
     {
         LOCK2(cs_main, cs_vNodes);
@@ -334,9 +335,6 @@ int printMetrics(size_t cols, bool mining)
                         chainActive.Contains(mapBlockIndex[hash])) {
                     int height = mapBlockIndex[hash]->nHeight;
                     CAmount subsidy = GetBlockSubsidy(height, consensusParams);
-                    if ((height > 0) && (height <= consensusParams.GetLastFoundersRewardBlockHeight())) {
-                        subsidy -= subsidy/5;
-                    }
                     if (std::max(0, COINBASE_MATURITY - (tipHeight - height)) > 0) {
                         immature += subsidy;
                     } else {
@@ -429,7 +427,9 @@ void ThreadShowMetricsScreen()
 
     if (isScreen) {
         // Clear screen
+#ifndef WIN32
         std::cout << "\e[2J";
+#endif
 
     // Thank you text
     std::cout << _("Thank you for running a HUSH node!") << std::endl;
@@ -464,7 +464,16 @@ void ThreadShowMetricsScreen()
 
         if (isScreen) {
             // Erase below current position
+#ifndef WIN32
             std::cout << "\e[J";
+#else
+            DWORD count;
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            COORD homeCoords = { 0, csbi.dwCursorPosition.Y };
+            FillConsoleOutputCharacter(GetStdHandle(STD_OUTPUT_HANDLE), (TCHAR) ' ', csbi.dwSize.X * (csbi.dwSize.Y-csbi.dwCursorPosition.Y), homeCoords, &count);
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), homeCoords);
+#endif
         }
 
         // Miner status
@@ -498,7 +507,14 @@ void ThreadShowMetricsScreen()
 
         if (isScreen) {
             // Return to the top of the updating section
+#ifndef WIN32
             std::cout << "\e[" << lines << "A";
+#else
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            COORD homeCoords = { 0, csbi.dwCursorPosition.Y - lines };
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), homeCoords);
+#endif
         }
     }
 }

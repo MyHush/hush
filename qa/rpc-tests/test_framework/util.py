@@ -29,7 +29,7 @@ def rpc_port(n):
     return 12000 + n + os.getpid()%999
 
 def check_json_precision():
-    """Make sure json library being used does not lose precision converting BTC values"""
+    """Make sure json library being used does not lose precision converting HUSH values"""
     n = Decimal("20000000.00000003")
     satoshis = int(json.loads(json.dumps(float(n)))*1.0e8)
     if satoshis != 2000000000000003:
@@ -83,30 +83,35 @@ def initialize_datadir(dirname, n):
         f.write("port="+str(p2p_port(n))+"\n");
         f.write("rpcport="+str(rpc_port(n))+"\n");
         f.write("listenonion=0\n");
+        # TODO: maybe make these optional, defaulted to on for now
+        f.write("addressindex=1\n");
+        f.write("spentindex=1\n");
+        f.write("timestampindex=1\n");
     return datadir
 
 def initialize_chain(test_dir):
     """
     Create (or copy from cache) a 200-block-long chain and
     4 wallets.
-    bitcoind and bitcoin-cli must be in search path.
+    hushd and hush-cli must be in search path.
     """
 
     if not os.path.isdir(os.path.join("cache", "node0")):
         devnull = open("/dev/null", "w+")
-        # Create cache directories, run bitcoinds:
+        # Create cache directories, run hushds:
         for i in range(4):
             datadir=initialize_datadir("cache", i)
-            args = [ os.getenv("BITCOIND", "bitcoind"), "-keypool=1", "-datadir="+datadir, "-discover=0" ]
+            args = [ os.getenv("BITCOIND", "hushd"), "-keypool=1", "-datadir="+datadir, "-discover=0" ]
             if i > 0:
                 args.append("-connect=127.0.0.1:"+str(p2p_port(0)))
             bitcoind_processes[i] = subprocess.Popen(args)
             if os.getenv("PYTHON_DEBUG", ""):
-                print "initialize_chain: bitcoind started, calling bitcoin-cli -rpcwait getblockcount"
-            subprocess.check_call([ os.getenv("BITCOINCLI", "bitcoin-cli"), "-datadir="+datadir,
+                print "initialize_chain: hushd started, calling hush-cli -rpcwait getblockcount"
+            print [ os.getenv("BITCOINCLI", "hush-cli"), "-datadir="+datadir, "-rpcwait", "getblockcount"]
+            subprocess.check_call([ os.getenv("BITCOINCLI", "hush-cli"), "-datadir="+datadir,
                                     "-rpcwait", "getblockcount"], stdout=devnull)
             if os.getenv("PYTHON_DEBUG", ""):
-                print "initialize_chain: bitcoin-cli -rpcwait getblockcount completed"
+                print "initialize_chain: hush-cli -rpcwait getblockcount completed"
         devnull.close()
         rpcs = []
         for i in range(4):
@@ -177,22 +182,22 @@ def _rpchost_to_args(rpchost):
 
 def start_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=None):
     """
-    Start a bitcoind and return RPC connection to it
+    Start a hushd and return RPC connection to it
     """
     datadir = os.path.join(dirname, "node"+str(i))
     if binary is None:
-        binary = os.getenv("BITCOIND", "bitcoind")
+        binary = os.getenv("BITCOIND", "hushd")
     args = [ binary, "-datadir="+datadir, "-keypool=1", "-discover=0", "-rest" ]
     if extra_args is not None: args.extend(extra_args)
     bitcoind_processes[i] = subprocess.Popen(args)
     devnull = open("/dev/null", "w+")
     if os.getenv("PYTHON_DEBUG", ""):
-        print "start_node: bitcoind started, calling bitcoin-cli -rpcwait getblockcount"
-    subprocess.check_call([ os.getenv("BITCOINCLI", "bitcoin-cli"), "-datadir="+datadir] +
+        print "start_node: hushd started, calling hush-cli -rpcwait getblockcount"
+    subprocess.check_call([ os.getenv("BITCOINCLI", "hush-cli"), "-datadir="+datadir] +
                           _rpchost_to_args(rpchost)  +
                           ["-rpcwait", "getblockcount"], stdout=devnull)
     if os.getenv("PYTHON_DEBUG", ""):
-        print "start_node: calling bitcoin-cli -rpcwait getblockcount returned"
+        print "start_node: calling hush-cli -rpcwait getblockcount returned"
     devnull.close()
     url = "http://rt:rt@%s:%d" % (rpchost or '127.0.0.1', rpc_port(i))
     if timewait is not None:
@@ -204,7 +209,7 @@ def start_node(i, dirname, extra_args=None, rpchost=None, timewait=None, binary=
 
 def start_nodes(num_nodes, dirname, extra_args=None, rpchost=None, binary=None):
     """
-    Start multiple bitcoinds, return RPC connections to them
+    Start multiple hushds, return RPC connections to them
     """
     if extra_args is None: extra_args = [ None for i in range(num_nodes) ]
     if binary is None: binary = [ None for i in range(num_nodes) ]
@@ -368,3 +373,33 @@ def assert_raises(exc, fun, *args, **kwds):
         raise AssertionError("Unexpected exception raised: "+type(e).__name__)
     else:
         raise AssertionError("No exception raised")
+
+# Returns txid if operation was a success or None
+def wait_and_assert_operationid_status(node, myopid, in_status='success', in_errormsg=None):
+    print('waiting for async operation {}'.format(myopid))
+    opids = []
+    opids.append(myopid)
+    timeout = 300
+    status = None
+    errormsg = None
+    txid = None
+    for x in xrange(1, timeout):
+        results = node.z_getoperationresult(opids)
+        if len(results)==0:
+            time.sleep(1)
+        else:
+            status = results[0]["status"]
+            if status == "failed":
+                errormsg = results[0]['error']['message']
+            elif status == "success":
+                txid = results[0]['result']['txid']
+            break
+    assert_equal(in_status, status)
+    if errormsg is not None:
+        assert(in_errormsg is not None)
+        assert_equal(in_errormsg in errormsg, True)
+    if os.getenv("PYTHON_DEBUG", ""):
+        print('...returned status: {}'.format(status))
+        if errormsg is not None:
+            print('...returned error: {}'.format(errormsg))
+    return txid

@@ -93,6 +93,7 @@ static std::string cipherdescription;
 static std::string securitylevel;
 static std::string validationdescription;
 
+
 typedef int NodeId;
 
 struct CombinerAll
@@ -190,6 +191,7 @@ public:
     uint64_t nServices;
     bool fTLSEstablished;
     bool fTLSVerified;
+
     int64_t nLastSend;
     int64_t nLastRecv;
     int64_t nTimeConnected;

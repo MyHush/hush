@@ -37,6 +37,7 @@ unsigned int nTxConfirmTarget = DEFAULT_TX_CONFIRM_TARGET;
 bool bSpendZeroConfChange = true;
 bool fSendFreeTransactions = false;
 bool fPayAtLeastCustomFee = true;
+std::vector<CWalletRef> vpwallets;
 
 /**
  * Fees smaller than this (in satoshi) are considered zero fee (for transaction creation)
@@ -106,6 +107,10 @@ bool CWallet::AddZKey(const libzcash::SpendingKey &key)
 
     if (!CCryptoKeyStore::AddSpendingKey(key))
         return false;
+
+    // check if we need to remove from viewing keys
+    if (HaveViewingKey(addr))
+        RemoveViewingKey(key.viewing_key());
 
     if (!fFileBacked)
         return true;
@@ -190,10 +195,10 @@ bool CWallet::AddCryptedKey(const CPubKey &vchPubKey,
 
 
 bool CWallet::AddCryptedSpendingKey(const libzcash::PaymentAddress &address,
-                                    const libzcash::ViewingKey &vk,
+                                    const libzcash::ReceivingKey &rk,
                                     const std::vector<unsigned char> &vchCryptedSecret)
 {
-    if (!CCryptoKeyStore::AddCryptedSpendingKey(address, vk, vchCryptedSecret))
+    if (!CCryptoKeyStore::AddCryptedSpendingKey(address, rk, vchCryptedSecret))
         return false;
     if (!fFileBacked)
         return true;
@@ -201,12 +206,12 @@ bool CWallet::AddCryptedSpendingKey(const libzcash::PaymentAddress &address,
         LOCK(cs_wallet);
         if (pwalletdbEncryption) {
             return pwalletdbEncryption->WriteCryptedZKey(address,
-                                                         vk,
+                                                         rk,
                                                          vchCryptedSecret,
                                                          mapZKeyMetadata[address]);
         } else {
             return CWalletDB(strWalletFile).WriteCryptedZKey(address,
-                                                             vk,
+                                                             rk,
                                                              vchCryptedSecret,
                                                              mapZKeyMetadata[address]);
         }
@@ -236,14 +241,46 @@ bool CWallet::LoadCryptedKey(const CPubKey &vchPubKey, const std::vector<unsigne
     return CCryptoKeyStore::AddCryptedKey(vchPubKey, vchCryptedSecret);
 }
 
-bool CWallet::LoadCryptedZKey(const libzcash::PaymentAddress &addr, const libzcash::ViewingKey &vk, const std::vector<unsigned char> &vchCryptedSecret)
+bool CWallet::LoadCryptedZKey(const libzcash::PaymentAddress &addr, const libzcash::ReceivingKey &rk, const std::vector<unsigned char> &vchCryptedSecret)
 {
-    return CCryptoKeyStore::AddCryptedSpendingKey(addr, vk, vchCryptedSecret);
+    return CCryptoKeyStore::AddCryptedSpendingKey(addr, rk, vchCryptedSecret);
 }
 
 bool CWallet::LoadZKey(const libzcash::SpendingKey &key)
 {
     return CCryptoKeyStore::AddSpendingKey(key);
+}
+
+bool CWallet::AddViewingKey(const libzcash::ViewingKey &vk)
+{
+    if (!CCryptoKeyStore::AddViewingKey(vk)) {
+        return false;
+    }
+    nTimeFirstKey = 1; // No birthday information for viewing keys.
+    if (!fFileBacked) {
+        return true;
+    }
+    return CWalletDB(strWalletFile).WriteViewingKey(vk);
+}
+
+bool CWallet::RemoveViewingKey(const libzcash::ViewingKey &vk)
+{
+    AssertLockHeld(cs_wallet);
+    if (!CCryptoKeyStore::RemoveViewingKey(vk)) {
+        return false;
+    }
+    if (fFileBacked) {
+        if (!CWalletDB(strWalletFile).EraseViewingKey(vk)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool CWallet::LoadViewingKey(const libzcash::ViewingKey &vk)
+{
+    return CCryptoKeyStore::AddViewingKey(vk);
 }
 
 bool CWallet::AddCScript(const CScript& redeemScript)
@@ -946,7 +983,8 @@ void CWallet::MarkDirty()
 }
 
 /**
- * Ensure that every note in the wallet has a cached nullifier.
+ * Ensure that every note in the wallet (for which we possess a spending key)
+ * has a cached nullifier.
  */
 bool CWallet::UpdateNullifierNoteMap()
 {
@@ -960,16 +998,17 @@ bool CWallet::UpdateNullifierNoteMap()
         for (std::pair<const uint256, CWalletTx>& wtxItem : mapWallet) {
             for (mapNoteData_t::value_type& item : wtxItem.second.mapNoteData) {
                 if (!item.second.nullifier) {
-                    auto i = item.first.js;
-                    GetNoteDecryptor(item.second.address, dec);
-                    auto hSig = wtxItem.second.vjoinsplit[i].h_sig(
-                        *pzcashParams, wtxItem.second.joinSplitPubKey);
-                    item.second.nullifier = GetNoteNullifier(
-                        wtxItem.second.vjoinsplit[i],
-                        item.second.address,
-                        dec,
-                        hSig,
-                        item.first.n);
+                    if (GetNoteDecryptor(item.second.address, dec)) {
+                        auto i = item.first.js;
+                        auto hSig = wtxItem.second.vjoinsplit[i].h_sig(
+                            *pzcashParams, wtxItem.second.joinSplitPubKey);
+                        item.second.nullifier = GetNoteNullifier(
+                            wtxItem.second.vjoinsplit[i],
+                            item.second.address,
+                            dec,
+                            hSig,
+                            item.first.n);
+                    }
                 }
             }
             UpdateNullifierNoteMapWithTx(wtxItem.second);
@@ -1231,7 +1270,9 @@ boost::optional<uint256> CWallet::GetNoteNullifier(const JSDescription& jsdesc,
         hSig,
         (unsigned char) n);
     auto note = note_pt.note(address);
-    // SpendingKeys are only available if the wallet is unlocked
+    // SpendingKeys are only available if:
+    // - We have them (this isn't a viewing key)
+    // - The wallet is unlocked
     libzcash::SpendingKey key;
     if (GetSpendingKey(address, key)) {
         ret = note.nullifier(key);
@@ -1638,6 +1679,43 @@ void CWalletTx::GetAmounts(list<COutputEntry>& listReceived,
             listReceived.push_back(output);
     }
 
+}
+
+/**
+ * Scan active chain for relevant transactions after importing keys. This should
+ * be called whenever new keys are added to the wallet, with the oldest key
+ * creation time.
+ *
+ * @return Earliest timestamp that could be successfully scanned from. Timestamp
+ * returned will be higher than startTime if relevant blocks could not be read.
+ */
+int64_t CWallet::RescanFromTime(int64_t startTime, const WalletRescanReserver& reserver, bool update)
+{
+    // Find starting block. May be null if nCreateTime is greater than the
+    // highest blockchain timestamp, in which case there is nothing that needs
+    // to be scanned.
+    CBlockIndex* startBlock = nullptr;
+    {
+        LOCK(cs_main);
+        startBlock = chainActive.FindEarliestAtLeast(startTime - TIMESTAMP_WINDOW);
+        LogPrintf("%s: Rescanning last %i blocks\n", __func__, startBlock ? chainActive.Height() - startBlock->nHeight + 1 : 0);
+    }
+
+    if (startBlock) {
+        //const CBlockIndex* const failedBlock = ScanForWalletTransactions(startBlock, false); //nullptr, reserver, update);
+        //if (failedBlock) {
+        //    return failedBlock->GetBlockTimeMax() + TIMESTAMP_WINDOW + 1;
+        //}
+        ScanForWalletTransactions(startBlock, false); //nullptr, reserver, update);
+    }
+    return startTime;
+}
+
+CBlockIndex* CChain::FindEarliestAtLeast(int64_t nTime) const
+{
+    std::vector<CBlockIndex*>::const_iterator lower = std::lower_bound(vChain.begin(), vChain.end(), nTime,
+        [](CBlockIndex* pBlock, const int64_t& time) -> bool { return pBlock->GetBlockTimeMax() < time; });
+    return (lower == vChain.end() ? nullptr : *lower);
 }
 
 void CWalletTx::GetAccountAmounts(const string& strAccount, CAmount& nReceived,
@@ -3328,6 +3406,12 @@ void CWallet::GetAllReserveKeys(set<CKeyID>& setAddress) const
     }
 }
 
+std::vector<CTxDestination> GetAllDestinationsForKey(const CPubKey& key)
+{
+    CKeyID keyid = key.GetID();
+    return std::vector<CTxDestination>{std::move(keyid)};
+}
+
 void CWallet::UpdatedTransaction(const uint256 &hashTx)
 {
     {
@@ -3373,6 +3457,42 @@ void CWallet::ListLockedCoins(std::vector<COutPoint>& vOutpts)
         COutPoint outpt = (*it);
         vOutpts.push_back(outpt);
     }
+}
+
+
+// Note Locking Operations
+
+void CWallet::LockNote(JSOutPoint& output)
+{
+    AssertLockHeld(cs_wallet); // setLockedNotes
+    setLockedNotes.insert(output);
+}
+
+void CWallet::UnlockNote(JSOutPoint& output)
+{
+    AssertLockHeld(cs_wallet); // setLockedNotes
+    setLockedNotes.erase(output);
+}
+
+void CWallet::UnlockAllNotes()
+{
+    AssertLockHeld(cs_wallet); // setLockedNotes
+    setLockedNotes.clear();
+}
+
+bool CWallet::IsLockedNote(uint256 hash, size_t js, uint8_t n) const
+{
+    AssertLockHeld(cs_wallet); // setLockedNotes
+    JSOutPoint outpt(hash, js, n);
+
+    return (setLockedNotes.count(outpt) > 0);
+}
+
+std::vector<JSOutPoint> CWallet::ListLockedNotes()
+{
+    AssertLockHeld(cs_wallet); // setLockedNotes
+    std::vector<JSOutPoint> vOutpts(setLockedNotes.begin(), setLockedNotes.end());
+    return vOutpts;
 }
 
 /** @} */ // end of Actions
@@ -3608,7 +3728,7 @@ bool CMerkleTx::AcceptToMemoryPool(bool fLimitFree, bool fRejectAbsurdFee)
  * Find notes in the wallet filtered by payment address, min depth and ability to spend.
  * These notes are decrypted and added to the output parameter vector, outEntries.
  */
-void CWallet::GetFilteredNotes(std::vector<CNotePlaintextEntry> & outEntries, std::string address, int minDepth, bool ignoreSpent)
+void CWallet::GetFilteredNotes(std::vector<CNotePlaintextEntry> & outEntries, std::string address, int minDepth, bool ignoreSpent, bool ignoreUnspendable)
 {
     bool fFilterAddress = false;
     libzcash::PaymentAddress filterPaymentAddress;
@@ -3646,6 +3766,16 @@ void CWallet::GetFilteredNotes(std::vector<CNotePlaintextEntry> & outEntries, st
                 continue;
             }
 
+            // skip notes which cannot be spent
+            if (ignoreUnspendable && !HaveSpendingKey(pa)) {
+                continue;
+            }
+            
+            // skip locked notes
+            if (IsLockedNote(jsop.hash, jsop.js, jsop.n)) {
+                continue;
+            }
+
             int i = jsop.js; // Index into CTransaction.vjoinsplit
             int j = jsop.n; // Index into JSDescription.ciphertexts
 
@@ -3677,4 +3807,96 @@ void CWallet::GetFilteredNotes(std::vector<CNotePlaintextEntry> & outEntries, st
             }
         }
     }
+}
+
+/* Find unspent notes filtered by payment address, min depth and max depth */
+void CWallet::GetUnspentFilteredNotes(
+    std::vector<CUnspentNotePlaintextEntry>& outEntries,
+    std::set<PaymentAddress>& filterAddresses,
+    int minDepth,
+    int maxDepth,
+    bool ignoreUnspendable)
+{
+    LOCK2(cs_main, cs_wallet);
+
+    for (auto & p : mapWallet) {
+        CWalletTx wtx = p.second;
+
+        // Filter the transactions before checking for notes
+        if (!CheckFinalTx(wtx) || wtx.GetBlocksToMaturity() > 0 || wtx.GetDepthInMainChain() < minDepth || wtx.GetDepthInMainChain() > maxDepth ) {
+            continue;
+        }
+
+        if (wtx.mapNoteData.size() == 0) {
+            continue;
+        }
+
+        for (auto & pair : wtx.mapNoteData) {
+            JSOutPoint jsop = pair.first;
+            CNoteData nd = pair.second;
+            PaymentAddress pa = nd.address;
+
+            // skip notes which belong to a different payment address in the wallet
+            if (!(filterAddresses.empty() || filterAddresses.count(pa))) {
+                continue;
+            }
+
+            // skip note which has been spent
+            if (nd.nullifier && IsSpent(*nd.nullifier)) {
+                continue;
+            }
+
+            // skip notes which cannot be spent
+            if (ignoreUnspendable && !HaveSpendingKey(pa)) {
+                continue;
+            }
+
+            int i = jsop.js; // Index into CTransaction.vjoinsplit
+            int j = jsop.n; // Index into JSDescription.ciphertexts
+
+            // Get cached decryptor
+            ZCNoteDecryption decryptor;
+            if (!GetNoteDecryptor(pa, decryptor)) {
+                // Note decryptors are created when the wallet is loaded, so it should always exist
+                throw std::runtime_error(strprintf("Could not find note decryptor for payment address %s", CZCPaymentAddress(pa).ToString()));
+            }
+
+            // determine amount of funds in the note
+            auto hSig = wtx.vjoinsplit[i].h_sig(*pzcashParams, wtx.joinSplitPubKey);
+            try {
+                NotePlaintext plaintext = NotePlaintext::decrypt(
+                        decryptor,
+                        wtx.vjoinsplit[i].ciphertexts[j],
+                        wtx.vjoinsplit[i].ephemeralKey,
+                        hSig,
+                        (unsigned char) j);
+
+                outEntries.push_back(CUnspentNotePlaintextEntry{jsop, pa, plaintext, wtx.GetDepthInMainChain()});
+
+            } catch (const note_decryption_failed &err) {
+                // Couldn't decrypt with this spending key
+                throw std::runtime_error(strprintf("Could not decrypt note for payment address %s", CZCPaymentAddress(pa).ToString()));
+            } catch (const std::exception &exc) {
+                // Unexpected failure
+                throw std::runtime_error(strprintf("Error while decrypting note for payment address %s: %s", CZCPaymentAddress(pa).ToString(), exc.what()));
+            }
+        }
+    }
+}
+
+void CWallet::LearnRelatedScripts(const CPubKey& key, OutputType type)
+{
+    if (key.IsCompressed() && (type == OutputType::P2SH_SEGWIT || type == OutputType::BECH32)) {
+        //CTxDestination witdest = WitnessV0KeyHash(key.GetID());
+        //CScript witprog = GetScriptForDestination(witdest);
+        // Make sure the resulting program is solvable.
+        //assert(IsSolvable(*this, witprog));
+        //AddCScript(witprog);
+    }
+}
+
+void CWallet::LearnAllRelatedScripts(const CPubKey& key)
+{
+    // OutputType::P2SH_SEGWIT always adds all necessary scripts for all types.
+    LearnRelatedScripts(key, OutputType::P2SH_SEGWIT);
 }

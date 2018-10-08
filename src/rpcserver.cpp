@@ -27,6 +27,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/thread.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper()
+#include "komodo_rpcblockchain.h"
 
 using namespace RPCServer;
 using namespace std;
@@ -252,6 +253,8 @@ UniValue stop(const UniValue& params, bool fHelp)
     return "Hush server stopping";
 }
 
+extern UniValue importpubkey(const UniValue &params, bool fHelp);
+
 /**
  * Call Table
  */
@@ -281,6 +284,8 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "getbestblockhash",       &getbestblockhash,       true  },
     { "blockchain",         "getblockcount",          &getblockcount,          true  },
     { "blockchain",         "getblock",               &getblock,               true  },
+    { "blockchain",         "getblockdeltas",         &getblockdeltas,         false },
+    { "blockchain",         "getblockhashes",         &getblockhashes,         true  },
     { "blockchain",         "getblockhash",           &getblockhash,           true  },
     { "blockchain",         "getblockheader",         &getblockheader,         true  },
     { "blockchain",         "getchaintips",           &getchaintips,           true  },
@@ -292,6 +297,9 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "verifytxoutproof",       &verifytxoutproof,       true  },
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true  },
     { "blockchain",         "verifychain",            &verifychain,            true  },
+    { "blockchain",         "getspentinfo",           &getspentinfo,           false },
+    { "blockchain",         "calc_MoM",               &calc_MoM,               true  },
+    { "blockchain",         "height_MoM",             &height_MoM,             true  },
 
     /* Mining */
     { "mining",             "getblocktemplate",       &getblocktemplate,       true  },
@@ -320,6 +328,13 @@ static const CRPCCommand vRPCCommands[] =
 #ifdef ENABLE_WALLET
     { "rawtransactions",    "fundrawtransaction",     &fundrawtransaction,     false },
 #endif
+
+    /* Address index */
+    { "addressindex",       "getaddressmempool",      &getaddressmempool,      true  },
+    { "addressindex",       "getaddressutxos",        &getaddressutxos,        false },
+    { "addressindex",       "getaddressdeltas",       &getaddressdeltas,       false },
+    { "addressindex",       "getaddresstxids",        &getaddresstxids,        false },
+    { "addressindex",       "getaddressbalance",      &getaddressbalance,      false },
 
     /* Utility functions */
     { "util",               "createmultisig",         &createmultisig,         true  },
@@ -356,6 +371,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "getunconfirmedbalance",  &getunconfirmedbalance,  false },
     { "wallet",             "getwalletinfo",          &getwalletinfo,          false },
     { "wallet",             "importprivkey",          &importprivkey,          true  },
+    { "wallet",             "importpubkey",           &importpubkey,           true  },
     { "wallet",             "importwallet",           &importwallet,           true  },
     { "wallet",             "importaddress",          &importaddress,          true  },
     { "wallet",             "keypoolrefill",          &keypoolrefill,          true  },
@@ -384,6 +400,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "zcrawreceive",           &zc_raw_receive,         true  },
     { "wallet",             "zcsamplejoinsplit",      &zc_sample_joinsplit,    true  },
     { "wallet",             "z_listreceivedbyaddress",&z_listreceivedbyaddress,false },
+    { "wallet",             "z_listunspent",          &z_listunspent,          false },
     { "wallet",             "z_getbalance",           &z_getbalance,           false },
     { "wallet",             "z_gettotalbalance",      &z_gettotalbalance,      false },
     { "wallet",             "z_sendmany",             &z_sendmany,             false },
@@ -395,6 +412,8 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "z_listaddresses",        &z_listaddresses,        true  },
     { "wallet",             "z_exportkey",            &z_exportkey,            true  },
     { "wallet",             "z_importkey",            &z_importkey,            true  },
+    { "wallet",             "z_exportviewingkey",     &z_exportviewingkey,     true  },
+    { "wallet",             "z_importviewingkey",     &z_importviewingkey,     true  },
     { "wallet",             "z_exportwallet",         &z_exportwallet,         true  },
     { "wallet",             "z_importwallet",         &z_importwallet,         true  },
 
