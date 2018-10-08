@@ -1,40 +1,22 @@
 # Installing Hush
 
-## Linux Install with Windows via VirtualBox
-VirtualBox 5.2.8 (released February 27 2018)
-https://www.virtualbox.org/wiki/Download_Old_Builds_5_2
+## Download and Install Hush v1.0.13 Stable Release
 
-Or click below for direct download
-https://download.virtualbox.org/virtualbox/5.2.8/VirtualBox-5.2.8-121009-Win.exe
+This method can be used to install release packages:
 
-Ubuntu Install
-Download Ubuntu 16.04.4 LTS (Xenial Xerus) from your favorite mirror, or find it below.
-http://www.gtlib.gatech.edu/pub/ubuntu-releases/xenial/
-
-Or click below for direct download
-http://www.gtlib.gatech.edu/pub/ubuntu-releases/xenial/ubuntu-16.04.4-desktop-amd64.iso
-
-Set up VirtualBox to install from Ubuntu ISO, 4 Gigs of RAM and 20 GB of storage will work.  
-
----
-
-## Linux Install with VPS (<$3/month)
-Ubuntu 16.04 VPS with CPU: 1 vCore, RAM: 512 MB, Storage: and 20 GB SSD will work.
-
-Create a new username, just replace "CREATE_NEW_USERNAME" with a new name.
 ```sh
-adduser CREATE_NEW_USERNAME && adduser CREATE_NEW_USERNAME sudo
+cd ~
+sudo wget https://github.com/MyHush/hush/releases/download/v1.0.13/hush-1.0.13-afad8af-amd64.deb
+sudo dpkg -i hush-1.0.13-afad8af-amd64.deb
 ```
-Reboot and log in as new user
 
----
+To install Hush from source, read on.
 
-## Update Ubuntu
+## Build HUSH dependencies
 
-After installation is complete open terminal and do an update.
-```sh
-sudo apt-get update && sudo apt-get upgrade -y
-```
+The following build process generally applies to Ubuntu (and similar) Linux
+distributions. For best results it is recommended to use Ubuntu Linux 16.04
+or later.
 
 ## Swap Space (Optional)
 You will need at least 4GB of RAM to build hush from git source, OR you can
@@ -47,28 +29,7 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
 
-Now make the swap work better. Add a line to sysctl.conf
-```sh
-sudo nano /etc/sysctl.conf
-```
-add to last line of file:
-```
-vm.swappiness=10
-```
-
-Then make it so the swap gets mounted when the server reboots. Edit the fstab file
-```sh
-sudo nano /etc/fstab
-```
-add to last line of file:
-```
-/swapfile   none    swap    sw    0   0
-```
-
-## Build HUSH dependencies
-The following build process generally applies to Ubuntu (and similar) Linux
-distributions. For best results it is recommended to use Ubuntu Linux 16.04
-or later.
+To install build depedencies:
 
 ```sh
 sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib \
@@ -76,12 +37,6 @@ sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib \
       bsdmainutils automake curl unzip nano
 ```
 
-## Download and Install Hush v1.0.13 Stable Release
-```sh
-cd ~
-sudo wget https://github.com/MyHush/hush/releases/download/v1.0.13/hush-1.0.13-afad8af-amd64.deb
-sudo dpkg -i hush-1.0.13-afad8af-amd64.deb
-```
 
 ## Download proving key
 ```sh
@@ -89,6 +44,9 @@ sudo dpkg -i hush-1.0.13-afad8af-amd64.deb
 ```
 
 ## Create a HUSH configuration file (*important*):
+
+You can compile Hush without this, but need a config file to run hushd.
+
 ```sh
 mkdir -p ~/.hush
 echo "rpcuser=username" >> ~/.hush/hush.conf
@@ -101,7 +59,8 @@ echo "addnode=dnsseed.hush.quebec" >> ~/.hush/hush.conf
 ```
 
 ## Run a HUSH Node
-```ssh
+
+```sh
 ./hushd
 ```
 
