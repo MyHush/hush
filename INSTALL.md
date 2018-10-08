@@ -29,16 +29,22 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
 
-To install build depedencies:
+## Build on Linux:
+
 
 ```sh
+# install build depedencies
 sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python zlib1g-dev wget \
       bsdmainutils automake curl unzip nano
+# pull
+git clone https://github.com/MyHush/hush.git
+cd hush
+# Build
+./zcutil/build.sh -j$(nproc)
 ```
 
-
-## Download proving key
+## Download proving key:
 ```sh
 ./zcutil/fetch-params.sh
 ```
