@@ -6,8 +6,8 @@ This method can be used to install release packages:
 
 ```sh
 cd ~
-sudo wget https://github.com/MyHush/hush/releases/download/v2.0.0/hush-2.0.0-b4f1a4ce-amd64.deb
-sudo dpkg -i hush-2.0.0-b4f1a4ce-amd64.deb
+sudo wget https://github.com/MyHush/hush/releases/download/v2.0.0/hush-2.0.0-c7d6ba61-amd64.deb
+sudo dpkg -i hush-2.0.0-c7d6ba61-amd64.deb
 ```
 
 To install Hush from source, read on.
@@ -29,16 +29,22 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 ```
 
-To install build depedencies:
+## Build on Linux:
+
 
 ```sh
+# install build depedencies
 sudo apt-get install build-essential pkg-config libc6-dev m4 g++-multilib \
       autoconf libtool ncurses-dev unzip git python zlib1g-dev wget \
       bsdmainutils automake curl unzip nano
+# pull
+git clone https://github.com/MyHush/hush.git
+cd hush
+# Build
+./zcutil/build.sh -j$(nproc)
 ```
 
-
-## Download proving key
+## Download proving key:
 ```sh
 ./zcutil/fetch-params.sh
 ```
