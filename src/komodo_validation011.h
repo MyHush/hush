@@ -142,7 +142,7 @@ int32_t komodo_importaddress(std::string addr)
                 return(1);
             }
         }
-        printf("%s -> komodo_importaddress failed valid.%d\n",addr.c_str(),address.IsValid());
+        LogPrint("dpow","%s -> komodo_importaddress failed valid.%d\n",addr.c_str(),address.IsValid());
     }
     return(-1);
 }
@@ -514,7 +514,7 @@ int32_t decode_hex(uint8_t *bytes,int32_t n,char *hex)
         if ( n > 0 )
         {
             bytes[0] = unhex(hex[0]);
-            printf("decode_hex n.%d hex[0] (%c) -> %d hex.(%s) [n*2+1: %d] [n*2: %d %c] len.%ld\n",n,hex[0],bytes[0],hex,hex[n*2+1],hex[n*2],hex[n*2],(long)strlen(hex));
+            LogPrint("dpow","decode_hex n.%d hex[0] (%c) -> %d hex.(%s) [n*2+1: %d] [n*2: %d %c] len.%ld\n",n,hex[0],bytes[0],hex,hex[n*2+1],hex[n*2],hex[n*2],(long)strlen(hex));
         }
         bytes++;
         hex++;
@@ -754,7 +754,7 @@ void komodo_importpubkeys()
 	    //fprintf(stderr,"pubkey=%s, addr=%s\n", pubkey, addr.c_str() );
 
             if ( (val= komodo_importaddress(addr)) < 0 )
-                LogPrintf("dpow: error importing (%s)\n",addr.c_str());
+                LogPrint("dpow","dpow: error importing (%s)\n",addr.c_str());
             else if ( val == 0 )
                 dispflag++;
         }
@@ -954,7 +954,7 @@ int32_t komodo_notarizeddata(int32_t nHeight,uint256 *notarized_hashp,uint256 *n
                 {
                     if ( NPOINTS[i].nHeight >= nHeight )
                     {
-                        LogPrintf("dpow: flag.1 i.%d np->ht %d [%d].ht %d >= nHeight.%d, last.%d num.%d\n",i,np->nHeight,i,NPOINTS[i].nHeight,nHeight,last_NPOINTSi,NUM_NPOINTS);
+                        LogPrint("dpow","dpow: flag.1 i.%d np->ht %d [%d].ht %d >= nHeight.%d, last.%d num.%d\n",i,np->nHeight,i,NPOINTS[i].nHeight,nHeight,last_NPOINTSi,NUM_NPOINTS);
                         flag = 1;
                         break;
                     }
@@ -1007,7 +1007,7 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
         sep = "/";
 #endif
         sprintf(fname,"%s%snotarizations%s",GetDefaultDataDir().string().c_str(), sep.c_str(), suffix.c_str());
-        LogPrintf("dpow: fname.(%s)\n",fname);
+        LogPrint("dpow","dpow: fname.(%s)\n",fname);
         if ( (fp= fopen(fname,"rb+")) == 0 )
             fp = fopen(fname,"wb+");
         else
@@ -1030,12 +1030,12 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
                     NOTARIZED_MOMDEPTH = np->MoMdepth;
                     //fprintf(stderr,"%d ",np->notarized_height);
                     fpos = ftell(fp);
-                } else LogPrintf("dpow: %s error with notarization ht.%d %s\n",ASSETCHAINS_SYMBOL,N.notarized_height,pindex->GetBlockHash().ToString().c_str());
+                } else LogPrint("dpow","dpow: %s error with notarization ht.%d %s\n",ASSETCHAINS_SYMBOL,N.notarized_height,pindex->GetBlockHash().ToString().c_str());
             }
             if ( ftell(fp) !=  fpos )
                 fseek(fp,fpos,SEEK_SET);
         }
-        LogPrintf("dpow: finished loading %s [pubkey %s]\n",fname,NOTARY_PUBKEY.c_str());
+        LogPrint("dpow","dpow: finished loading %s [pubkey %s]\n",fname,NOTARY_PUBKEY.c_str());
         didinit = 1;
     }
     if ( notarized_height == 0 )
@@ -1045,16 +1045,16 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
 	}
     if ( notarized_height >= nHeight )
     {
-        LogPrintf("dpow: komodo_notarized_update REJECT notarized_height %d > %d nHeight\n",notarized_height,nHeight);
+        LogPrint("dpow","dpow: komodo_notarized_update REJECT notarized_height %d > %d nHeight\n",notarized_height,nHeight);
         return;
     }
     pindex = komodo_chainactive(notarized_height);
     if ( pindex == 0 || pindex->GetBlockHash() != notarized_hash || notarized_height != pindex->nHeight )
     {
-        LogPrintf("dpow: komodo_notarized_update reject nHeight.%d notarized_height.%d:%d\n",nHeight,notarized_height,(int32_t)pindex->nHeight);
+        LogPrint("dpow","dpow: komodo_notarized_update reject nHeight.%d notarized_height.%d:%d\n",nHeight,notarized_height,(int32_t)pindex->nHeight);
         return;
     }
-    LogPrintf("dpow: komodo_notarized_update nHeight.%d notarized_height.%d prev.%d\n",nHeight,notarized_height,NPOINTS!=0?NPOINTS[NUM_NPOINTS-1].notarized_height:-1);
+    LogPrint("dpow","dpow: komodo_notarized_update nHeight.%d notarized_height.%d prev.%d\n",nHeight,notarized_height,NPOINTS!=0?NPOINTS[NUM_NPOINTS-1].notarized_height:-1);
     portable_mutex_lock(&komodo_mutex);
     NPOINTS = (struct notarized_checkpoint *)realloc(NPOINTS,(NUM_NPOINTS+1) * sizeof(*NPOINTS));
     np = &NPOINTS[NUM_NPOINTS++];
@@ -1073,7 +1073,7 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
     {
         if ( fwrite(np,1,sizeof(*np),fp) == sizeof(*np) )
             fflush(fp);
-        else LogPrintf("dpow: error writing notarization to %d\n",(int32_t)ftell(fp));
+        else LogPrint("dpow","dpow: error writing notarization to %d\n",(int32_t)ftell(fp));
     }
     // add to stored notarizations
     portable_mutex_unlock(&komodo_mutex);
@@ -1092,7 +1092,7 @@ int32_t komodo_checkpoint(int32_t *notarized_heightp,int32_t nHeight,uint256 has
     {
         notary = mapBlockIndex[notarized_hash];
         if ( IS_NOTARY )
-            printf("nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
+            LogPrint("dpow","nHeight.%d -> (%d %s)\n",pindex->nHeight,notarized_height,notarized_hash.ToString().c_str());
         if ( notary->nHeight == notarized_height ) // if notarized_hash not in chain, reorg
         {
             if ( nHeight < notarized_height )
@@ -1132,7 +1132,7 @@ void komodo_voutupdate(int32_t txi,int32_t vout,uint8_t *scriptbuf,int32_t scrip
             opretlen = scriptbuf[len++];
             opretlen += (scriptbuf[len++] << 8);
         }
-        printf("opretlen.%d vout.%d [%s].(%s)\n",opretlen,vout,(char *)&scriptbuf[len+32*2+4],ASSETCHAINS_SYMBOL);
+        LogPrint("dpow","opretlen.%d vout.%d [%s].(%s)\n",opretlen,vout,(char *)&scriptbuf[len+32*2+4],ASSETCHAINS_SYMBOL);
         if ( vout == 1 && opretlen-3 >= 32*2+4 && strcmp(ASSETCHAINS_SYMBOL,(char *)&scriptbuf[len+32*2+4]) == 0 )
         {
             len += iguana_rwbignum(0,&scriptbuf[len],32,(uint8_t *)&hash);
@@ -1158,12 +1158,12 @@ void komodo_voutupdate(int32_t txi,int32_t vout,uint8_t *scriptbuf,int32_t scrip
                     }
                     else
                     {
-                        LogPrintf("dpow: VALID %s MoM.%s [%d]\n",ASSETCHAINS_SYMBOL,MoM.ToString().c_str(),MoMdepth);
+                        LogPrint("dpow","dpow: VALID %s MoM.%s [%d]\n",ASSETCHAINS_SYMBOL,MoM.ToString().c_str(),MoMdepth);
                     }
                 }
                 komodo_notarized_update(height,*notarizedheightp,hash,desttxid,MoM,MoMdepth);
-                LogPrintf("dpow: %s ht.%d NOTARIZED.%d %s %sTXID.%s lens.(%d %d)\n",ASSETCHAINS_SYMBOL,height,*notarizedheightp,hash.ToString().c_str(),"KMD",desttxid.ToString().c_str(),opretlen,len);
-            } else LogPrintf("dpow: notarized.%d ht %d vs prev %d vs height.%d\n",notarized,*notarizedheightp,NOTARIZED_HEIGHT,height);
+                LogPrint("dpow","dpow: %s ht.%d NOTARIZED.%d %s %sTXID.%s lens.(%d %d)\n",ASSETCHAINS_SYMBOL,height,*notarizedheightp,hash.ToString().c_str(),"KMD",desttxid.ToString().c_str(),opretlen,len);
+            } else LogPrint("dpow","dpow: notarized.%d ht %d vs prev %d vs height.%d\n",notarized,*notarizedheightp,NOTARIZED_HEIGHT,height);
         }
     }
 }
@@ -1187,7 +1187,7 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
     else
     {
         if ( pindex->nHeight != hwmheight )
-            LogPrintf("dpow: %s hwmheight.%d vs pindex->nHeight.%d t.%u reorg.%d\n",ASSETCHAINS_SYMBOL,hwmheight,pindex->nHeight,(uint32_t)pindex->nTime,hwmheight-pindex->nHeight);
+            LogPrint("dpow","dpow: %s hwmheight.%d vs pindex->nHeight.%d t.%u reorg.%d\n",ASSETCHAINS_SYMBOL,hwmheight,pindex->nHeight,(uint32_t)pindex->nTime,hwmheight-pindex->nHeight);
     }
 
     if ( pindex != 0 )
@@ -1225,11 +1225,11 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             if ( numvalid >= KOMODO_MINRATIFY )
                 notarized = 1;
             if ( IS_NOTARY )
-                printf("(tx.%d: ",i);
+                LogPrint("dpow","(tx.%d: ",i);
             for (j=0; j<numvouts; j++)
             {
                 if ( IS_NOTARY )
-                    printf("%.8f ",dstr(block.vtx[i].vout[j].nValue));
+                    LogPrint("dpow","%.8f ",dstr(block.vtx[i].vout[j].nValue));
                 len = block.vtx[i].vout[j].scriptPubKey.size();
                 if ( len >= (int32_t)sizeof(uint32_t) && len <= (int32_t)sizeof(scriptbuf) )
                 {
@@ -1238,10 +1238,10 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
                 }
             }
             if ( NOTARY_PUBKEY33[0] != 0 )
-                printf(") ");
+                LogPrint("dpow",") ");
             if ( NOTARY_PUBKEY33[0] != 0 )
-                printf("%s ht.%d\n",ASSETCHAINS_SYMBOL,height);
-            LogPrintf("dpow: [%s] ht.%d txi.%d signedmask.%llx numvins.%d numvouts.%d notarized.%d special.%d\n",ASSETCHAINS_SYMBOL,height,i,(long long)signedmask,numvins,numvouts,notarized,specialtx);
+                LogPrint("dpow","%s ht.%d\n",ASSETCHAINS_SYMBOL,height);
+            LogPrint("dpow","dpow: [%s] ht.%d txi.%d signedmask.%llx numvins.%d numvouts.%d notarized.%d special.%d\n",ASSETCHAINS_SYMBOL,height,i,(long long)signedmask,numvins,numvouts,notarized,specialtx);
         }
     } else LogPrint("dpow","komodo_connectblock: unexpected null pindex\n");
 
