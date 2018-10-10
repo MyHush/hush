@@ -965,7 +965,7 @@ struct CompareBlocksByHeight
 
 UniValue getchaintips(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() != 0)
+    if (fHelp || params.size() > 1)
         throw runtime_error(
             "getchaintips\n"
             "Return information about all known tips in the block tree,"
