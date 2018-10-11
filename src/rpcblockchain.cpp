@@ -1015,8 +1015,10 @@ UniValue getchaintips(const UniValue& params, bool fHelp)
             setTips.erase(pprev);
     }
 
-    // Always report the currently active tip.
-    setTips.insert(chainActive.Tip());
+    if (minBranchLen == 0) {
+        // insert currently active tip
+        setTips.insert(chainActive.Tip());
+    }
 
     /* Construct the output array.  */
     UniValue res(UniValue::VARR);
