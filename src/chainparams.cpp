@@ -244,7 +244,7 @@ public:
         strNetworkID = "test";
         strCurrencyUnits = "TUSH";
         consensus.fCoinbaseMustBeProtected = true;
-        consensus.nSubsidySlowStartInterval = 20000;
+        consensus.nSubsidySlowStartInterval = 2;
         consensus.nSubsidyHalvingInterval = 840000;
         consensus.nMajorityEnforceBlockUpgrade = 51;
         consensus.nMajorityRejectBlockOutdated = 75;
