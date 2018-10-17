@@ -27,6 +27,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/thread.hpp>
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper()
+#include "komodo_rpcblockchain.h"
 
 using namespace RPCServer;
 using namespace std;
@@ -252,6 +253,8 @@ UniValue stop(const UniValue& params, bool fHelp)
     return "Hush server stopping";
 }
 
+extern UniValue importpubkey(const UniValue &params, bool fHelp);
+
 /**
  * Call Table
  */
@@ -296,6 +299,8 @@ static const CRPCCommand vRPCCommands[] =
     { "blockchain",         "gettxoutsetinfo",        &gettxoutsetinfo,        true  },
     { "blockchain",         "verifychain",            &verifychain,            true  },
     { "blockchain",         "getspentinfo",           &getspentinfo,           false },
+    { "blockchain",         "calc_MoM",               &calc_MoM,               true  },
+    { "blockchain",         "height_MoM",             &height_MoM,             true  },
 
     /* Mining */
     { "mining",             "getblocktemplate",       &getblocktemplate,       true  },
@@ -367,6 +372,7 @@ static const CRPCCommand vRPCCommands[] =
     { "wallet",             "getunconfirmedbalance",  &getunconfirmedbalance,  false },
     { "wallet",             "getwalletinfo",          &getwalletinfo,          false },
     { "wallet",             "importprivkey",          &importprivkey,          true  },
+    { "wallet",             "importpubkey",           &importpubkey,           true  },
     { "wallet",             "importwallet",           &importwallet,           true  },
     { "wallet",             "importaddress",          &importaddress,          true  },
     { "wallet",             "keypoolrefill",          &keypoolrefill,          true  },

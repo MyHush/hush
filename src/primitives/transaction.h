@@ -13,6 +13,7 @@
 #include "uint256.h"
 #include "consensus/consensus.h"
 
+#include <memory>
 #include <boost/array.hpp>
 
 #include "zcash/NoteEncryption.hpp"
@@ -461,6 +462,10 @@ public:
 
     std::string ToString() const;
 };
+
+typedef std::shared_ptr<const CTransaction> CTransactionRef;
+static inline CTransactionRef MakeTransactionRef() { return std::make_shared<const CTransaction>(); }
+template <typename Tx> static inline CTransactionRef MakeTransactionRef(Tx&& txIn) { return std::make_shared<const CTransaction>(std::forward<Tx>(txIn)); }
 
 /** A mutable version of CTransaction. */
 struct CMutableTransaction

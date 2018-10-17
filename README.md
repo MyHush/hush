@@ -1,4 +1,4 @@
-# HUSH 1.0.15
+# HUSH 2.0.0
 
 ## What is HUSH?
 
@@ -7,7 +7,7 @@
 HUSH (formerly Zdash) is a code fork of [ZCash](https://z.cash/) which has it's own genesis block.
 Based on Bitcoin's code, it intends to offer a far higher standard of privacy
 through a sophisticated zero-knowledge proving scheme that preserves
-confidentiality of transaction metadata. 
+confidentiality of transaction metadata.
 
 This software is the HUSH node and command-line client. It downloads and stores the entire history
 of HUSH transactions; depending on the speed of your computer and network
@@ -94,7 +94,7 @@ The section of using the command line is relevant to HUSH.
 
 ### Not content with command line use of HUSH?
 
-A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/releases/tag/v0.71.2-beta)
+A [HUSH GUI Wallet](https://github.com/MyHush/hush-swing-wallet-ui/releases)
 
 License
 -------

@@ -51,8 +51,8 @@ cp $SRC_DOC/man/hushd.1 $DEB_MAN
 cp $SRC_DOC/man/hush-cli.1 $DEB_MAN
 cp $SRC_DOC/man/hush-fetch-params.1 $DEB_MAN
 # Copy bash completion files
-cp $SRC_PATH/contrib/bitcoind.bash-completion $DEB_CMP/hushd
-cp $SRC_PATH/contrib/bitcoin-cli.bash-completion $DEB_CMP/hush-cli
+cp $SRC_PATH/contrib/hushd.bash-completion $DEB_CMP/hushd
+cp $SRC_PATH/contrib/hush-cli.bash-completion $DEB_CMP/hush-cli
 # Gzip files
 gzip --best -n $DEB_DOC/changelog
 gzip --best -n $DEB_DOC/changelog.Debian
