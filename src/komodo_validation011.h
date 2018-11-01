@@ -1006,7 +1006,7 @@ void komodo_notarized_update(int32_t nHeight,int32_t notarized_height,uint256 no
 #else
         sep = "/";
 #endif
-        sprintf(fname,"%s%snotarizations%s",GetDefaultDataDir().string().c_str(), sep.c_str(), suffix.c_str());
+        sprintf(fname,"%s%snotarizations%s",GetDataDir().string().c_str(), sep.c_str(), suffix.c_str());
         LogPrint("dpow","dpow: fname.(%s)\n",fname);
         if ( (fp= fopen(fname,"rb+")) == 0 )
             fp = fopen(fname,"wb+");
