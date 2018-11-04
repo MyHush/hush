@@ -18,18 +18,19 @@ class DPoWConfsTest(BitcoinTestFramework):
     def setup_network(self):
         self.nodes = []
         self.is_network_split = False
-        self.nodes.append(start_node(0, self.options.tmpdir, [['-dpowconfs=1']]))
+        self.nodes.append(start_node(0, self.options.tmpdir))
         self.sync_all()
 
     def run_test(self):
-        self.nodes[0].generate(3)
+        self.nodes[0].generate(101)
         rpc = self.nodes[0]
 
-        result = rpc.getinfo()
-        # regtest should have no notarization data, this test makes sure we do not see mainnet values as well!
-        assert_equal(result['notarized'],0)
-        assert_equal(result['notarizedhash'],'0000000000000000000000000000000000000000000000000000000000000000')
-        assert_equal(result['notarizedtxid'],'0000000000000000000000000000000000000000000000000000000000000000')
+        result = rpc.listunspent()
+        # no notarization data in regtest, yet
+        assert_equal( result[0]['confirmations'], 101 )
+        assert_equal( result[0]['rawconfirmations'], 101 )
+        print result
+
 
 if __name__ == '__main__':
     DPoWConfsTest().main()
