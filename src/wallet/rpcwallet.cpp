@@ -42,6 +42,7 @@ using namespace std;
 using namespace libzcash;
 
 extern UniValue TxJoinSplitToJSON(const CTransaction& tx);
+int32_t komodo_dpowconfs(int32_t height,int32_t numconfs);
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
