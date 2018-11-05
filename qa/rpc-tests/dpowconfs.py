@@ -22,7 +22,11 @@ class DPoWConfsTest(BitcoinTestFramework):
         self.sync_all()
 
     def run_test(self):
-        self.nodes[0].generate(101)
+        rpc = self.nodes[0]
+        rpc.generate(8)
+        print rpc.getinfo()
+        self.nodes[0].generate(94)
+        print rpc.getinfo()
         rpc = self.nodes[0]
 
         result = rpc.listunspent()
