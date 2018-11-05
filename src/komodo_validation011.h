@@ -1224,6 +1224,8 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
             numvalid = bitweight(signedmask);
             if ( numvalid >= KOMODO_MINRATIFY )
                 notarized = 1;
+            if ( Params().NetworkIDString() == "regtest" && ( height%7 == 0) )
+                notarized = 1;
             if ( IS_NOTARY )
                 LogPrint("dpow","(tx.%d: ",i);
             for (j=0; j<numvouts; j++)
