@@ -11,6 +11,7 @@ export BITCOIND=${REAL_BITCOIND}
 #Run the tests
 
 testScripts=(
+    'dpowconfs.py'
     'dpow.py'
     'paymentdisclosure.py'
     'prioritisetransaction.py'
