@@ -23,17 +23,23 @@ class DPoWConfsTest(BitcoinTestFramework):
 
     def run_test(self):
         rpc = self.nodes[0]
-        rpc.generate(8)
+        # 98 is notarized, next will be 105. Must mine at least 101
+        # blocks for 100 block maturity rule
+        rpc.generate(101)
         print rpc.getinfo()
-        self.nodes[0].generate(94)
-        print rpc.getinfo()
-        rpc = self.nodes[0]
 
+        taddr = rpc.getnewaddress()
+        rpc.sendtoaddress(taddr, 1987.420)
+        rpc.generate(2)
+        print rpc.getinfo()
         result = rpc.listunspent()
-        # no notarization data in regtest, yet
-        assert_equal( result[0]['confirmations'], 101 )
-        assert_equal( result[0]['rawconfirmations'], 101 )
-        print result
+
+        # this xtn has 2 raw confs, but not in a notarized block,
+        # so dpowconfs holds it at 1
+        for res in result:
+            if (res['address'] == taddr and res['generated'] == 'false'):
+                assert_equal( result[0]['confirmations'], 1 )
+                assert_equal( result[0]['rawconfirmations'], 2 )
 
 
 if __name__ == '__main__':
