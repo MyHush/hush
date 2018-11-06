@@ -25,13 +25,18 @@ class DPoWConfsTest(BitcoinTestFramework):
         rpc = self.nodes[0]
         # 98 is notarized, next will be 105. Must mine at least 101
         # blocks for 100 block maturity rule
-        rpc.generate(101)
+        blockhashes = rpc.generate(101)
+        # block 98, this is 0 indexed
+        notarizedhash = blockhashes[97]
         print rpc.getinfo()
 
         taddr = rpc.getnewaddress()
         rpc.sendtoaddress(taddr, 1987.420)
         rpc.generate(2)
-        print rpc.getinfo()
+
+        info = rpc.getinfo()
+        assert_equal( info['notarizedhash'], notarizedhash)
+
         result = rpc.listunspent()
 
         # this xtn has 2 raw confs, but not in a notarized block,
