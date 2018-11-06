@@ -1227,8 +1227,8 @@ void komodo_connectblock(CBlockIndex *pindex,CBlock& block)
                 notarized = 1;
             if ( Params().NetworkIDString() == "regtest" && ( height%7 == 0) ) {
                 notarized = 1;
-                NOTARIZED_HEIGHT = height;
-                //NOTARIZED_HASH = hash;
+                NOTARIZED_HEIGHT   = height;
+                NOTARIZED_HASH     = block.GetHash();
                 NOTARIZED_DESTTXID = txhash;
             }
             if ( IS_NOTARY )
