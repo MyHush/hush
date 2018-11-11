@@ -1056,3 +1056,57 @@ UniValue getspentinfo(const UniValue& params, bool fHelp)
 
     return obj;
 }
+
+UniValue hush_snapshot(int top);
+
+UniValue getsnapshot(const UniValue& params, bool fHelp)
+{
+    UniValue result(UniValue::VOBJ); int64_t total; int32_t top = 0;
+
+    if (params.size() > 0 && !params[0].isNull()) {
+        top = atoi(params[0].get_str().c_str());
+    if (top <= 0)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, top must be a positive integer");
+    }
+
+    if ( fHelp || params.size() > 1)
+    {
+        throw runtime_error(
+            "getsnapshot\n"
+            "\nReturns a snapshot of (address,amount) pairs at current height (requires addressindex to be enabled).\n"
+            "\nArguments:\n"
+            "  \"top\" (number, optional) Only return this many addresses, i.e. top N richlist\n"
+            "\nResult:\n"
+            "{\n"
+            "   \"addresses\": [\n"
+            "    {\n"
+            "      \"addr\": \"t1EBhzvATA8mrfVK82E5TgPzzjtagCL420\",\n"
+            "      \"amount\": \"100.0\"\n"
+            "    },\n"
+            "    {\n"
+            "      \"addr\": \"t1EBhzvATAJmrfVL82E57gPzzjtaggDuke\",\n"
+            "      \"amount\": \"23.45\"\n"
+            "    }\n"
+            "  ],\n"
+            "  \"total\": 123.45           (numeric) Total amount in snapshot\n"
+            "  \"average\": 61.7,          (numeric) Average amount in each address \n"
+            "  \"utxos\": 14,              (number) Total number of UTXOs in snapshot\n"
+            "  \"total_addresses\": 2,     (number) Total number of addresses in snapshot,\n"
+            "  \"start_height\": 91,       (number) Block height snapshot began\n"
+            "  \"ending_height\": 91       (number) Block height snapsho finished,\n"
+            "  \"start_time\": 1531982752, (number) Unix epoch time snapshot started\n"
+            "  \"end_time\": 1531982752    (number) Unix epoch time snapshot finished\n"
+            "}\n"
+            "\nExamples:\n"
+            + HelpExampleCli("getsnapshot","")
+            + HelpExampleRpc("getsnapshot", "1000")
+                        );
+    }
+    result = hush_snapshot(top);
+    if ( result.size() > 0 ) {
+        result.push_back(Pair("end_time", (int) time(NULL)));
+    } else {
+        result.push_back(Pair("error", "no addressindex"));
+    }
+    return(result);
+}
