@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
-// Copyright (c)      2017 The Hush developers
+// Copyright (c) 2017-2018 The Hush developers
 
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -559,6 +559,24 @@ CBlockIndex* FindForkInGlobalIndex(const CChain& chain, const CBlockLocator& loc
 
 CCoinsViewCache *pcoinsTip = NULL;
 CBlockTreeDB *pblocktree = NULL;
+
+UniValue hush_snapshot(int top)
+{
+    LOCK(cs_main);
+    int64_t total = -1;
+    UniValue result(UniValue::VOBJ);
+
+    if (fAddressIndex) {
+        if ( pblocktree != 0 ) {
+            result = pblocktree->Snapshot(top);
+        } else {
+            fprintf(stderr,"null pblocktree! Make sure to start with -addressindex=1\n");
+        }
+    } else {
+        fprintf(stderr,"getsnapshot requires -addressindex=1\n");
+    }
+    return(result);
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //
