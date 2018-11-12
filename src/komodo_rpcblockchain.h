@@ -21,6 +21,25 @@
 int32_t komodo_MoMdata(int32_t *notarized_htp,uint256 *MoMp,uint256 *kmdtxidp,int32_t height,uint256 *MoMoMp,int32_t *MoMoMoffsetp,int32_t *MoMoMdepthp,int32_t *kmdstartip,int32_t *kmdendip);
 uint256 komodo_calcMoM(int32_t height,int32_t MoMdepth);
 extern char ASSETCHAINS_SYMBOL[65];
+uint32_t DPOWCONFS = 1;
+extern int32_t NOTARIZED_HEIGHT;
+
+int32_t komodo_dpowconfs(int32_t txheight,int32_t numconfs)
+{
+    // DPoW confs are on by default
+    int32_t dpowconfs = 1;
+    DPOWCONFS = GetArg("-dpowconfs",dpowconfs);
+    if ( DPOWCONFS != 0 && txheight > 0 && numconfs > 0 )
+    {
+        if ( NOTARIZED_HEIGHT > 0 )
+        {
+            if ( txheight < NOTARIZED_HEIGHT )
+                return(numconfs);
+            else return(1);
+        }
+    }
+    return(numconfs);
+}
 
 int32_t komodo_MoM(int32_t *notarized_heightp,uint256 *MoMp,uint256 *kmdtxidp,int32_t nHeight,uint256 *MoMoMp,int32_t *MoMoMoffsetp,int32_t *MoMoMdepthp,int32_t *kmdstartip,int32_t *kmdendip)
 {

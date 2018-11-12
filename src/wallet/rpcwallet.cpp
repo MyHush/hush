@@ -42,6 +42,7 @@ using namespace std;
 using namespace libzcash;
 
 extern UniValue TxJoinSplitToJSON(const CTransaction& tx);
+int32_t komodo_dpowconfs(int32_t height,int32_t numconfs);
 
 int64_t nWalletUnlockTime;
 static CCriticalSection cs_nWalletUnlockTime;
@@ -77,15 +78,16 @@ void EnsureWalletIsUnlocked()
 void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
 {
     int confirms = wtx.GetDepthInMainChain();
-    entry.push_back(Pair("confirmations", confirms));
+    entry.push_back(Pair("rawconfirmations", confirms));
     if (wtx.IsCoinBase())
         entry.push_back(Pair("generated", true));
     if (confirms > 0)
     {
+        entry.push_back(Pair("confirmations", komodo_dpowconfs((int32_t)mapBlockIndex[wtx.hashBlock]->nHeight,confirms)));
         entry.push_back(Pair("blockhash", wtx.hashBlock.GetHex()));
         entry.push_back(Pair("blockindex", wtx.nIndex));
         entry.push_back(Pair("blocktime", mapBlockIndex[wtx.hashBlock]->GetBlockTime()));
-    }
+    } else entry.push_back(Pair("confirmations", confirms));
     uint256 hash = wtx.GetHash();
     entry.push_back(Pair("txid", hash.GetHex()));
     UniValue conflicts(UniValue::VARR);
@@ -2418,8 +2420,12 @@ UniValue listunspent(const UniValue& params, bool fHelp)
                     entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));
             }
         }
+        int32_t txheight;
+        if ( chainActive.Tip() != NULL )
+            txheight = (chainActive.Tip()->nHeight - out.nDepth - 1);
         entry.push_back(Pair("amount",ValueFromAmount(nValue)));
-        entry.push_back(Pair("confirmations",out.nDepth));
+        entry.push_back(Pair("rawconfirmations",out.nDepth));
+        entry.push_back(Pair("confirmations",komodo_dpowconfs(txheight,out.nDepth)));
         entry.push_back(Pair("spendable", out.fSpendable));
         results.push_back(entry);
     }
@@ -2546,10 +2552,15 @@ UniValue z_listunspent(const UniValue& params, bool fHelp)
         pwalletMain->GetUnspentFilteredNotes(entries, zaddrs, nMinDepth, nMaxDepth, !fIncludeWatchonly);
         for (CUnspentNotePlaintextEntry & entry : entries) {
             UniValue obj(UniValue::VOBJ);
-            obj.push_back(Pair("txid",entry.jsop.hash.ToString()));
+            int32_t txheight;
+            std::string txid = entry.jsop.hash.ToString();
+            obj.push_back(Pair("txid",txid));
             obj.push_back(Pair("js_index", (int)entry.jsop.js ));
             obj.push_back(Pair("output_index", (int)entry.jsop.n));
-            obj.push_back(Pair("confirmations", entry.nHeight));
+            if ( chainActive.Tip() != NULL )
+                 txheight = (chainActive.Tip()->nHeight - entry.nHeight - 1);
+            obj.push_back(Pair("rawconfirmations", entry.nHeight));
+            obj.push_back(Pair("confirmations",komodo_dpowconfs(txheight,entry.nHeight)));
             obj.push_back(Pair("spendable", pwalletMain->HaveSpendingKey(entry.address)));
             obj.push_back(Pair("address", CZCPaymentAddress(entry.address).ToString()));
             obj.push_back(Pair("amount", ValueFromAmount(CAmount(entry.plaintext.value))));
