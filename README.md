@@ -33,7 +33,13 @@ See [INSTALL.md](https://github.com/MyHush/hush/blob/master/INSTALL.md).
 
 Bootstrap Nodes
 ---------------
-Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file.
+Choose to add any of the following bootstrap nodes, per your preferred network configuration, to speed up peer discovery. Utilize `addnode=HOSTNAME` in your `hush.conf` file. For example:
+
+    addnode=explorer.myhush.org
+    addnode=dnsseed.myhush.org
+    addnode=dnsseed2.myhush.org
+    addnode=dnsseed.bleuzero.com
+    addnode=dnsseed.hush.quebec
 
 **IPV4**
  * dnsseed.myhush.org
