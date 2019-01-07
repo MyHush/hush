@@ -1201,7 +1201,8 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
             obj.push_back(Pair("address",       address.ToString()));
             obj.push_back(Pair("account",       strAccount));
             obj.push_back(Pair("amount",        ValueFromAmount(nAmount)));
-            obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+            obj.push_back(Pair("rawconfirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+            obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : komodo_dpowconfs(nHeight, nConf))));
             UniValue transactions(UniValue::VARR);
             if (it != mapTally.end())
             {
@@ -1226,7 +1227,8 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
                 obj.push_back(Pair("involvesWatchonly", true));
             obj.push_back(Pair("account",       (*it).first));
             obj.push_back(Pair("amount",        ValueFromAmount(nAmount)));
-            obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+            obj.push_back(Pair("rawconfirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
+            obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : komodo_dpowconfs(nHeight, nConf))));
             ret.push_back(obj);
         }
     }
@@ -2326,13 +2328,13 @@ UniValue listunspent(const UniValue& params, bool fHelp)
             "with between minconf and maxconf (inclusive) confirmations.\n"
             "Optionally filter to only include txouts paid to specified addresses.\n"
             "Results are an array of Objects, each of which has:\n"
-            "{txid, vout, scriptPubKey, amount, confirmations}\n"
+            "{txid, vout, scriptPubKey, amount, generated, confirmations, rawconfirmations}\n"
             "\nArguments:\n"
             "1. minconf          (numeric, optional, default=1) The minimum confirmations to filter\n"
             "2. maxconf          (numeric, optional, default=9999999) The maximum confirmations to filter\n"
             "3. \"addresses\"    (string) A json array of Hush addresses to filter\n"
             "    [\n"
-            "      \"address\"   (string) hush address\n"
+            "      \"address\"   (string) Hush address\n"
             "      ,...\n"
             "    ]\n"
             "\nResult\n"
@@ -2345,7 +2347,8 @@ UniValue listunspent(const UniValue& params, bool fHelp)
             "    \"account\" : \"account\",  (string) DEPRECATED. The associated account, or \"\" for the default account\n"
             "    \"scriptPubKey\" : \"key\", (string) the script key\n"
             "    \"amount\" : x.xxx,         (numeric) the transaction amount in " + CURRENCY_UNIT + "\n"
-            "    \"confirmations\" : n       (numeric) The number of confirmations\n"
+            "    \"confirmations\" : n       (numeric) The number of notarized DPoW confirmations\n"
+            "    \"rawconfirmations\" : n    (numeric) The number of raw confirmations\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -2460,7 +2463,8 @@ UniValue z_listunspent(const UniValue& params, bool fHelp)
             "    \"txid\" : \"txid\",        (string) the transaction id \n"
             "    \"js_index\" : n          (numeric) the joinsplit index\n"
             "    \"output_index\" : n      (numeric) the output index of the joinsplit\n"
-            "    \"confirmations\" : n     (numeric) the number of confirmations\n"
+            "    \"confirmations\" : n     (numeric) the number of notarized DPoW confirmations\n"
+            "    \"rawconfirmations\" : n  (numeric) the number of raw confirmations\n"
             "    \"spendable\" : true|false  (boolean) true if note is spendable, false if watchonly\n"
             "    \"address\" : \"address\",  (string) the shielded address\n"
             "    \"amount\": xxxxx,        (numeric) the amount of value in the note\n"
@@ -3248,8 +3252,27 @@ UniValue z_listreceivedbyaddress(const UniValue& params, bool fHelp)
     pwalletMain->GetFilteredNotes(entries, fromaddress, nMinDepth, false, false);
     for (CNotePlaintextEntry & entry : entries) {
         UniValue obj(UniValue::VOBJ);
+        int nHeight = 0;
+        CTransaction tx;
+        uint256 hashBlock;
+
+        if (GetTransaction(entry.jsop.hash, tx, hashBlock, true)) {
+            BlockMap::const_iterator it = mapBlockIndex.find(hashBlock);
+            if (it != mapBlockIndex.end()) {
+                nHeight = it->second->GetHeight();
+                fprintf(stderr,"blockHash %s height %d\n",hashBlock.ToString().c_str(), nHeight);
+            } else {
+                fprintf(stderr,"block hash %s does not exist!\n", hashBlock.ToString().c_str() );
+            }
+        } else {
+            fprintf(stderr,"tx hash %s does not exist!\n", entry.jsop.hash.ToString().c_str() );
+        }
+
         obj.push_back(Pair("txid",entry.jsop.hash.ToString()));
         obj.push_back(Pair("amount", ValueFromAmount(CAmount(entry.plaintext.value))));
+        obj.push_back(Pair("rawconfirmations", entry.confirmations));
+        obj.push_back(Pair("confirmations", komodo_dpowconfs(nHeight, entry.confirmations)));
+
         std::string data(entry.plaintext.memo.begin(), entry.plaintext.memo.end());
         obj.push_back(Pair("memo", HexStr(data)));
         result.push_back(obj);
