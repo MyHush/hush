@@ -3392,7 +3392,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
             {
                 //fprintf(stderr,"got a pre notarization block that matches height.%d\n",(int32_t)nHeight);
                 return true;
-            } else return state.DoS(100, error("%s: forked chain %d older than last notarized (height %d) vs %d", __func__,nHeight, notarized_height));
+            } else return state.DoS(100, error("%s: forked chain %d older than last notarized (height %d)", __func__,nHeight, notarized_height));
         }
     }
 
