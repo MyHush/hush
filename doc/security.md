@@ -22,9 +22,14 @@ don't affect the current release or older software.)
 # What if myhush.org get hacked?
 
 In the event the Hush website is down or hacked, please also check these
-twitter handles: @radix42,  @dukeleto and @MyHushTeam. The Hush protocol has an
+twitter handles: @dukeleto and @MyHushTeam. The Hush protocol has an
 alert system and currently a small set of people control the keys to issue
 alerts. These will be sent to all nodes, if necessary in an emergency situation.
+
+Additionally, you can contact Duke Leto via GPG keys from [Keybase](https://keybase.io/dukeleto), corresponding to
+
+    F16219F4C23F91112E9C734A8DFCBF8E5A4D8019
+    https://keybase.io/dukeleto/pgp_keys.asc
 
 # What if all the Hush core devs turn evil?
 
