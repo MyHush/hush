@@ -213,6 +213,7 @@ namespace {
 } // anon namespace
 
 char ASSETCHAINS_SYMBOL[65] = { "HUSH" };
+uint32_t HUSH_STOPAT = GetArg("-stopat",0);
 #include "komodo_validation011.h"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2215,6 +2216,9 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 {
     const CChainParams& chainparams = Params();
     AssertLockHeld(cs_main);
+
+    if ( HUSH_STOPAT != 0 && pindex->nHeight > HUSH_STOPAT )
+        return(false);
 
     bool fExpensiveChecks = true;
     if (fCheckpointsEnabled) {
