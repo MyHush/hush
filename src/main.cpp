@@ -2217,8 +2217,10 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     const CChainParams& chainparams = Params();
     AssertLockHeld(cs_main);
 
-    if ( HUSH_STOPAT != 0 && pindex->nHeight > HUSH_STOPAT )
+    if ( HUSH_STOPAT != 0 && pindex->nHeight > HUSH_STOPAT ) {
+        printf("Stopping at block height %d\n", HUSH_STOPAT);
         return(false);
+    }
 
     bool fExpensiveChecks = true;
     if (fCheckpointsEnabled) {
